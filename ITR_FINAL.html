@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Intertype Relations · The Cybernetics of Human Interaction</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #10111a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#08090e", card: "#10111a", cardHover: "#181925", border: "#252538",
+  accent1: "#06b6d4", accent2: "#8b5cf6", accent3: "#10b981", accent4: "#f59e0b",
+  text: "#e4e4e7", textMuted: "#9ca3af", textDim: "#6b7280",
+  // relation category colors
+  symmetric: "#10b981",    // emerald , core symmetric
+  reinin: "#06b6d4",       // cyan , Reinin-only
+  tencer: "#a78bfa",       // violet , Minaiev-only
+  asymmetric: "#f59e0b",   // amber , compositional / asymmetric
+  rose: "#ec4899", teal: "#14b8a6", lime: "#84cc16", amber: "#d97706",
+  // specific relations
+  identity: "#64748b",
+  dual: "#10b981",
+  superEgo: "#ef4444",
+  extinguish: "#8b5cf6",
+  mirror: "#06b6d4",
+  conflict: "#dc2626",
+  activity: "#14b8a6",
+  quasi: "#3b82f6",
+  kindred: "#14b8a6",     // teal
+  lookalike: "#22c55e",   // green (Business)
+  semiDual: "#eab308",    // yellow-gold
+  illusionary: "#f97316", // orange (Mirage)
+  benefit: "#f59e0b",
+  supervision: "#d97706",
+};
+
+const Divider = ({ label, color }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
+    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 13, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
+  </div>
+);
+
+const Card = ({ children, color = C.border, style = {} }) => (
+  <div style={{ background: C.card, border: `1px solid ${color}30`, borderRadius: 14, padding: 24, marginBottom: 8, ...style }}>{children}</div>
+);
+
+const Tag = ({ label, color }) => (
+  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+);
+
+const Prose = ({ children, style = {} }) => (
+  <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, margin: "0 0 16px", ...style }}>{children}</p>
+);
+
+const SmallProse = ({ children, style = {} }) => (
+  <p style={{ fontSize: 12, color: C.textDim, lineHeight: 1.65, margin: 0, ...style }}>{children}</p>
+);
+
+const SectionTitle = ({ children, color = C.text }) => (
+  <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color, margin: "0 0 14px" }}>{children}</h3>
+);
+
+const Mono = ({ children, color = C.textDim }) => (
+  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color }}>{children}</span>
+);
+
+const TabBtn = ({ label, active, onClick, color }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: "10px 4px",
+      border: "none",
+      background: "transparent",
+      color: active ? color : C.textMuted,
+      fontSize: 14,
+      fontWeight: active ? 700 : 500,
+      cursor: "pointer",
+      letterSpacing: 0.2,
+      fontFamily: "'Inter', -apple-system, sans-serif",
+      borderBottom: active ? `3px solid ${color}` : "3px solid transparent",
+      transition: "all 0.15s",
+      whiteSpace: "nowrap",
+    }}
+  >{label}</button>
+);
+
+// Relation card: used across all category sections
+const RelationCard = ({ name, subtitle, color, mechanics, examples, signature, quality }) => (
+  <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 22, flex: "1 1 340px", minWidth: 300, position: "relative", overflow: "hidden" }}>
+    <div style={{ position: "absolute", top: -20, right: -10, fontSize: 90, opacity: 0.04, fontWeight: 900, color, lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{name.charAt(0)}</div>
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
+      <div style={{ fontSize: 17, fontWeight: 700, color, fontFamily: "'Playfair Display', Georgia, serif" }}>{name}</div>
+      <span style={{ fontSize: 9, color: `${color}aa`, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>{signature}</span>
+    </div>
+    <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.8, textTransform: "uppercase", marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>{subtitle}</div>
+    <p style={{ fontSize: 12.5, color: C.text, lineHeight: 1.65, margin: "0 0 12px" }}>{mechanics}</p>
+    {quality && <div style={{ fontSize: 11, color: `${color}cc`, fontStyle: "italic", marginBottom: 10, lineHeight: 1.5 }}>{quality}</div>}
+    {examples && (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10 }}>
+        {examples.map((e, i) => (
+          <span key={i} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: `${color}14`, color: `${color}dd`, border: `1px solid ${color}22`, fontFamily: "'JetBrains Mono', monospace" }}>{e}</span>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+// Donut chart for Bukalov marriage statistics
+const DonutChart = ({ data, size = 380 }) => {
+  const cx = size / 2, cy = size / 2, r = size * 0.40, inner = size * 0.24;
+  let cumulative = 0;
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const segments = data.map((d) => {
+    const startAngle = (cumulative / total) * Math.PI * 2 - Math.PI / 2;
+    cumulative += d.value;
+    const endAngle = (cumulative / total) * Math.PI * 2 - Math.PI / 2;
+    const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+    const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
+    const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+    const x3 = cx + inner * Math.cos(endAngle), y3 = cy + inner * Math.sin(endAngle);
+    const x4 = cx + inner * Math.cos(startAngle), y4 = cy + inner * Math.sin(startAngle);
+    const path = `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${inner} ${inner} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+    const midAngle = (startAngle + endAngle) / 2;
+    const labelR = (r + inner) / 2;
+    return { path, color: d.color, label: d.label, value: d.value, lx: cx + labelR * Math.cos(midAngle), ly: cy + labelR * Math.sin(midAngle) };
+  });
+  return (
+    <div style={{ display: "flex", gap: 32, alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {segments.map((s, i) => (
+          <g key={i}>
+            <path d={s.path} fill={s.color} stroke={C.bg} strokeWidth="2" opacity="0.88" />
+            {s.value >= 8 && (
+              <text x={s.lx} y={s.ly} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize="18" fontWeight="800" fontFamily="'JetBrains Mono', monospace">{s.value}%</text>
+            )}
+            {s.value < 8 && s.value >= 5 && (
+              <text x={s.lx} y={s.ly} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize="14" fontWeight="700" fontFamily="'JetBrains Mono', monospace">{s.value}%</text>
+            )}
+          </g>
+        ))}
+        <text x={cx} y={cy - 10} textAnchor="middle" fill={C.textMuted} fontSize="11" fontFamily="'JetBrains Mono', monospace" letterSpacing="2">BUKALOV</text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fill={C.text} fontSize="14" fontWeight="700" fontFamily="'JetBrains Mono', monospace">MARRIAGES</text>
+      </svg>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 240 }}>
+        {data.map((d, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 16, height: 16, borderRadius: 4, background: d.color }} />
+            <div style={{ flex: 1, fontSize: 14, color: C.text, fontWeight: 500 }}>{d.label}</div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: d.color }}>{d.value}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Stacked bar showing breakdown within the "Inside Quadra" segment
+const StackedBar = ({ data, title }) => {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  return (
+    <div style={{ marginTop: 8 }}>
+      {title && <div style={{ fontSize: 11, color: C.textDim, marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>{title}</div>}
+      <div style={{ display: "flex", height: 44, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+        {data.map((d, i) => (
+          <div key={i} style={{ flex: d.value, background: `linear-gradient(180deg, ${d.color}, ${d.color}bb)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderRight: i < data.length - 1 ? `1px solid ${C.bg}` : "none" }}>
+            <div style={{ color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{d.value}%</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", marginTop: 10, gap: 14, flexWrap: "wrap" }}>
+        {data.map((d, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color }} />
+            <span style={{ fontSize: 11, color: C.textMuted, fontWeight: 500 }}>{d.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+function IntertypeReport() {
+  const [activeSection, setActiveSection] = useState("intro");
+
+  const sections = [
+    { id: "intro",      label: "Overview",                 color: C.accent1 },
+    { id: "symmetric",  label: "Central Relations",        color: C.symmetric },
+    { id: "fringes",    label: "Space-Exclusive Relations", color: C.reinin },
+    { id: "asymmetric", label: "Ring Relations",           color: C.asymmetric },
+    { id: "frontier",   label: "Validation Efforts",       color: C.accent2 },
+    { id: "matrix",     label: "All Type Relations",       color: C.teal },
+  ];
+
+  // Bukalov data, relabeled to match document terminology
+  const marriageData = [
+    { label: "Intra-Quadra",     value: 64, color: C.symmetric },
+    { label: "Adjacent Quadra",  value: 13, color: C.tencer },
+    { label: "Benefit Ring",     value: 10, color: C.benefit },
+    { label: "Opposite Quadra",  value: 8,  color: C.superEgo },
+    { label: "Supervision Ring", value: 5,  color: C.supervision },
+  ];
+  const inQuadraBreakdown = [
+    { label: "Duality",  value: 54, color: C.dual },
+    { label: "Identity", value: 9,  color: C.identity },
+    { label: "Activity", value: 7,  color: C.activity },
+    { label: "Mirror",   value: 6,  color: C.mirror },
+  ];
+
+  // ─── Full Intertype Relations Data ────────────────────────────
+  // Row-major lookup: REL_DATA[A] returns A's partner for each relation code.
+  // Codes: Id=Identity Du=Dual Ac=Activity Mr=Mirror Ki=Kindred Mg=Mirage
+  //        Bu=Business Sd=Semi-Dual Qd=Quasi-Identical Ex=Extinguishment
+  //        Su=Super-Ego Co=Conflict  Bn=Benefactor-to  Sv=Supervisor-to
+  const REL_DATA = {
+    ILE:{Id:"ILE",Du:"SEI",Ac:"ESE",Mr:"LII",Ki:"IEE",Mg:"IEI",Bu:"SLE",Sd:"SLI",Qd:"LIE",Ex:"ILI",Su:"SEE",Co:"ESI",Bn:"EIE",Sv:"LSI"},
+    SEI:{Id:"SEI",Du:"ILE",Ac:"LII",Mr:"ESE",Ki:"SLI",Mg:"SLE",Bu:"IEI",Sd:"IEE",Qd:"ESI",Ex:"SEE",Su:"ILI",Co:"LIE",Bn:"LSI",Sv:"EIE"},
+    LII:{Id:"LII",Du:"ESE",Ac:"SEI",Mr:"ILE",Ki:"LSI",Mg:"LSE",Bu:"EII",Sd:"EIE",Qd:"ILI",Ex:"LIE",Su:"ESI",Co:"SEE",Bn:"SLI",Sv:"IEE"},
+    ESE:{Id:"ESE",Du:"LII",Ac:"ILE",Mr:"SEI",Ki:"EIE",Mg:"EII",Bu:"LSE",Sd:"LSI",Qd:"SEE",Ex:"ESI",Su:"LIE",Co:"ILI",Bn:"IEE",Sv:"SLI"},
+    EIE:{Id:"EIE",Du:"LSI",Ac:"SLE",Mr:"IEI",Ki:"ESE",Mg:"ESI",Bu:"LIE",Sd:"LII",Qd:"IEE",Ex:"EII",Su:"LSE",Co:"SLI",Bn:"SEE",Sv:"ILI"},
+    LSI:{Id:"LSI",Du:"EIE",Ac:"IEI",Mr:"SLE",Ki:"LII",Mg:"LIE",Bu:"ESI",Sd:"ESE",Qd:"SLI",Ex:"LSE",Su:"EII",Co:"IEE",Bn:"ILI",Sv:"SEE"},
+    SLE:{Id:"SLE",Du:"IEI",Ac:"EIE",Mr:"LSI",Ki:"SEE",Mg:"SEI",Bu:"ILE",Sd:"ILI",Qd:"LSE",Ex:"SLI",Su:"IEE",Co:"EII",Bn:"ESE",Sv:"LII"},
+    IEI:{Id:"IEI",Du:"SLE",Ac:"LSI",Mr:"EIE",Ki:"ILI",Mg:"ILE",Bu:"SEI",Sd:"SEE",Qd:"EII",Ex:"IEE",Su:"SLI",Co:"LSE",Bn:"LII",Sv:"ESE"},
+    SEE:{Id:"SEE",Du:"ILI",Ac:"LIE",Mr:"ESI",Ki:"SLE",Mg:"SLI",Bu:"IEE",Sd:"IEI",Qd:"ESE",Ex:"SEI",Su:"ILE",Co:"LII",Bn:"LSE",Sv:"EII"},
+    ILI:{Id:"ILI",Du:"SEE",Ac:"ESI",Mr:"LIE",Ki:"IEI",Mg:"IEE",Bu:"SLI",Sd:"SLE",Qd:"LII",Ex:"ILE",Su:"SEI",Co:"ESE",Bn:"EII",Sv:"LSE"},
+    LIE:{Id:"LIE",Du:"ESI",Ac:"SEE",Mr:"ILI",Ki:"LSE",Mg:"LSI",Bu:"EIE",Sd:"EII",Qd:"ILE",Ex:"LII",Su:"ESE",Co:"SEI",Bn:"SLE",Sv:"IEI"},
+    ESI:{Id:"ESI",Du:"LIE",Ac:"ILI",Mr:"SEE",Ki:"EII",Mg:"EIE",Bu:"LSI",Sd:"LSE",Qd:"SEI",Ex:"ESE",Su:"LII",Co:"ILE",Bn:"IEI",Sv:"SLE"},
+    LSE:{Id:"LSE",Du:"EII",Ac:"IEE",Mr:"SLI",Ki:"LIE",Mg:"LII",Bu:"ESE",Sd:"ESI",Qd:"SLE",Ex:"LSI",Su:"EIE",Co:"IEI",Bn:"ILE",Sv:"SEI"},
+    EII:{Id:"EII",Du:"LSE",Ac:"SLI",Mr:"IEE",Ki:"ESI",Mg:"ESE",Bu:"LII",Sd:"LIE",Qd:"IEI",Ex:"EIE",Su:"LSI",Co:"SLE",Bn:"SEI",Sv:"ILE"},
+    IEE:{Id:"IEE",Du:"SLI",Ac:"LSE",Mr:"EII",Ki:"ILE",Mg:"ILI",Bu:"SEE",Sd:"SEI",Qd:"EIE",Ex:"IEI",Su:"SLE",Co:"LSI",Bn:"LIE",Sv:"ESI"},
+    SLI:{Id:"SLI",Du:"IEE",Ac:"EII",Mr:"LSE",Ki:"SEI",Mg:"SEE",Bu:"ILI",Sd:"ILE",Qd:"LSI",Ex:"SLE",Su:"IEI",Co:"EIE",Bn:"ESI",Sv:"LIE"},
+  };
+
+  // Quadra-ordered types for the matrix display
+  const MATRIX_TYPES = ["ILE","SEI","ESE","LII","EIE","LSI","SLE","IEI","SEE","ILI","LIE","ESI","LSE","EII","IEE","SLI"];
+  const QUADRA_BOUNDS = { Alpha:[0,4], Beta:[4,8], Gamma:[8,12], Delta:[12,16] };
+
+  const REL_META = {
+    Id:{name:"Identity",       color:"#64748b"},
+    Du:{name:"Dual",           color:"#10b981"},
+    Ac:{name:"Activity",       color:"#14b8a6"},
+    Mr:{name:"Mirror",         color:"#06b6d4"},
+    Ki:{name:"Kindred",        color:"#14b8a6"},
+    Mg:{name:"Mirage",         color:"#f97316"},
+    Bu:{name:"Business",       color:"#22c55e"},
+    Sd:{name:"Semi-Dual",      color:"#eab308"},
+    Qd:{name:"Quasi-Identical",color:"#3b82f6"},
+    Ex:{name:"Extinguishment", color:"#a855f7"},
+    Su:{name:"Super-Ego",      color:"#ef4444"},
+    Co:{name:"Conflict",       color:"#dc2626"},
+    "Bn>":{name:"Benefactor → ",   color:"#f59e0b"},
+    "Bn<":{name:"← Beneficiary",   color:"#fbbf24"},
+    "Sv>":{name:"Supervisor → ",   color:"#d97706"},
+    "Sv<":{name:"← Supervisee",    color:"#f97316"},
+  };
+
+  const getRelation = (a, b) => {
+    if (a === b) return "Id";
+    const row = REL_DATA[a];
+    for (const k of ["Du","Ac","Mr","Ki","Mg","Bu","Sd","Qd","Ex","Su","Co"]) {
+      if (row[k] === b) return k;
+    }
+    if (row.Bn === b) return "Bn>";
+    if (row.Sv === b) return "Sv>";
+    const rb = REL_DATA[b];
+    if (rb.Bn === a) return "Bn<";
+    if (rb.Sv === a) return "Sv<";
+    return "Id";
+  };
+
+  const [hoveredCell, setHoveredCell] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
+
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      {/* HEADER */}
+      <div style={{ borderBottom: `1px solid ${C.border}`, padding: "64px 20px 32px", textAlign: "center", background: `radial-gradient(ellipse at top, ${C.asymmetric}08, transparent 60%)` }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <div style={{ fontSize: 10, letterSpacing: 4, color: C.textDim, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>COMPLETE SOCIONICS ONTOLOGY · VOL. V</div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 44, color: C.text, fontWeight: 700, letterSpacing: -0.5, marginBottom: 14, lineHeight: 1.1 }}>
+            Intertype Relations
+          </h1>
+          <div style={{ fontSize: 14, color: C.textMuted, fontStyle: "italic", marginBottom: 20, fontFamily: "'Playfair Display', Georgia, serif" }}>
+            The Cybernetics of Human Interaction
+          </div>
+          <Prose style={{ maxWidth: 720, margin: "0 auto 24px" }}>
+            A comprehensive analysis of the 14 classical Socionics relations, reconstructed through the algebraic synthesis of Reinin and Minaiev dichotomy spaces, grounded in Bukalov's empirical marriage data, and framed as a predictive science of structural cognitive acoustics.
+          </Prose>
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+            {["Relations Overview", "ITR Structure", "Couples Data", "Rings of Progress", "Empirical Investigation"].map((l, i) => (
+              <Tag key={i} label={l} color={[C.accent1, C.symmetric, C.rose, C.asymmetric, C.accent2][i]} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 20px" }}>
+        {/* SECTION NAV */}
+        <div style={{ display: "flex", gap: 28, marginTop: 28, marginBottom: 8, flexWrap: "wrap", justifyContent: "center", borderBottom: `1px solid ${C.border}`, paddingBottom: 0 }}>
+          {sections.map(s => (
+            <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
+          ))}
+        </div>
+
+        {/* ═══════════════════ INTRODUCTION ═══════════════════ */}
+        {activeSection === "intro" && <>
+          <Divider label="Definition" color={C.accent1} />
+          <Card color={C.accent1}>
+            <SectionTitle color={C.accent1}>Relations as Structural Information Acoustics</SectionTitle>
+            <Prose>
+              Intertype Relations (ITRs) are not mystical romantic compatibility, nor are they horoscope-tier pairings. They are the measurement of friction and resonance that emerges when one person's metabolic output (the information elements produced by their Ego block) enters another person's receptor array (the Super-Id and Super-Ego blocks). Each pairing of sociotypes generates a specific, mathematically predictable acoustic profile: some signals land on starving receptors and nourish them, others collide with defended functions and produce dissonance, and still others bypass the recipient entirely.
+            </Prose>
+            <Prose>
+              Think of each sociotype as a transmitter broadcasting on fixed frequencies and a receiver tuned to fixed frequencies. When person A's broadcast frequencies align with person B's reception frequencies, the channel is clear, information flows cheaply, and both parties experience cognitive ease. When they misalign, the metabolic system expends enormous effort to translate incompatible signals, and the resulting friction is experienced as fatigue, confusion, or hostility. Relations are thus a cybernetic property of the pair, not a personality trait of either individual.
+            </Prose>
+          </Card>
+
+          <Divider label="The 14 Relations at a Glance" color={C.text} />
+          <Card>
+            <Prose>
+              Before descending into specifics, note that the full Socion decomposes into exactly 14 distinct intertype relations. The algebra, proven by Vladimir Vincent on the foundation of Reinin's and Minaiev's dichotomy spaces, partitions these 14 relations into four mathematically distinct categories based on which dichotomy space can define them.
+            </Prose>
+            <Prose>
+              The number 14 itself is peculiar and worth pausing on. Naively, one might expect 16 relations (one for each of the 16 possible pairings a given sociotype can have, including itself), or perhaps 15 (excluding Identity as trivial). Neither intuition is correct. The answer drops to 14 because the two asymmetric ring relations, Benefit and Supervision, each collapse two apparent pairings into a single directional relation: Benefactor-to-Beneficiary and Supervisor-to-Supervisee describe the same structural dynamic viewed from opposite ends, so each ring contributes only one distinct relation to the count rather than two. Algebraically, this is the statement that the composition of any Reinin dichotomy with any Minaiev dichotomy yields exactly one of four asymmetric operations, not eight; the "direction" of the ring is a reading frame, not a second relation. The result is 4 + 4 + 4 + 2 = 14, and this count is forced by the group structure of the 24-dichotomy synthesis. Any alternative counting scheme either double-counts the rings or introduces relations that fail to preserve the Socion's symmetry under one or both dichotomy spaces, which is why classical and modern Socionics converge on the same 14 despite very different notational conventions.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 14 }}>
+              {[
+                { cat: "Reinin OR Minaiev", color: C.symmetric, count: 4, list: ["Identity", "Duality", "Super-Ego", "Extinguishment"], note: "Exist in both spaces" },
+                { cat: "Reinin Space Only", color: C.reinin, count: 4, list: ["Mirror", "Conflict", "Activity", "Quasi-Identity"], note: "Structural oppositions" },
+                { cat: "Minaiev Space Only", color: C.tencer, count: 4, list: ["Kindred", "Business", "Semi-Dual", "Mirage"], note: "Domain alignments" },
+                { cat: "Reinin AND Minaiev", color: C.asymmetric, count: 4, list: ["Benefactor", "Beneficiary", "Supervisor", "Supervisee"], note: "Compositional, asymmetric" },
+              ].map((g, i) => (
+                <div key={i} style={{ background: `${g.color}08`, border: `1px solid ${g.color}28`, borderRadius: 10, padding: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: g.color, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{g.cat}</div>
+                    <Mono color={g.color}>n={g.count}</Mono>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.text, lineHeight: 1.6, marginBottom: 6 }}>{g.list.join(", ")}</div>
+                  <div style={{ fontSize: 10, color: C.textDim, fontStyle: "italic" }}>{g.note}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="Why Relations Matter" color={C.teal} />
+          <Card color={C.teal}>
+            <SectionTitle color={C.teal}>Metabolic Starvation and Toxicity</SectionTitle>
+            <Prose>
+              Every sociotype has weak or absent cognitive functions whose contents the psyche still needs in order to navigate reality. The Super-Id block (Suggestive and Mobilizing functions) represents areas of perpetual hunger: information the type cannot generate internally but desperately needs from the environment. When those receptors are fed by a partner's Ego output, the effect is qualitatively different from merely receiving "helpful" information; it is cognitive nourishment at the architectural level, lowering stress, increasing confidence, and freeing the Ego to do its natural work.
+            </Prose>
+            <Prose>
+              Conversely, when a partner's output hits the Super-Ego block (Role and Vulnerable functions), the result is not merely unpleasant but metabolically toxic. These are functions that the psyche has learned to conceal or compensate for, and having them targeted, even innocently, produces a stress response far out of proportion to the surface content. This is why some relationships deplete both parties despite good intentions, and why others generate sustained energy without any visible effort: the difference is structural, not behavioral.
+            </Prose>
+          </Card>
+
+          <Divider label="Clarity vs. Obscurity" color={C.accent2} />
+          <Card color={C.accent2}>
+            <SectionTitle color={C.accent2}>Which Relations Are Empirically Well-Defined</SectionTitle>
+            <Prose>
+              Not all relations are equally observable. Duality, Conflict, and Supervision have sharp, consistent behavioral signatures that both the classical literature and modern empirical work recover reliably: duality produces long-term marital stability, conflict produces mutual avoidance, and supervision produces a persistent asymmetric tension that the supervisee experiences as being watched even when the supervisor is acting neutrally. These are the "load-bearing" relations of the theory.
+            </Prose>
+            <Prose>
+              By contrast, relations like Semi-Dual, Mirage, Activity, and Business often blur into each other in real-world observation. They share cognitive domains or creative outputs but diverge on deeper parameters that require careful instruments to isolate. Talanov's SOLTI-192 questionnaires and the statistical work at sociotype.xyz/r are specifically designed to decouple these blurry relations by measuring functional profiles directly rather than inferring them from surface behavior.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Decoupling these blurry relations will require substantially more empirical work than has been conducted to date. The SOLTI-192 dataset and the sociotype.xyz correlation tables are a strong start, but a truly rigorous validation would demand longitudinal studies of cohabiting dyads, controlled laboratory paradigms measuring physiological stress responses to each relation type, and cross-cultural replications outside the predominantly Russian-speaking Socionics research base. The payoff would be substantial: if the finer-grained relations could be isolated with the same confidence as Duality and Conflict, algorithmic matching systems could move beyond coarse quadra-level recommendations to predict exactly which flavor of metabolic complement a given person should seek, and organizational psychology could design teams that exploit the full 14-relation spectrum rather than treating all non-conflict pairings as interchangeable.
+            </Prose>
+          </Card>
+
+          <Divider label="Practical Applications" color={C.amber} />
+          <Card color={C.amber}>
+            <SectionTitle color={C.amber}>Beyond Personality Typing</SectionTitle>
+            <Prose>
+              ITRs transcend standard personality matching because they predict structural compatibility rather than surface similarity. Two people may share all the same hobbies, political views, and aesthetic tastes and still metabolize each other's presence as exhausting, because their Ego outputs continuously target each other's Super-Ego blocks. Inversely, two people with radically different tastes may find each other's presence effortless because their cognitive architectures are complementary.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 14, marginTop: 18 }}>
+              {[
+                { title: "Team Architecture", color: C.accent1, text: "Organizational psychology applications: constructing teams where supervision rings flow toward productive goals rather than scapegoating, and where benefit rings drive initiative without creating resentment." },
+                { title: "Relational Matching", color: C.rose, text: "Algorithmic matching systems that target structural cognitive compatibility instead of surface hobbies; the Bukalov marriage data shows such matching would dramatically outperform current approaches." },
+                { title: "Conflict Prevention", color: C.conflict, text: "Identifying Conflict, Super-Ego, and Revision pairings in advance so institutions can route around the worst friction instead of pathologizing the individuals caught inside it." },
+                { title: "Cognitive Health", color: C.symmetric, text: "Diagnosing chronic social fatigue not as introversion or burnout but as structural receptor starvation, then prescribing environmental changes that restore metabolic flow." },
+              ].map((a, i) => (
+                <div key={i} style={{ background: `${a.color}08`, border: `1px solid ${a.color}22`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: a.color, marginBottom: 8, letterSpacing: 0.5 }}>{a.title}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{a.text}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="Similarity vs. Complementarity" color={C.rose} />
+          <Card color={C.rose}>
+            <SectionTitle color={C.rose}>Do Opposites Attract? Depends... Which Opposites?</SectionTitle>
+            <Prose>
+              The popular debate between "opposites attract" and "birds of a feather flock together" is a false dichotomy. The empirical personality literature has resolved it by asking a more precise question: opposites or similars on what dimension? The answer consistently splits along a clean line: similarity wins on everything that functions as a shared operating system, while complementarity wins on everything that functions as division of labor.
+            </Prose>
+            <Prose>
+              Evolutionary biology offers the simplest explanation for the split. Our ancestors faced two different mate-selection problems simultaneously. The first was coordination: a pair raising offspring together across years had to agree on what dangers to avoid, which resources to pursue, and what counted as acceptable behavior, and mismatches on those questions were lethal. Selection pressured our mate-evaluation systems to look for shared values, shared moral orientation, and shared attachment patterns. The second problem was complementarity: a pair that pooled identical skills wasted the potential gains from specialization, while a pair whose strengths covered different domains could exploit a larger ecological niche together than either could alone. Selection pressured the same systems to look for partners whose cognitive, temperamental, and physiological endowments filled in the gaps in our own. The two pressures live inside every modern human, which is why we simultaneously want someone who "gets it" and someone who "brings something different."
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginTop: 18 }}>
+              <div style={{ background: `${C.dual}0a`, border: `1px solid ${C.dual}28`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.dual, marginBottom: 10, letterSpacing: 0.5, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>Similarity Wins</div>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Core values and moral orientation:</strong> Openness, Honesty-Humility (HEXACO), religious and political attitudes. Highest spousal similarity coefficients in the entire literature.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Attachment style and love style:</strong> Secure-secure pairings dominate satisfaction metrics across hundreds of studies.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Conscientiousness in life goals:</strong> Partners who agree on how much structure, planning, and effort a life should contain avoid a primary source of chronic friction.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 0 }}><strong>Agreeableness and warmth baseline:</strong> Equal levels of willingness to accommodate the other predict stability; large asymmetries predict resentment.</SmallProse>
+              </div>
+              <div style={{ background: `${C.asymmetric}0a`, border: `1px solid ${C.asymmetric}28`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.asymmetric, marginBottom: 10, letterSpacing: 0.5, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>Complementarity Wins</div>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Cognitive style:</strong> Intuitive-Sensing and Thinking-Feeling complementarity allows one partner to see what the other misses; this is the literal mechanism of Socionics Duality.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Extraversion and energy rhythm:</strong> Equal-extraversion couples exhaust the same resource; complementary energy patterns let each partner recharge while the other engages.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 6 }}><strong>Dominance and conflict-resolution roles:</strong> Carson's classic finding, equal warmth but opposite dominance, predicts smoother negotiation of practical decisions.</SmallProse>
+                <SmallProse style={{ color: C.textMuted, marginBottom: 0 }}><strong>Temperament and patience curves:</strong> Fast-and-impulsive paired with slow-and-deliberate outperforms two of either in long-term task completion.</SmallProse>
+              </div>
+            </div>
+            <Prose style={{ marginTop: 18, marginBottom: 0 }}>
+              This split is exactly what Socionics Duality encodes at the structural level. Dual partners share quadra values (similarity on the operating system) while inverting every cognitive function position (complementarity on the cognitive hardware). It is the only relation in the Socion that satisfies both evolutionary pressures at once, which is why it dominates Bukalov's marriage data and why Fisher's Director-Negotiator pairing, the most direct mainstream analog, shows a similar statistical preference. Identity and Kindred fail the complementarity test, Conflict and Super-Ego fail the similarity test, and only the intra-quadra complementary relations (especially Duality) thread the needle.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ SYMMETRIC CORE ═══════════════════ */}
+        {activeSection === "symmetric" && <>
+          <Divider label="Mathematical Origin" color={C.symmetric} />
+          <Card color={C.symmetric}>
+            <SectionTitle color={C.symmetric}>The Common Denominators of the Socion</SectionTitle>
+            <Prose>
+              Four relations can be fully defined inside the Reinin dichotomy space, inside the Minaiev dichotomy space, or inside either one independently. These are Identity, Duality, Super-Ego, and Extinguishment. They are, in a precise algebraic sense, the load-bearing symmetries of Socionics: they exist no matter which mathematical lens you use to partition the Socion, because they preserve structure under every valid transformation Vincent's proofs permit.
+            </Prose>
+            <Prose>
+              Practically, this means that when two relations agree on a pairing being Identity or Dual or Super-Ego or Extinguishment, that agreement is not an accident of notation; it reflects a real invariant of the information metabolism. These are also the relations with the cleanest behavioral signatures in the empirical literature, which is no coincidence. What is mathematically robust tends also to be phenomenologically robust.
+            </Prose>
+          </Card>
+
+          <Divider label="The Four Central Relations" color={C.symmetric} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <RelationCard
+              name="Identity"
+              subtitle="Absolute Resonance · Zero Growth"
+              color={C.identity}
+              signature="A = A"
+              mechanics="Two instances of the same sociotype. Every function, every block, every dichotomy is mirrored exactly. Communication is effortless because there is nothing to translate; both parties share the same perceptual filters, the same valued elements, and the same blind spots."
+              quality="Comfortable but developmentally stagnant. Neither party can illuminate the other's Super-Id because neither has access to the opposite information elements."
+              examples={["ILE <> ILE", "SEI <> SEI", "LII <> LII", "ESE <> ESE", "SLE <> SLE", "IEI <> IEI", "LSI <> LSI", "EIE <> EIE"]}
+            />
+            <RelationCard
+              name="Duality"
+              subtitle="Perfect Metabolic Homeostasis"
+              color={C.dual}
+              signature="A + Ā"
+              mechanics="Partners whose Ego functions land precisely on each other's Super-Id receptors. Every strong, valued element one partner produces is exactly what the other's psyche is hungry for. This is the theoretical maximum of structural complementarity in the Socion."
+              quality="Produces sustained low-friction interaction, the Bukalov data's single largest cluster. Growth comes automatically because each partner's strength fills the other's gap without either having to ask."
+              examples={["ILE <> SEI", "LII <> ESE", "SLE <> IEI", "LSI <> EIE", "SEE <> ILI", "ESI <> LIE", "IEE <> SLI", "EII <> LSE"]}
+            />
+            <RelationCard
+              name="Super-Ego"
+              subtitle="Maximum Psychological Distance"
+              color={C.superEgo}
+              signature="Ego ↔ Super-Ego"
+              mechanics="Each partner's Ego block sits exactly on the other's Super-Ego block, meaning every strong assertion one makes targets a function the other has learned to defend or conceal. Quadra values oppose and strength profiles invert."
+              quality="Not hostile like conflict, but normatively exhausting. Both parties feel they 'should' get along because they recognize each other's competence, yet every attempt at depth produces subtle shaming on both sides."
+              examples={["ILE <> SEE", "SEI <> ILI", "LII <> ESI", "ESE <> LIE", "SLE <> IEE", "IEI <> SLI", "LSI <> EII", "EIE <> LSE"]}
+            />
+            <RelationCard
+              name="Extinguishment"
+              subtitle="Same Base · Inverted Processing"
+              color={C.extinguish}
+              signature="Contrary"
+              mechanics="Same Jungian base function but inverted along every orientation and rationality dichotomy. The topic space is shared, but every approach to that topic is reversed. Partners agree on what matters while disagreeing on how to think about it at every step."
+              quality="Generates a strange mutual fascination, often mistaken for duality at first. Over time the inversion becomes exhausting because neither partner can 'hand off' cognitive work to the other; they must restart from scratch."
+              examples={["ILE <> ILI", "SEI <> SEE", "LII <> LIE", "ESE <> ESI", "SLE <> SLI", "IEI <> IEE", "LSI <> LSE", "EIE <> EII"]}
+            />
+          </div>
+
+          <Card style={{ marginTop: 16 }}>
+            <SectionTitle>Why These Four and Not Others</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              The reason these four relations persist across both dichotomy spaces is structural: they correspond to the four possible ways a psyche can relate to itself along the two most fundamental axes of Socionics, same-or-different Ego and same-or-different orientation. Identity shares both, Duality shares neither, Super-Ego shares orientation but inverts Ego, and Extinguishment shares Ego base but inverts orientation. These four exhaust the symmetric possibilities, which is why any additional relations must live in the asymmetric, compositional territory explored in later sections.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ STRUCTURAL FRINGES ═══════════════════ */}
+        {activeSection === "fringes" && <>
+          <Divider label="Mathematical Origin" color={C.reinin} />
+          <Card color={C.reinin}>
+            <SectionTitle color={C.reinin}>Space-Exclusive Relations</SectionTitle>
+            <Prose>
+              Eight of the fourteen intertype relations exist in exactly one of the two major dichotomy spaces (Reinin and Minaiev) but not the other. Four live exclusively in the Reinin space, where they are defined by structural oppositions among Model A function positions. The other four live exclusively in the Minaiev space, where they are defined by alignments of information domains and creative outputs. These relations are real and observable, but they require a specific mathematical lens to see.
+            </Prose>
+            <Prose>
+              The practical upshot is that Reinin-only relations tend to be recognized by how the functions are ordered (mirror reflections, block swaps, parallel inversions), while Minaiev-only relations tend to be recognized by what the functions are about (shared clubs, shared creative outputs, shared quadra fragments). Mistaking one type of signature for the other is a common source of mistyping in the literature.
+            </Prose>
+          </Card>
+
+          <Divider label="Reinin-Only Relations" color={C.reinin} />
+          <Card color={C.reinin} style={{ marginBottom: 12 }}>
+            <SectionTitle color={C.reinin}>Defined by Block-Level Structural Opposition</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              These four relations are generated by the Reinin space alone. They correspond to specific structural operations on Model A blocks: swapping base and creative, inverting all four blocks, exchanging Ego for Id, and so on. Their phenomenology is dictated by which functions meet which receptors after the transformation.
+            </Prose>
+          </Card>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <RelationCard
+              name="Mirror"
+              subtitle="Base ↔ Creative Swap"
+              color={C.mirror}
+              signature="Reinin"
+              mechanics="Partners share the same Ego block contents but with base and creative functions swapped. Each sees the other as a slightly rotated version of themselves, capable of verbalizing what the other intuits. Shared quadra, shared club."
+              quality="High-quality intellectual partnership. Each clarifies the other's thinking without overriding it. Common in mentor-peer and co-author relationships."
+              examples={["ILE <> LII", "SEI <> ESE", "SLE <> LSI", "IEI <> EIE", "SEE <> ESI", "ILI <> LIE", "IEE <> EII", "SLI <> LSE"]}
+            />
+            <RelationCard
+              name="Conflict"
+              subtitle="Maximum Incompatibility"
+              color={C.conflict}
+              signature="Reinin"
+              mechanics="Each partner's base function is the other's vulnerable function, and each partner's creative function is the other's point of most denied concern. Every confident assertion one makes directly triggers the other's deepest insecurity."
+              quality="The single most metabolically toxic pairing. Both parties typically avoid each other after initial encounters; forced proximity produces chronic stress with no compensating benefit."
+              examples={["ILE <> ESI", "SEI <> LIE", "LII <> SEE", "ESE <> ILI", "SLE <> EII", "IEI <> LSE", "LSI <> IEE", "EIE <> SLI"]}
+            />
+            <RelationCard
+              name="Activity"
+              subtitle="Cross-Quadra Complementarity"
+              color={C.activity}
+              signature="Reinin"
+              mechanics="Partners share quadra values but exchange base-creative pairs in a way that activates each other's ignored strengths. Contact feels energizing in short bursts as both parties stimulate latent capacities in the other."
+              quality="Excellent for short-term projects and social bonding. Less stable than duality for long-term cohabitation because the activation is episodic rather than continuous."
+              examples={["ILE <> ESE", "SEI <> LII", "SLE <> EIE", "IEI <> LSI", "SEE <> LIE", "ILI <> ESI", "IEE <> LSE", "SLI <> EII"]}
+            />
+            <RelationCard
+              name="Quasi-Identity"
+              subtitle="Same Club, Inverted Ego"
+              color={C.quasi}
+              signature="Reinin"
+              mechanics="Partners share the same Jungian club but invert rationality, orientation, and quadra simultaneously. They discuss the same topics with completely different assumptions underneath, producing a false sense of familiarity that collapses under scrutiny."
+              quality="Surface agreement masking structural incompatibility. Feels like 'talking past each other' in extended conversation despite shared interests."
+              examples={["ILE <> LIE", "SEI <> ESI", "LII <> ILI", "ESE <> SEE", "SLE <> LSE", "IEI <> EII", "LSI <> SLI", "EIE <> IEE"]}
+            />
+          </div>
+
+          <Divider label="Minaiev-Only Relations" color={C.tencer} />
+          <Card color={C.tencer} style={{ marginBottom: 12 }}>
+            <SectionTitle color={C.tencer}>Defined by Information Domain Alignment</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              These four relations are generated by the Minaiev space alone. They correspond to partial alignments of base functions, creative functions, or quadra fragments. Where Reinin-only relations are about structural operations on blocks, Minaiev-only relations are about shared information territories that nevertheless diverge in deeper processing.
+            </Prose>
+          </Card>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <RelationCard
+              name="Kindred"
+              subtitle="Shared Base, Divergent Creative"
+              color={C.kindred}
+              signature="Minaiev"
+              mechanics="Partners share the same base information element but use different creative functions, landing in different quadras. They agree on the fundamental lens but disagree on everything that lens is applied to, because their values diverge."
+              quality="A peculiar mixture of recognition and irritation. Each partner recognizes their own base in the other, then finds that recognition used in the 'wrong' service."
+              examples={["ILE <> IEE", "SEI <> SLI", "LII <> LSI", "ESE <> EIE", "SLE <> SEE", "IEI <> ILI", "ESI <> EII", "LIE <> LSE"]}
+            />
+            <RelationCard
+              name="Business"
+              subtitle="Same Base Dichotomies · Task-Aligned"
+              color={C.lookalike}
+              signature="Minaiev"
+              mechanics="Partners share the same two base dichotomies (T/F and N/S) but differ on rationality and quadra, putting them in the same Club. They produce similar outputs, especially in professional and task-oriented contexts, but arrive at those outputs through fundamentally different cognitive routes."
+              quality="Often mistaken for identity or mirror on first meeting. Excellent for short-term collaboration around shared objectives; divergence becomes apparent only when both parties attempt to explain how they arrived at their shared conclusions."
+              examples={["ILE <> SLE", "SEI <> IEI", "LII <> EII", "ESE <> LSE", "LSI <> ESI", "EIE <> LIE", "SEE <> IEE", "ILI <> SLI"]}
+            />
+            <RelationCard
+              name="Semi-Dual"
+              subtitle="Partial Metabolic Transfer"
+              color={C.semiDual}
+              signature="Minaiev"
+              mechanics="Partners share quadra values and half of the dual complementarity structure but miss the other half. One partner's creative function feeds the other's Suggestive, but the reciprocal flow from the second partner's Ego is incomplete."
+              quality="Feels almost dual in good moments and strikingly distant in bad ones. Common in relationships that start promisingly and then plateau without the couple being able to articulate why."
+              examples={["ILE <> SLI", "SEI <> IEE", "LII <> EIE", "ESE <> LSI", "SLE <> ILI", "IEI <> SEE", "ESI <> LSE", "LIE <> EII"]}
+            />
+            <RelationCard
+              name="Mirage"
+              subtitle="Surface Duality · Shallow Complement"
+              color={C.illusionary}
+              signature="Minaiev"
+              mechanics="Also called Illusionary. Partners share a creative function and half of the quadra value structure, producing an illusion of complementarity that does not survive deep engagement. Comfortable in low-stakes settings, brittle under pressure."
+              quality="The 'vacation romance' relation. Excellent for relaxed, exploratory contact; disappointing when the demands of sustained collaboration expose the missing half of the complementarity."
+              examples={["ILE <> IEI", "SEI <> SLE", "LII <> LSE", "ESE <> EII", "LSI <> LIE", "EIE <> ESI", "SEE <> SLI", "ILI <> IEE"]}
+            />
+          </div>
+        </>}
+
+        {/* ═══════════════════ ASYMMETRIC ENGINE ═══════════════════ */}
+        {activeSection === "asymmetric" && <>
+          <Divider label="Mathematical Origin" color={C.asymmetric} />
+          <Card color={C.asymmetric}>
+            <SectionTitle color={C.asymmetric}>The Compositional Engines of Societal Movement</SectionTitle>
+            <Prose>
+              The four asymmetric relations, Benefactor, Beneficiary, Supervisor, and Supervisee, cannot be defined by either the Reinin space or the Minaiev space acting alone. They exist only as compositions: the product of a Reinin dichotomy multiplied by a Minaiev dichotomy, treating dichotomies as binary operations in Vincent's algebraic framework. This is why they are the only asymmetric relations in the Socion. Symmetry is preserved under either space alone, but asymmetry emerges the moment the two spaces interact.
+            </Prose>
+            <Prose>
+              Practically, this means Benefit and Supervision are not merely "rarer" or "less compatible" than the symmetric relations. They are categorically different: they are directional rings that carry energy from one end of the Socion to the other, producing the clock-like rotational dynamics that Gulenko and others have used to describe cultural evolution. Every symmetric relation is reciprocal; every asymmetric relation has a sender and a receiver who cannot trade roles.
+            </Prose>
+          </Card>
+
+          <Divider label="The Benefit Ring" color={C.benefit} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <RelationCard
+              name="Benefactor"
+              subtitle="Zakaz · Energy Source"
+              color={C.benefit}
+              signature="R × T"
+              mechanics="The Benefactor's base function lands directly on the Beneficiary's Suggestive (hungry receptor). Every casual utterance from the Benefactor is received by the Beneficiary as meaningful guidance, often regardless of intent. The Benefactor typically does not understand why the Beneficiary listens so attentively."
+              quality="Produces admiration flowing one direction and mild bewilderment flowing back. The Benefactor is the Beneficiary's cognitive reference point without having chosen that role."
+              examples={["ILE > EIE", "SEI > LSI", "LII > SLI", "ESE > IEE", "SLE > ESE", "IEI > LII", "LSI > ILI", "EIE > SEE"]}
+            />
+            <RelationCard
+              name="Beneficiary"
+              subtitle="Zakaz · Energy Receiver"
+              color={C.benefit}
+              signature="R × T"
+              mechanics="The Beneficiary receives the Benefactor's Ego output on their Suggestive function, producing a powerful pull toward the Benefactor's worldview and decisions. The Beneficiary experiences this as fascination or even mild idealization that does not fully reciprocate from the Benefactor's side."
+              quality="Highly productive for knowledge transfer and ideology adoption, but intrinsically asymmetric. Long-term equilibrium requires the Beneficiary to eventually rotate out of the ring or find a parallel duality elsewhere."
+              examples={["SEE > LSE", "ILI > EII", "ESI > IEI", "LIE > SLE", "IEE > LIE", "SLI > ESI", "EII > SEI", "LSE > ILE"]}
+            />
+          </div>
+
+          <Divider label="The Supervision Ring" color={C.supervision} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <RelationCard
+              name="Supervisor"
+              subtitle="Reviziya · Structural Pressure"
+              color={C.supervision}
+              signature="R × T"
+              mechanics="The Supervisor's base function targets the Supervisee's Vulnerable function (Point of Least Resistance). Every confident act by the Supervisor inadvertently suppresses the Supervisee's weakest cognitive zone, producing a 'being watched' sensation that does not require any actual judgmental intent."
+              quality="The Supervisor typically does not understand the effect they have. They experience the Supervisee as evasive or anxious without recognizing that their own presence is the stimulus. This relation is invisible from the Supervisor's side and inescapable from the Supervisee's side."
+              examples={["ILE > LSI", "SEI > EIE", "LII > IEE", "ESE > SLI", "SLE > LII", "IEI > ESE", "LSI > SEE", "EIE > ILI"]}
+            />
+            <RelationCard
+              name="Supervisee"
+              subtitle="Reviziya · Structural Compression"
+              color={C.supervision}
+              signature="R × T"
+              mechanics="The Supervisee's Vulnerable function is permanently exposed to the Supervisor's Base function. Even neutral statements from the Supervisor land as implicit criticism because they touch a function the Supervisee has spent years learning to conceal or compensate for."
+              quality="Produces chronic low-level stress that neither party can easily dismantle. The Supervisee often cycles between seeking the Supervisor's approval and fleeing their presence; the Supervisor rarely notices either."
+              examples={["SEE > EII", "ILI > LSE", "ESI > SLE", "LIE > IEI", "IEE > ESI", "SLI > LIE", "EII > ILE", "LSE > SEI"]}
+            />
+          </div>
+
+          <Divider label="The Clock of the Socion" color={C.asymmetric} />
+          <Card color={C.asymmetric}>
+            <SectionTitle color={C.asymmetric}>Rings as Directional Energy Transfer</SectionTitle>
+            <Prose>
+              Benefit and Supervision rings are not pairwise relations in the usual sense. They are closed rings that pass through all 16 types, with each type occupying exactly one position in each ring as both sender and receiver. The Benefit ring flows in one direction around the Socion; the Supervision ring flows in another; together they define what Gulenko called the "Clock of the Socion," a rotational structure that drives cultural change as energy circulates from quadra to quadra.
+            </Prose>
+            <Prose>
+              At the societal scale, the Benefit ring tends to produce ideological diffusion: ideas originating in one quadra travel around the ring and are received as revelatory by the next. The Supervision ring produces structural discipline: norms imposed by one quadra land as non-negotiable constraints on the next. Historians and cultural theorists who have never heard of Socionics routinely describe these dynamics under other names; the rings simply give them a precise algebraic address.
+            </Prose>
+            <div style={{ background: `${C.asymmetric}08`, border: `1px solid ${C.asymmetric}22`, borderRadius: 10, padding: 16, marginTop: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.asymmetric, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>Benefit Rings (4 cycles of 4)</div>
+              <SmallProse style={{ color: C.textMuted, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.9 }}>
+                ILE {'>'} EIE {'>'} SEE {'>'} LSE {'>'} ILE<br/>
+                SEI {'>'} LSI {'>'} ILI {'>'} EII {'>'} SEI<br/>
+                LII {'>'} SLI {'>'} ESI {'>'} IEI {'>'} LII<br/>
+                ESE {'>'} IEE {'>'} LIE {'>'} SLE {'>'} ESE
+              </SmallProse>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.supervision, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 14, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>Supervision Rings (4 cycles of 4)</div>
+              <SmallProse style={{ color: C.textMuted, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.9 }}>
+                ILE {'>'} LSI {'>'} SEE {'>'} EII {'>'} ILE<br/>
+                SEI {'>'} EIE {'>'} ILI {'>'} LSE {'>'} SEI<br/>
+                LII {'>'} IEE {'>'} ESI {'>'} SLE {'>'} LII<br/>
+                ESE {'>'} SLI {'>'} LIE {'>'} IEI {'>'} ESE
+              </SmallProse>
+            </div>
+            <SmallProse style={{ marginTop: 14 }}>
+              The 16 types partition into four closed benefit cycles and four closed supervision cycles, each cycle containing exactly four types. Each type appears once in each ring as sender and once as receiver. The rings are the only mechanism in classical Socionics by which energy moves directionally across the Socion without being trapped in pairwise exchanges.
+            </SmallProse>
+          </Card>
+
+          <Card>
+            <SectionTitle>Why Asymmetric Rings Exist at All</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              Vincent's compositional proof shows that multiplying any Reinin dichotomy by any Minaiev dichotomy yields exactly one of the four asymmetric relations. This is not merely a mathematical curiosity; it is the formal statement that asymmetry in the Socion is always the product of two different kinds of symmetry interacting. A purely Reinin-based universe or a purely Minaiev-based universe would have no directional rings at all. It is the interference between the two spaces that generates the clock, the cultural drift, and the hierarchical magnetism that shows up in Bukalov's 10 percent Benefit Ring slice.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ EMPIRICAL FRONTIER ═══════════════════ */}
+        {activeSection === "frontier" && <>
+          <Divider label="Validating Information Metabolism" color={C.accent2} />
+          <Card color={C.accent2}>
+            <SectionTitle color={C.accent2}>From Classical Theory to Measured Reality</SectionTitle>
+            <Prose>
+              For most of its history, Socionics existed as a brilliant but unvalidated formalism: precise in its algebra, rich in its typology, but lacking the large-scale empirical apparatus that would let it compete on equal footing with the Big Five, HEXACO, and other modern personality instruments. That situation has changed dramatically in the last decade. The work of Viktor Talanov, A. Romanov (socionavigator), the Danidin archives, quantitativesocionics.org, and sociotype.xyz now provides the statistical machinery to test functional profiles against behavior, language, and neural markers at scale.
+            </Prose>
+            <Prose>
+              The convergent finding across all of these programs is that the cognitive functions are measurable, the sociotypes cluster in the predicted ways, and the intertype relations produce the predicted patterns of attraction, avoidance, and asymmetric pull. Where the old literature relied on case studies and expert typing, the new literature relies on factor analyses over thousands of respondents and correlation matrices with scientifically established instruments. The theory is no longer untestable; it is being tested, and it is performing far better than its critics assumed it would.
+            </Prose>
+          </Card>
+
+          <Divider label="Research Programs" color={C.teal} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+            {[
+              { title: "Talanov SOLTI-192", color: C.accent1, text: "Viktor Talanov's factor-analytic questionnaire with 192 items, validated against tens of thousands of respondents. Produces continuous functional profiles that correlate strongly with Big Five, HEXACO, and PY axes, demonstrating that discrete sociotypes emerge from dimensional measurement." },
+              { title: "Socionavigator (Romanov)", color: C.asymmetric, text: "A. Romanov's platform at socionavigator.com provides statistical maps of how each sociotype distributes across Talanov's trait dimensions, including the base vs. creative asymmetries that refine classical duality predictions." },
+              { title: "Danidin Archives", color: C.rose, text: "Large corpora of self-reported functional profiles indexed by sociotype, supporting meta-analysis of which dichotomies have the highest empirical stability and which (like Reinin's Judicious-Decisive) emerge only statistically." },
+              { title: "sociotype.xyz/r", color: C.symmetric, text: "Factor-analytic cross-correlation tools for mapping Socionics traits onto established personality instruments. The /r subroute specifically handles intertype relations, plotting how they distribute across the empirical sociotype population." },
+              { title: "Quantitative Socionics", color: C.tencer, text: "quantitativesocionics.org gathers the community-wide effort to apply formal statistical methods to classical claims, publishing correlation tables, factor loadings, and validity estimates that make the theory falsifiable in a Popperian sense." },
+              { title: "Neuroimaging (Nardi)", color: C.reinin, text: "Dario Nardi's EEG work, though framed in MBTI terms, maps cleanly onto the Socionics information elements via the Reinin dichotomies and provides early neurological correlates for the cognitive functions posited by the theory." },
+            ].map((r, i) => (
+              <div key={i} style={{ background: `${r.color}08`, border: `1px solid ${r.color}28`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: r.color, marginBottom: 8, letterSpacing: 0.3 }}>{r.title}</div>
+                <SmallProse>{r.text}</SmallProse>
+              </div>
+            ))}
+          </div>
+
+          <Divider label="Bukalov's Marriage Data" color={C.rose} />
+          <Card color={C.rose}>
+            <SectionTitle color={C.rose}>Intertype Relationships Within Couples</SectionTitle>
+            <Prose>
+              Alexander Bukalov's marriage statistics constitute one of the earliest large-scale empirical tests of Socionics theory. By typing thousands of married couples and tabulating which intertype relations recurred, Bukalov produced a distribution that strongly validates the cybernetic prediction: couples cluster around relations that provide cognitive resonance rather than those predicted by demographic matching alone. The five categories in the chart below correspond directly to the relation groupings used throughout this document: Intra-Quadra (Identity, Duality, Activity, Mirror), Adjacent Quadra (Kindred, Business, Semi-Dual, Mirage), Opposite Quadra (Super-Ego, Conflict, Extinguishment, Quasi-Identical), and the two asymmetric Rings (Benefit, Supervision).
+            </Prose>
+            <div style={{ margin: "28px 0", padding: "24px 16px", background: `${C.rose}06`, border: `1px solid ${C.rose}22`, borderRadius: 12 }}>
+              <DonutChart data={marriageData} size={400} />
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Breakdown of the Intra-Quadra Majority</SectionTitle>
+            <Prose>
+              The 64 percent Intra-Quadra slice is itself dominated by a single relation. Within couples who married another member of their own quadra, Duality alone accounts for roughly 54 percent, with Identity, Activity, and Mirror dividing the remainder. This is the single most important empirical datum in classical Socionics: the relation the theory predicts to be maximally complementary is also the relation people empirically select when they form long-term pair bonds, at a rate far exceeding chance.
+            </Prose>
+            <div style={{ margin: "18px 0" }}>
+              <StackedBar data={inQuadraBreakdown} title="Intra-Quadra Composition" />
+            </div>
+            <SmallProse style={{ marginTop: 14 }}>
+              Values drawn from Bukalov's published couple statistics. The dominance of Duality, together with the strong presence of Activity and Mirror pairs, confirms that intra-quadra selection is itself driven by the specific complementarity of information metabolism rather than by mere shared values.
+            </SmallProse>
+          </Card>
+
+          <Card color={C.amber}>
+            <SectionTitle color={C.amber}>Why the Data Skews Toward Quadra Values and Duality</SectionTitle>
+            <Prose>
+              Three interlocking mechanisms explain the overwhelming bias toward intra-quadra marriage. First, the quadra is the smallest unit of the Socion in which all four valued information elements are mutually reinforced; outside the quadra, at least one partner's valued elements will be subdued in the other, producing a baseline metabolic cost that accumulates over years of cohabitation.
+            </Prose>
+            <Prose>
+              Second, Duality specifically positions each partner's strongest Ego elements directly on top of the other's hungry Super-Id receptors: the Suggestive and Mobilizing functions. This produces the strongest possible information transfer asymmetry, where each party's metabolic "exhaust" becomes the other's metabolic "fuel." No other relation achieves this exact alignment.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Third, the remaining intra-quadra relations (Identity, Activity, Mirror) still preserve quadra values, which means the baseline metabolic cost is near zero even when the fine-grained complementarity of duality is absent. This is why Identity pairs, for instance, show up in the data at nearly 9 percent despite offering no growth or developmental asymmetry: cohabiting with someone whose cognitive architecture is identical to yours is metabolically cheap even if it is developmentally stagnant.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle>What the Benefit Ring Slice Reveals</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              The 10 percent Benefit Ring slice is easy to overlook but theoretically crucial. Benefit is an asymmetric ring relation: one partner (the Benefactor) channels energy downward to the other (the Beneficiary) without fully understanding why, while the Beneficiary receives the flow as admiration or fascination. These relations are not symmetric and not structurally "compatible" in the sense of Duality, yet they show up in the marriage data at double the rate of Supervision. The interpretation matters: human energetic attraction is not solely driven by metabolic complementarity; it is also driven by hierarchical magnetism. Benefactors experience Beneficiaries as attractive in a way that feels almost automatic, even when no quadra values are shared. This is how Socionics accounts for the common experience of falling into long-term relationships that are clearly unbalanced yet somehow "right" in their directional pull. The asymmetric rings of the Socion do genuine work in human pair formation, not merely in corporate hierarchies.
+            </Prose>
+          </Card>
+
+          <Divider label="Cross-Framework Corroboration" color={C.teal} />
+          <Card color={C.teal}>
+            <SectionTitle color={C.teal}>The Statistics of Chemistry</SectionTitle>
+            <Prose>
+              Socionics is not the only framework attempting to predict romantic and collaborative compatibility through personality structure. Big Five, HEXACO, Helen Fisher's neurochemical temperament model, and attachment theory have all accumulated substantial empirical literatures on which trait configurations predict satisfaction, longevity, and mutual attraction. When those findings are placed alongside Bukalov's 64 percent intra-quadra figure, a striking convergence emerges: the features that predict compatibility across every major framework are precisely the features that Duality, Activity, Mirror, and Identity pairings preserve.
+            </Prose>
+            <Prose>
+              The Big Five literature consistently finds that similarity on values, attitudes, and Openness to Experience predicts relationship satisfaction more strongly than similarity on any other trait, with Openness showing the highest spousal correlation (r ≈ 0.21 in Horwitz et al.'s meta-analysis). Crucially, similarity on Conscientiousness and Extraversion does not reliably predict satisfaction; Shiota and Levenson's 12-year longitudinal study of long-term marriages found that high similarity on Conscientiousness and Extraversion actually predicted more negative satisfaction trajectories, because two equally driven or equally expressive partners end up competing in the same performance domains. Low Neuroticism in both partners (and low Emotionality in HEXACO terms) is the single most robust predictor of stability across meta-analyses.
+            </Prose>
+            <Prose>
+              HEXACO research sharpens this further. Honesty-Humility is the trait where preferred similarity is highest: people consistently want a partner whose moral orientation matches their own, and low Honesty-Humility in either partner predicts infidelity, exploitation, and intimate partner violence. This maps directly onto the Socionics concept of quadra values: quadra-sharing partners agree on what is worth caring about and what is beneath consideration, which is functionally the same thing Honesty-Humility similarity measures at the trait level.
+            </Prose>
+            <Prose>
+              Helen Fisher's 40,000-subject data from Chemistry.com provides the most direct parallel. Fisher found that Explorers (dopamine-dominant) bond best with other Explorers and Builders (serotonin-dominant) bond best with other Builders (similarity-seeking), while Directors (testosterone-dominant) and Negotiators (estrogen-dominant) bond best with each other (complementarity-seeking). This is the same logical structure as the Socionics distinction between intra-quadra symmetric relations (same-values, similar "temperature") and Duality specifically (same-values, inverted cognitive poles). Fisher's Director-Negotiator pairing is arguably the closest mainstream analog to Socionics Duality: opposite in cognitive style, identical in underlying motivational currency.
+            </Prose>
+            <Prose>
+              Attachment research adds the final layer. Secure-secure pairings outperform every other combination across hundreds of studies; insecure pairings show complementarity pulls (anxious seeks avoidant) but lower satisfaction than secure-secure matches. Translated into Socionics terms: the equivalent of "two secure adults" is a pair whose Super-Id hungers are reliably fed by the partner's Ego output, which is exactly what Duality and, to a lesser degree, Activity produce. Relationships built on Conflict or Super-Ego relations instead mimic the insecure-insecure pattern: initial magnetism followed by chronic dysregulation.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Taken together, the cross-framework picture is clear. Every serious empirical personality model that has studied compatibility converges on the same prescription: share values and moral orientation (quadra), share a cognitive wavelength without being identical (same club or mirror), and differ on cognitive-energetic poles in ways that let each partner's strength feed the other's gap (the Dual complementarity). The Bukalov 64 percent figure is not an outlier inside personality science. It is one of the cleanest empirical restatements of what Big Five, HEXACO, Fisher, and attachment theory have all been finding independently for decades.
+            </Prose>
+          </Card>
+
+          <Divider label="The Paradigm Shift" color={C.rose} />
+          <Card color={C.rose}>
+            <SectionTitle color={C.rose}>Where Socionics Fits in the Cognitive Sciences</SectionTitle>
+            <Prose>
+              The Big Five and HEXACO measure behavioral surface traits: the statistical regularities you can extract from lexical descriptions of how people act. They are excellent at what they do, and they remain the gold standard for trait-level prediction. But they were never designed to model cognitive architecture, and they do not attempt to predict interaction dynamics between specific pairs of people. A Big Five match score is a correlation; it cannot tell you why two people energize or exhaust each other at the metabolic level.
+            </Prose>
+            <Prose>
+              The Enneagram, by contrast, tracks psychodynamic fixations: the defensive and motivational patterns the ego develops over time. It is phenomenologically rich and clinically useful, especially for self-understanding and narrative work. But it does not formalize information processing; its nine types are archetypes of motivation, not architectures of cognition. You cannot derive intertype relations from the Enneagram because it does not model the information channels on which those relations would operate.
+            </Prose>
+            <Prose>
+              Socionics occupies a genuinely different niche. It offers a predictive model of human interaction based on neuro-metabolic architecture: a formal specification of which signals each cognitive profile emits, which signals it receives, and what happens when the emitters and receivers of two profiles are brought into contact. Paired with modern empirical instruments (Talanov, Romanov, sociotype.xyz, Nardi), it is the most advanced available candidate for a truly predictive theory of pair dynamics. That is a scientific frontier in its own right.
+            </Prose>
+          </Card>
+
+          <Divider label="Closing Thesis" color={C.text} />
+          <Card>
+            <SectionTitle>The Next Era of the Social Sciences</SectionTitle>
+            <Prose>
+              As conventional menial labor is increasingly automated, the questions that will dominate human flourishing are no longer about competence at fixed tasks but about alignment: finding the cognitive niche where your information metabolism operates at low friction and producing valuable output alongside others whose architectures complement rather than contradict your own. The 20th century could afford to ignore intertype relations because it had enough assembly-line work to absorb any personality profile. The 21st century cannot.
+            </Prose>
+            <Prose>
+              Socionics, correctly understood and empirically validated, is a tool for that alignment problem. Its 14 intertype relations are not entertainment. They are an algebraic map of the structural cognitive friction that determines which teams will gel, which marriages will last, which organizations will calcify, and which ideas will diffuse. The Bukalov data and the Talanov validations show that the predictions work. What remains is to build the infrastructure that makes these predictions available to anyone trying to find their place in an economy increasingly defined by cognitive matching rather than physical output.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              This is the frontier. The theory is old; the empirical validation is recent; the practical application is just beginning. Every serious effort to model human cognitive-behavioral alignment in the coming decades will have to contend with the structural facts that Socionics first made precise: the Socion is a metabolic network, relations are its channels, and the algebra of Reinin and Minaiev tells us exactly what each channel carries.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ ALL TYPE RELATIONS MATRIX ═══════════════════ */}
+        {activeSection === "matrix" && <>
+          <Divider label="The Complete Intertype Matrix" color={C.teal} />
+          <Card color={C.teal}>
+            <SectionTitle color={C.teal}>All 256 Type Pairings at a Glance</SectionTitle>
+            <Prose>
+              The full Socion generates 16 × 16 = 256 directed type pairings, which collapse into 14 distinct intertype relations. The matrix below shows every pairing: the row type (A) is the "viewer," the column type (B) is the "other," and each cell displays A's relation to B. Types are ordered by quadra (Alpha, Beta, Gamma, Delta), so quadra blocks appear as 4×4 sub-matrices along the diagonal. Click any row type to highlight the full relation profile of that sociotype.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Notice that the main diagonal is pure Identity, and that Duality runs along a second diagonal inside each quadra block. The asymmetric Benefit and Supervision rings are the only relations whose cells differ depending on which type you read as the "sender," which is why they carry directional arrows (<Mono color={C.text}>{'>'}</Mono> outgoing, <Mono color={C.text}>{'<'}</Mono> incoming) while symmetric relations appear identically above and below the diagonal.
+            </Prose>
+          </Card>
+
+          {/* ─── Matrix ─── */}
+          <Card style={{ padding: 18 }}>
+            <div style={{ overflowX: "auto", paddingBottom: 4 }}>
+              <div style={{ display: "inline-block", minWidth: "100%" }}>
+                <table style={{ borderCollapse: "separate", borderSpacing: 2, fontFamily: "'JetBrains Mono', monospace", margin: "0 auto" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: 40, height: 32 }}></th>
+                      {MATRIX_TYPES.map((t, i) => {
+                        const quadra = i < 4 ? "Alpha" : i < 8 ? "Beta" : i < 12 ? "Gamma" : "Delta";
+                        const qColor = { Alpha:"#3b82f6", Beta:"#a78bfa", Gamma:"#ef4444", Delta:"#22c55e" }[quadra];
+                        return (
+                          <th key={t} style={{ width: 42, padding: "6px 2px", fontSize: 10, fontWeight: 700, color: qColor, borderBottom: `1px solid ${qColor}40`, fontFamily: "'JetBrains Mono', monospace" }}>{t}</th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {MATRIX_TYPES.map((rowType, ri) => {
+                      const rowQuadra = ri < 4 ? "Alpha" : ri < 8 ? "Beta" : ri < 12 ? "Gamma" : "Delta";
+                      const qColor = { Alpha:"#3b82f6", Beta:"#a78bfa", Gamma:"#ef4444", Delta:"#22c55e" }[rowQuadra];
+                      const isRowSelected = selectedType === rowType;
+                      return (
+                        <tr key={rowType}>
+                          <th
+                            onClick={() => setSelectedType(isRowSelected ? null : rowType)}
+                            style={{
+                              padding: "4px 8px",
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: isRowSelected ? "#fff" : qColor,
+                              background: isRowSelected ? qColor : "transparent",
+                              borderRight: `1px solid ${qColor}40`,
+                              fontFamily: "'JetBrains Mono', monospace",
+                              textAlign: "right",
+                              cursor: "pointer",
+                              borderRadius: 4,
+                              transition: "all 0.15s",
+                            }}
+                          >{rowType}</th>
+                          {MATRIX_TYPES.map((colType, ci) => {
+                            const rel = getRelation(rowType, colType);
+                            const meta = REL_META[rel];
+                            const isHovered = hoveredCell && hoveredCell.row === ri && hoveredCell.col === ci;
+                            const isHighlighted = isRowSelected || (hoveredCell && (hoveredCell.row === ri || hoveredCell.col === ci));
+                            const isQuadraBoundary = ci === 3 || ci === 7 || ci === 11;
+                            const isRowBoundary = ri === 3 || ri === 7 || ri === 11;
+                            return (
+                              <td
+                                key={colType}
+                                onMouseEnter={() => setHoveredCell({ row: ri, col: ci })}
+                                onMouseLeave={() => setHoveredCell(null)}
+                                style={{
+                                  width: 42,
+                                  height: 30,
+                                  textAlign: "center",
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  color: isHovered ? "#fff" : meta.color,
+                                  background: isHovered ? meta.color : isHighlighted ? `${meta.color}28` : `${meta.color}12`,
+                                  border: `1px solid ${meta.color}${isHovered ? "ff" : "30"}`,
+                                  borderRight: isQuadraBoundary ? `2px solid ${C.border}` : `1px solid ${meta.color}30`,
+                                  borderBottom: isRowBoundary ? `2px solid ${C.border}` : `1px solid ${meta.color}30`,
+                                  cursor: "pointer",
+                                  fontFamily: "'JetBrains Mono', monospace",
+                                  transition: "all 0.1s",
+                                }}
+                              >{rel}</td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Hover / selection readout */}
+            <div style={{ marginTop: 18, padding: "14px 16px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, minHeight: 56 }}>
+              {hoveredCell ? (() => {
+                const a = MATRIX_TYPES[hoveredCell.row];
+                const b = MATRIX_TYPES[hoveredCell.col];
+                const rel = getRelation(a, b);
+                const meta = REL_META[rel];
+                return (
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                    <div style={{ width: 14, height: 14, borderRadius: 3, background: meta.color }} />
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.text, fontFamily: "'JetBrains Mono', monospace" }}>
+                        {a} <span style={{ color: meta.color }}>{rel.includes(">") || rel.includes("<") ? (rel.includes(">") ? ">" : "<") : "<>"}</span> {b}
+                      </div>
+                      <div style={{ fontSize: 11, color: meta.color, marginTop: 2, fontWeight: 600 }}>{meta.name}</div>
+                    </div>
+                  </div>
+                );
+              })() : selectedType ? (
+                <div style={{ fontSize: 12, color: C.textMuted }}>
+                  Row <span style={{ color: C.text, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{selectedType}</span> selected. Click again to deselect, or hover any cell to see its relation.
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: C.textDim, fontStyle: "italic" }}>
+                  Hover any cell to see the full relation name, or click a row label to highlight that type's full profile.
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Legend */}
+          <Card>
+            <SectionTitle>Legend</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 10 }}>
+              {Object.entries(REL_META).map(([code, meta]) => (
+                <div key={code} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", background: `${meta.color}0a`, border: `1px solid ${meta.color}28`, borderRadius: 8 }}>
+                  <div style={{ minWidth: 32, padding: "3px 6px", textAlign: "center", fontSize: 10, fontWeight: 800, color: meta.color, background: `${meta.color}1a`, border: `1px solid ${meta.color}40`, borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+                  <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{meta.name}</div>
+                </div>
+              ))}
+            </div>
+            <SmallProse style={{ marginTop: 14 }}>
+              The four asymmetric relations use directional brackets: <Mono color={C.text}>{'Bn>'}</Mono> means the row type is the Benefactor <em>to</em> the column type, while <Mono color={C.text}>{'Bn<'}</Mono> means the row type receives benefit <em>from</em> the column type. Supervision follows the same convention. All other relations are symmetric and read identically regardless of direction.
+            </SmallProse>
+          </Card>
+
+          {/* Quadra structure readout */}
+          <Card>
+            <SectionTitle>Reading the Quadra Structure</SectionTitle>
+            <Prose>
+              Each quadra block along the main diagonal is a 4×4 sub-matrix containing only the four intra-quadra relations: Identity, Duality, Activity, and Mirror. These are the relations Bukalov's marriage data shows dominating 64 percent of couples, and their tight geometric localization here makes clear why: intra-quadra pairings require no translation across quadra-value boundaries.
+            </Prose>
+            <Prose>
+              Moving outward from the diagonal, the off-block regions contain the inter-quadra relations. The anti-quadra (directly opposite) block carries the toxic relations (Super-Ego, Conflict, Extinguishment, Quasi-Identity), while the two adjacent quadra blocks carry the ring relations (Benefit and Supervision) along with the softer cross-quadra pairings (Kindred, Mirage, Business, Semi-Dual).
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              This spatial structure is not decorative; it is the algebraic signature of the Reinin and Minaiev dichotomy products acting on the Socion. The matrix is, in effect, a visual proof that the 14 relations are not an arbitrary list but an exhaustive consequence of how the dichotomies partition the 16-type space.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* FOOTER */}
+        <div style={{ textAlign: "center", marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+            SOURCES: Vincent V (Mandalas, Dichotomy Spaces, Models) · Bukalov AV (Marriage Statistics) · Talanov VL (SOLTI-192) · Romanov I (socionavigator.com) · Augusta A (Model A) · Reinin GR · Minaiev Y · sociotype.xyz/r · quantitativesocionics.org · Danidin · wikisocion.github.io · opensocionics.gitbook.io
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<IntertypeReport />, document.getElementById('root'));
+</script>
+</body>
+</html>

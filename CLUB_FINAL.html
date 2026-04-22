@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Club Dichotomies & Their Structural Significance</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #10111a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#08090e", card: "#10111a", cardHover: "#181925", border: "#252538",
+  accent1: "#06b6d4", accent2: "#8b5cf6", accent3: "#10b981", accent4: "#f59e0b",
+  text: "#e4e4e7", textMuted: "#9ca3af", textDim: "#6b7280",
+  intuitive: "#8b5cf6", sensing: "#f59e0b", logical: "#06b6d4", ethical: "#ec4899",
+  questim: "#14b8a6", declatim: "#f97316",
+  nt: "#06b6d4", nf: "#a78bfa", st: "#10b981", sf: "#f472b6",
+  rose: "#ec4899", teal: "#14b8a6", lime: "#84cc16", amber: "#d97706",
+  democrat: "#3b82f6", aristocrat: "#dc2626",
+};
+
+const Divider = ({ label, color }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
+    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
+  </div>
+);
+
+const Card = ({ children, color = C.border, style = {} }) => (
+  <div style={{ background: C.card, border: `1px solid ${color}30`, borderRadius: 14, padding: 24, marginBottom: 8, ...style }}>{children}</div>
+);
+
+const Tag = ({ label, color }) => (
+  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+);
+
+const Prose = ({ children, style = {} }) => (
+  <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, margin: "0 0 16px", ...style }}>{children}</p>
+);
+
+const SmallProse = ({ children, style = {} }) => (
+  <p style={{ fontSize: 12, color: C.textDim, lineHeight: 1.65, margin: 0, ...style }}>{children}</p>
+);
+
+const SectionTitle = ({ children, color = C.text }) => (
+  <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color, margin: "0 0 14px" }}>{children}</h3>
+);
+
+const Mono = ({ children, color = C.textDim }) => (
+  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color }}>{children}</span>
+);
+
+const Bar = ({ label, value, color, max = 100 }) => (
+  <div style={{ marginBottom: 10 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+      <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>{label}</span>
+      <Mono>{value}%</Mono>
+    </div>
+    <div style={{ height: 6, borderRadius: 3, background: C.border }}>
+      <div style={{ height: "100%", borderRadius: 3, width: `${(value / max) * 100}%`, background: `linear-gradient(90deg, ${color}, ${color}99)` }} />
+    </div>
+  </div>
+);
+
+const TabBtn = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} style={{ padding: "8px 18px", borderRadius: 8, border: active ? `1px solid ${color}50` : `1px solid ${C.border}`, background: active ? `${color}15` : "transparent", color: active ? color : C.textMuted, fontSize: 12, fontWeight: 600, cursor: "pointer", letterSpacing: 0.5, fontFamily: "'JetBrains Mono', monospace", transition: "all 0.15s" }}>{label}</button>
+);
+
+const LensCard = ({ lens, color, content }) => (
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 10, padding: "16px 14px" }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>{lens}</div>
+    <SmallProse style={{ color: C.textMuted }}>{content}</SmallProse>
+  </div>
+);
+
+const PoleCard = ({ title, subtitle, color, items, icon }) => (
+  <div style={{ flex: 1, minWidth: 280, background: `linear-gradient(135deg, ${color}08, ${color}04)`, border: `1px solid ${color}25`, borderRadius: 12, padding: "24px 20px", position: "relative", overflow: "hidden" }}>
+    <div style={{ position: "absolute", top: -30, right: -20, fontSize: 80, opacity: 0.04, fontWeight: 900, color, lineHeight: 1 }}>{icon}</div>
+    <div style={{ fontSize: 18, fontWeight: 700, color, marginBottom: 4, fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</div>
+    <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>{subtitle}</div>
+    {items.map((item, i) => (
+      <div key={i} style={{ fontSize: 13, color: C.text, lineHeight: 1.65, marginBottom: 8, paddingLeft: 14, position: "relative" }}>
+        <span style={{ position: "absolute", left: 0, top: 6, width: 5, height: 5, borderRadius: "50%", background: color, opacity: 0.7 }} />
+        {item}
+      </div>
+    ))}
+  </div>
+);
+
+const ClubCard = ({ name, code, types, color, desc, traits, tissue }) => (
+  <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
+        <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{types}</div>
+      </div>
+    </div>
+    <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, margin: "0 0 6px" }}>{desc}</p>
+    <p style={{ fontSize: 10, color: `${color}aa`, fontStyle: "italic", margin: "0 0 10px" }}>{tissue}</p>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+      {traits.map((t, i) => (
+        <span key={i} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: `${color}10`, color: `${color}cc`, border: `1px solid ${color}20` }}>{t}</span>
+      ))}
+    </div>
+  </div>
+);
+
+// Quadrant diagram for RIASEC / HBDI style visualizations
+const QuadrantDiagram = ({ title, topLabel, bottomLabel, leftLabel, rightLabel, quadrants, color }) => (
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 12, padding: 20, marginBottom: 12 }}>
+    {title && <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 14, textAlign: "center", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>{title}</div>}
+    <div style={{ maxWidth: 440, margin: "0 auto" }}>
+      {/* top axis label */}
+      {topLabel && <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{topLabel}</div>}
+      {/* center row: leftLabel | grid | rightLabel */}
+      <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", gap: 10 }}>
+        {leftLabel && <div style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", transform: "rotate(180deg)", textAlign: "center" }}>{leftLabel}</div>}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: C.border, borderRadius: 8, overflow: "hidden" }}>
+          {quadrants.map((q, i) => (
+            <div key={i} style={{ background: `${q.color}0a`, padding: "16px 12px", textAlign: "center", borderLeft: i % 2 === 1 ? `1px solid ${C.border}` : "none", borderTop: i >= 2 ? `1px solid ${C.border}` : "none", minHeight: 82 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: q.color, marginBottom: 4 }}>{q.label}</div>
+              <div style={{ fontSize: 10, color: C.textDim, lineHeight: 1.5 }}>{q.sub}</div>
+            </div>
+          ))}
+        </div>
+        {rightLabel && <div style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", textAlign: "center" }}>{rightLabel}</div>}
+      </div>
+      {/* bottom axis label */}
+      {bottomLabel && <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{bottomLabel}</div>}
+    </div>
+  </div>
+);
+
+
+function ClubReport() {
+  const [activeTab, setActiveTab] = useState("ns");
+  const [activeSection, setActiveSection] = useState("core");
+
+  const sections = [
+    { id: "core", label: "Core Theory", color: C.accent1 },
+    { id: "clubs", label: "The Four Clubs", color: C.accent2 },
+    { id: "cognitive", label: "Cognitive Architecture", color: C.teal },
+    { id: "demari", label: "Democratic / Aristocratic", color: C.democrat },
+    { id: "systems", label: "Cross-System Maps", color: C.rose },
+    { id: "struct", label: "Structural Integration", color: C.accent4 },
+  ];
+
+  const tabs = {
+    ns: {
+      label: "Semantic Scope (N/S)", color: C.accent2, title: "Intuition / Sensing", code: "b",
+      dispersion: "14–16",
+      mathNote: 'Coded as "b" in Reinin algebra. In modern factor-analytic data (sociotype.xyz/d), N/S contributes ~15% of total trait dispersion, placing it third overall after T/F and E/I (both at ~18%). Determines whether the system preferentially processes abstract-imaginal or concrete-sensory information.',
+      structNote: "In Vincent's framework, N/S is determined by the content of the Ego block functions: if an intuitive element is present among the first two functions, the type is Intuitive. This dichotomy partitions the information space into abstract (idea-oriented) and concrete (thing-oriented) domains.",
+      poles: [
+        { title: "Intuition", subtitle: "Imagination · Abstraction · Associative", color: C.intuitive, icon: "N",
+          items: [
+            "Wider perceptual filters, allowing detection of subtle patterns and possibilities, but also generating more perceptual errors",
+            "Oriented toward abstract, symbolic, and imaginal processing: 'what could be' rather than 'what is'",
+            "Favors novel combinations, innovation, and non-standard solutions over proven methods",
+            "Talanov: extreme form correlates with schizotypal personality features, specifically the blurring of reality and imagination",
+            "Behaviorally: less attention to physical environment, appearance, and bodily signals; more internal imagery",
+            "In Big Five terms: strongly loads on Openness to Experience, particularly the Intellect and Imagination facets",
+          ],
+        },
+        { title: "Sensing", subtitle: "Sense · Concreteness · Physicality", color: C.sensing, icon: "S",
+          items: [
+            "Narrower perceptual filters, enabling superior control of bodily movement and identification of habitual environmental signals",
+            "Oriented toward concrete, tangible, present-moment processing: 'what is' rather than 'what could be'",
+            "Favors proven methods, established procedures, and practical application over theoretical exploration",
+            "Grounds cognition in direct sensory experience, including taste, touch, spatial awareness, proprioception",
+            "Behaviorally: greater attention to physical appearance, material comfort, health, and environmental quality",
+            "In Big Five terms: inversely correlated with Openness; loads on Conscientiousness (practical facets) and Agreeableness (conventional facets)",
+          ],
+        },
+      ],
+    },
+    tf: {
+      label: "Evaluative Paradigm (T/F)", color: C.accent1, title: "Logic / Ethics", code: "a",
+      dispersion: "17–19",
+      mathNote: 'Coded as "a" in Reinin algebra. Modern factor-analytic data (sociotype.xyz/d) places T/F at ~18% of total trait dispersion, tied with E/I as the highest-variance dichotomy overall, a sharp upward revision from older Talanov estimates (6–8%). Talanov\'s framing as "calculation vs. suggestion" captures a deeper neurological distinction: local vs. generalized excitation patterns in the nervous system.',
+      structNote: "T/F determines whether the Ego block contains a Logic (Ti or Te) or Ethics (Fi or Fe) element. This partitions the information space into object-oriented (Things) and subject-oriented (People) domains, directly mapping to Prediger's Things–People axis in RIASEC.",
+      poles: [
+        { title: "Logic (Thinking)", subtitle: "Calculation · Object-orientation · Formal reasoning", color: C.logical, icon: "T",
+          items: [
+            "Local, precise nervous system excitation, where brain functioning resembles a computer with discrete, targeted processing",
+            "Oriented toward objects, systems, mechanisms, and impersonal structures rather than interpersonal dynamics",
+            "Formal logical reasoning, cause-effect chains, systemic analysis, and parametric evaluation",
+            "Talanov: extreme form correlates with schizoid and antisocial personality features, particularly detachment from social feedback",
+            "Behaviorally: more task-focused than relationship-focused; communication prioritizes accuracy over tact",
+            "In Big Five terms: inversely correlated with Agreeableness; correlates with Openness (Intellect facet)",
+          ],
+        },
+        { title: "Ethics (Feeling)", subtitle: "Suggestion · Subject-orientation · Cognitive empathy", color: C.ethical, icon: "F",
+          items: [
+            "Generalized nervous system excitation, producing broader, more diffuse patterns of cortical activation",
+            "Oriented toward subjects, relationships, moods, and interpersonal dynamics rather than impersonal systems",
+            "Cognitive empathy, social attunement, suggestibility (including autosuggestion), and relational evaluation",
+            "Talanov: extreme form correlates with histrionic personality features, particularly emotional amplification and display",
+            "Behaviorally: more relationship-focused; communication prioritizes connection, harmony, and social impact",
+            "In Big Five terms: loads on Agreeableness (Compassion facet) and Extraversion (Enthusiasm/warmth)",
+          ],
+        },
+      ],
+    },
+    qd: {
+      label: "Integration Vector", color: C.teal, title: "Questimity / Declatimity", code: "c",
+      dispersion: "3–5",
+      mathNote: 'Coded as "c" in Reinin algebra. Modern factor-analytic data (sociotype.xyz/d) places Q/D at ~4% of total trait dispersion, modestly higher than Democratic/Aristocratic (~3%). The third Strength dichotomy in Talanov\'s paradigm, replacing the traditional assignment of D/A to the Strength triad. Q/D captures separateness vs. acceptance, a dimension of social-boundary regulation.',
+      structNote: "Q/D determines a deep social-positioning orientation. Questim types maintain narrower boundaries of the personally permissible, separating self from collective. Declatim types accept broader integration with group identity. Talanov hypothesizes the acceptance pole correlates with increased vasopressin activity in the CNS.",
+      poles: [
+        { title: "Questimity", subtitle: "Separateness · Divergence · Distancing", color: C.questim, icon: "Q",
+          items: [
+            "Narrower area of the personally permissible; everything outside these boundaries is rejected or questioned",
+            "Divergent orientation: creation of the original, personal uniqueness, irritation at boundary violations",
+            "Disgust and distancing from what is perceived as alien, low-quality, or morally impure",
+            "Social behavior characterized by asking, probing, and maintaining critical distance",
+            "Talanov: associated with social separation, moral fastidiousness, defense of personal freedom and justice",
+            "In paired functions: Questim types have I (independence/separation) and E (exclusivity/selectivity) as strong self-positioning functions",
+          ],
+        },
+        { title: "Declatimity", subtitle: "Acceptance · Convergence · Integration", color: C.declatim, icon: "D",
+          items: [
+            "Wider area of the personally permissible, with greater tolerance for what falls outside personal preferences",
+            "Convergent orientation: adaptation to mainstream, competition of copies, unity of commoners",
+            "Patience, acceptance, and willingness to integrate with collective norms and identities",
+            "Social behavior characterized by declaring, asserting, and establishing shared understanding",
+            "Talanov: associated with collectivism, obedience, willingness to involve and get involved",
+            "Possibly associated with higher vasopressin activity, the neurochemical of pair-bonding and social conformity",
+          ],
+        },
+      ],
+    },
+  };
+
+  const current = tabs[activeTab];
+
+  return (
+    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif", background: C.bg, color: C.text, minHeight: "100vh", padding: "0 0 60px" }}>
+      {/* HERO */}
+      <div style={{ background: `radial-gradient(ellipse at 20% 0%, ${C.nt}08, transparent 55%), radial-gradient(ellipse at 80% 0%, ${C.nf}06, transparent 55%), radial-gradient(ellipse at 20% 100%, ${C.st}05, transparent 50%), radial-gradient(ellipse at 80% 100%, ${C.sf}05, transparent 50%)`, padding: "48px 28px 36px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
+        <Mono color={C.teal}>Socionics · Talanov / Romanov / Gulenko / Vincent Paradigms</Mono>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, margin: "14px 0", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          Club Dichotomies & Their Structural Significance
+        </h1>
+        <Prose style={{ maxWidth: 680, margin: "0 auto 18px", textAlign: "center" }}>
+          A comprehensive analysis of N/S, T/F, and Q/D, the three dichotomies determining functional strength and generating the four Socionics Clubs: explored through cognitive architecture, societal specialization, the Democratic/Aristocratic autocatalysis hypothesis, and cross-system correspondences.
+        </Prose>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+          {["Cognitive Architecture", "Societal Roles", "Autocatalysis", "Cross-System", "Structure"].map((l, i) => (
+            <Tag key={i} label={l} color={[C.accent1, C.accent2, C.democrat, C.rose, C.accent4][i]} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
+        {/* SECTION NAV */}
+        <div style={{ display: "flex", gap: 0, padding: "0 8px", borderBottom: `1px solid ${C.border}55`, overflowX: "auto", justifyContent: "center", marginTop: 20, marginBottom: 8 }}>
+          {sections.map(s => (
+            <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
+              padding: "12px 14px", border: "none", fontSize: 12, fontWeight: 700,
+              background: "transparent",
+              color: activeSection === s.id ? s.color : C.textDim,
+              borderBottom: activeSection === s.id ? `2px solid ${s.color}` : "2px solid transparent",
+              transition: "all 0.2s", whiteSpace: "nowrap", letterSpacing: 0.3, cursor: "pointer",
+              fontFamily: "'Inter', -apple-system, sans-serif"
+            }}>{s.label}</button>
+          ))}
+        </div>
+
+        {/* ═══════════════════ CORE THEORY ═══════════════════ */}
+        {activeSection === "core" && <>
+          <Divider label="Scope & Variance Contribution" color={C.teal} />
+          <Card>
+            <Prose>
+              The "Strength" dichotomy triad determines <em>what a type can do</em>, i.e. which cognitive domains are strong and which are weak. In Talanov's empirical framework, the three Strength dichotomies are N/S (imagination–sense), T/F (calculation–suggestion), and Q/D (separateness–acceptance). Together they generate the four Clubs: NT (Researchers), NF (Humanitarians), ST (Pragmatists), and SF (Socials). Note that Q/D replaces the traditional Democratic/Aristocratic assignment; Talanov's data shows Q/D has a stronger independent variance contribution to functional strength than D/A, which he reassigns to the Value triad.
+            </Prose>
+            <Bar label="Logic / Ethics (a)" value={18} color={C.logical} />
+            <Bar label="Intuition / Sensing (b)" value={15} color={C.intuitive} />
+            <Bar label="Questimity / Declatimity (c)" value={4} color={C.questim} />
+            <SmallProse style={{ marginTop: 12 }}>
+              Variance values represent approximate population-average trait dispersion percentages from Talanov's factor analyses. N/S is the second-highest-variance dichotomy overall (after E/I), reflecting its deep ties to perceptual filter width and information processing architecture. T/F and Q/D follow as the next most impactful Strength dichotomies.
+            </SmallProse>
+          </Card>
+
+          <Divider label="Dichotomy Deep Dives" color={current.color} />
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+            {Object.entries(tabs).map(([k, t]) => (
+              <TabBtn key={k} label={t.label} active={activeTab === k} onClick={() => setActiveTab(k)} color={t.color} />
+            ))}
+          </div>
+
+          <Card color={current.color}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: `${current.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 16, fontWeight: 800, color: current.color, fontFamily: "'JetBrains Mono', monospace" }}>{current.code}</span>
+              </div>
+              <div>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22, color: current.color, margin: 0 }}>{current.title}</h2>
+                <Mono>Dispersion: {current.dispersion}% pop. avg.</Mono>
+              </div>
+            </div>
+            <Card style={{ background: `${current.color}06`, border: `1px solid ${current.color}12`, marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: current.color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Algebraic Identity</div>
+              <SmallProse style={{ color: C.textMuted }}>{current.mathNote}</SmallProse>
+            </Card>
+            <Card style={{ background: `${C.accent2}06`, border: `1px solid ${C.accent2}12`, marginBottom: 0 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.accent2, letterSpacing: 2, textTransform: "uppercase", marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Structural Role</div>
+              <SmallProse style={{ color: C.textMuted }}>{current.structNote}</SmallProse>
+            </Card>
+          </Card>
+
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 8 }}>
+            {current.poles.map((p, i) => <PoleCard key={i} {...p} />)}
+          </div>
+
+          <Divider label="The Four Clubs" color={C.teal} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <ClubCard name="Researchers" code="NT" types="ILE · LII · LIE · ILI" color={C.nt} desc="Imagination + Calculation = Abstract-symbolic thinking. Orientation toward changing the objective world by developing and implementing new ideas and technologies." tissue='"Nervous tissue" of society, which processes and preserves information about objective world properties.' traits={["Analytical","Inventive","Abstract","Systematic"]} />
+            <ClubCard name="Humanitarians" code="NF" types="EIE · IEI · IEE · EII" color={C.nf} desc="Imagination + Suggestion = Abstract-figurative thinking. Orientation toward changing the internal states, moods, and attitudes of people through inspiring artistic images." tissue='"Covering tissue" of society, which stratifies society using humanitarian images of culture and art.' traits={["Imaginative","Empathic","Expressive","Idealistic"]} />
+            <ClubCard name="Pragmatists" code="ST" types="SLE · LSI · LSE · SLI" color={C.st} desc="Sense + Calculation = Subject-instrumental thinking. Orientation toward changing the objective world by performing mechanical work: constructing and deconstructing material objects." tissue='"Muscular tissue" of society, which maintains vitality through production and management of material goods.' traits={["Practical","Decisive","Concrete","Disciplined"]} />
+            <ClubCard name="Socials" code="SF" types="ESE · SEI · SEE · ESI" color={C.sf} desc="Sense + Suggestion = Visceral-impressionist thinking. Orientation toward changing people's bodily condition by providing material resources (food, clothing, housing, care)." tissue='"Connective tissue" of society, which provides members with necessary material goods and social bonds.' traits={["Attentive","Hospitable","Aesthetic","Caring"]} />
+          </div>
+
+          <Divider label="Multi-Lens Analysis" color={C.teal} />
+          <Card>
+            <SectionTitle>Six Analytical Frames</SectionTitle>
+            <Prose>
+              The Strength dichotomies can be approached through multiple theoretical lenses. Unlike the Temperament dichotomies (which govern <em>how</em> you process), the Strength dichotomies govern <em>what</em> you process: the cognitive domain in which your information metabolism operates most efficiently. The frames below are ordered from most ontologically upstream (biological substrate) to most emergent (species-level adaptive explanation).
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+              <LensCard lens="Neurological" color={C.accent1}
+                content="T/F maps onto excitation pattern: Logic (calculation) involves localized cortical excitation, precise and computer-like. Ethics (suggestion) involves generalized excitation, broad and resonant. N/S maps onto filter bandwidth: Intuitive types show wider neural receptive fields (detecting weak signals), Sensing types show narrower fields (precise motor control). Q/D may correlate with vasopressin activity, the neuropeptide governing social bonding and in-group identification." />
+              <LensCard lens="Perceptual" color={C.accent2}
+                content="N/S determines the width of perceptual filters: Intuitives admit more signals (broader pattern detection, more noise), Sensors admit fewer (tighter environmental control, less error). T/F determines processing target: Logic processes object-properties, Ethics processes subject-states. Q/D determines boundary regulation: Questims narrow what is personally permissible, Declatims widen it." />
+              <LensCard lens="Communicative" color={C.teal}
+                content="Clubs produce characteristic discourse styles, as mapped by Gulenko's Activity Orientations and sociotype.xyz/g. NT: jargon-rich, hypothesis-driven, philosophical debate that prioritizes conceptual precision. NF: metaphor-laden, narrative, emotionally-resonant speech that prioritizes meaning and imagery. ST: directive, concrete, procedure-focused communication that prioritizes actionability and compliance. SF: anecdotal, sensory-descriptive, interpersonally warm conversation that prioritizes comfort and rapport. This is the surface layer of the Club in observable interaction." />
+              <LensCard lens="Vocational" color={C.st}
+                content="The Strength dichotomies directly predict vocational orientation. NT → scientific research, technology, systems design. NF → arts, culture, psychology, education. ST → engineering, administration, military, construction. SF → healthcare, hospitality, social services, commerce. This maps cleanly to Prediger's RIASEC dimensions: N/S ≈ Ideas–Data, T/F ≈ Things–People." />
+              <LensCard lens="Societal-Functional" color={C.sf}
+                content="Danidin and Talanov assign each Club an organic metaphor: NT as nervous tissue (information processing), NF as covering tissue (cultural membrane), ST as muscular tissue (productive force), SF as connective tissue (social binding). These metaphors capture the Club's irreplaceable societal function; remove any one and the social organism fails." />
+              <LensCard lens="Evolutionary" color={C.lime}
+                content="Romanov's survival framework: NT types specialize in divergent abstract-symbolic cognition, inventing tools and paradigms. NF types specialize in divergent implicit-figurative cognition, creating cultural bonds through shared imagery. ST types specialize in convergent explicit-technical cognition, maintaining state-level material infrastructure. SF types specialize in convergent visceral-impressionist cognition, regulating group cohesion through appearance and resource-sharing." />
+            </div>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ THE FOUR CLUBS ═══════════════════ */}
+        {activeSection === "clubs" && <>
+          <Divider label="NT: Researchers / Scientists" color={C.nt} />
+          <Card>
+            <SectionTitle color={C.nt}>Abstract-Symbolic Thinking: Changing the World Through Ideas</SectionTitle>
+            <Prose>
+              The NT Club: ILE, LII, LIE, ILI: combines imagination (N) with calculation (T) to produce abstract-symbolic cognition. These types orient their information metabolism toward understanding and transforming the objective world through the development and implementation of new technologies, theories, and logical frameworks. Their perceptual filters are wide enough to detect novel patterns (N) while their processing is precise and object-focused enough to formalize those patterns into reproducible knowledge (T).
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {[
+                { name: "Cognitive Signature", color: C.nt, icon: "◇", content: "Abstract-symbolic: thinking in terms of logical models, mathematical structures, systems architectures, and causal chains. Information is processed as formal symbols manipulated according to rules. Strong at pattern recognition in complex data, weak at reading interpersonal dynamics and aesthetic nuance." },
+                { name: "Learning Style", color: C.nt, icon: "△", content: "Learn best through theoretical frameworks, logical deduction, and systematic exploration. Prefer to understand principles before applying them. Thrive in environments that reward independent intellectual inquiry and tolerate unconventional approaches. Struggle with rote memorization and socially-mediated learning." },
+                { name: "Societal Niche", color: C.nt, icon: "⬡", content: "Science, technology, engineering, mathematics, philosophy, systems design. Form the 'nervous tissue,' which processes and preserve information about objective world properties. Both divergent types (ILE, LII: 'knowledge' dyad, creating and keeping paradigms) and convergent types (LIE, ILI: 'business' dyad, maintaining market unity through applied innovation)." },
+                { name: "Characteristic Weaknesses", color: C.nt, icon: "○", content: "Inattention to appearance (own and others'), indifference to everyday living conditions, poor appetite in food, low social sensitivity. Talanov and Danidin describe NTs as having the most developed but also most 'nervous' tissue: prone to overthinking, social awkwardness, and neglect of physical needs. May appear cold, tactless, or absent-minded." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 18, marginBottom: 6, opacity: 0.6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 8 }}>{item.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="NF: Humanitarians / Culturalists" color={C.nf} />
+          <Card>
+            <SectionTitle color={C.nf}>Implicit-Figurative Thinking: Changing People Through Images</SectionTitle>
+            <Prose>
+              The NF Club: EIE, IEI, IEE, EII: combines imagination (N) with suggestion (F) to produce implicit-figurative cognition. These types orient their information metabolism toward influencing the internal states, moods, and attitudes of people by inspiring them with artistic images, philosophical visions, and empathic understanding. Their wide perceptual filters (N) combine with diffuse, socially-resonant processing (F) to create the most psychologically penetrating and culturally generative cognitive style.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {[
+                { name: "Cognitive Signature", color: C.nf, icon: "◇", content: "Abstract-figurative: thinking in terms of images, metaphors, narratives, and emotional landscapes. Information is processed as symbolic meaning embedded in relational context. Strong at insight into human character, cultural pattern-recognition, and creative expression. Weak at systematic quantitative analysis and impersonal evaluation." },
+                { name: "Learning Style", color: C.nf, icon: "△", content: "Learn best through narrative, analogy, personal mentorship, and emotional engagement with material. Prefer learning that connects to existential questions and human meaning. Thrive in environments that allow creative self-expression and interpersonal exploration. Struggle with purely technical, impersonal instruction." },
+                { name: "Societal Niche", color: C.nf, icon: "⬡", content: "Arts, culture, education, psychology, counseling, literature, philosophy of values. Form the 'covering tissue,' which stratifies society using humanitarian information and cultural imagery. Divergent types (EIE, IEI: 'art' dyad, forming high culture through competition of independent artists) and convergent types (IEE, EII: 'culture' dyad, maintaining language-cultural unity)." },
+                { name: "Characteristic Weaknesses", color: C.nf, icon: "○", content: "Rich but easily excitable imagination, frequent interest in culture at the expense of practical matters. Tendency toward obsessive thoughts and mental images, emotional instability manifesting as capriciousness, anxiety, fearfulness, and health-related worry. Probably the least practical club in everyday life, as it is easier for them to persuade someone to do something than to handle routine chores themselves." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 18, marginBottom: 6, opacity: 0.6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 8 }}>{item.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="ST: Pragmatists / Practitioners" color={C.st} />
+          <Card>
+            <SectionTitle color={C.st}>Explicit-Technical Thinking: Changing the World Through Work</SectionTitle>
+            <Prose>
+              The ST Club: SLE, LSI, LSE, SLI: combines sense (S) with calculation (T) to produce explicit-technical cognition. These types orient their information metabolism toward transforming the objective world through direct physical and administrative work, including constructing, organizing, maintaining, and protecting material structures. Their narrow perceptual filters (S) give them precise environmental control, while their localized processing (T) enables systematic, rule-governed action.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {[
+                { name: "Cognitive Signature", color: C.st, icon: "◇", content: "Subject-instrumental: thinking in terms of procedures, mechanisms, power structures, and material properties. Information is processed as actionable data about objects, forces, and organizational flows. Strong at implementing structures, maintaining discipline, and solving concrete problems. Weak at abstract theorizing and emotional nuance." },
+                { name: "Learning Style", color: C.st, icon: "△", content: "Learn best through hands-on practice, concrete examples, and structured instruction with clear practical outcomes. Prefer learning that demonstrates immediate utility. Thrive in environments with clear rules, hierarchies, and measurable results. Struggle with abstract theorizing divorced from application and 'book knowledge' without practical grounding." },
+                { name: "Societal Niche", color: C.st, icon: "⬡", content: "Engineering, military, law enforcement, administration, manufacturing, logistics. Form the 'muscular tissue,' which maintains societal vitality through production and management of material goods. Divergent types (LSE, SLI: 'production' dyad, forming ergonomic environments through craft competition) and convergent types (SLE, LSI: 'force' dyad, maintaining state unity through power and organization)." },
+                { name: "Characteristic Weaknesses", color: C.st, icon: "○", content: "Insensitive and poorly developed imagination, with attention focused almost entirely on solving practical problems. Harsh communication style at close range ('I am a frank person!') Suspicious of new, unusual approaches (especially in idea-form). Can fall behind in rapidly changing intellectual environments, but thrives once settled into productive activity. Prone to authoritarianism and rigid thinking." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 18, marginBottom: 6, opacity: 0.6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 8 }}>{item.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="SF: Socials / Communalists" color={C.sf} />
+          <Card>
+            <SectionTitle color={C.sf}>Visceral-Impressionist Thinking: Changing People Through Care</SectionTitle>
+            <Prose>
+              The SF Club: ESE, SEI, SEE, ESI: combines sense (S) with suggestion (F) to produce visceral-impressionist cognition. These types orient their information metabolism toward changing people's bodily condition, emotional states, and social standing by providing material resources, aesthetic experiences, and direct interpersonal care. Their precise sensory processing (S) combined with socially-resonant activation (F) makes them the most attuned to the concrete, embodied dimensions of human well-being.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {[
+                { name: "Cognitive Signature", color: C.sf, icon: "◇", content: "Visceral-impressionist: thinking in terms of appearances, social dynamics, material needs, and interpersonal strategies. Information is processed as sensory-emotional gestalts about people's states and needs. Strong at reading social situations, creating comfort, and managing interpersonal relations. Weak at abstract analysis and impersonal systemic thinking." },
+                { name: "Learning Style", color: C.sf, icon: "△", content: "Learn best through social interaction, concrete demonstrations, and experiential engagement. Prefer learning embedded in relational contexts with emotional stakes. Thrive in environments with warm interpersonal dynamics and tangible, people-oriented outcomes. Struggle with purely abstract or impersonal instruction disconnected from human application." },
+                { name: "Societal Niche", color: C.sf, icon: "⬡", content: "Healthcare, hospitality, retail, social work, fashion, food service, event planning. Form the 'connective tissue,' which provides members of society with necessary material goods and social bonds. Divergent types (SEE, ESI: 'ownership' dyad, shaping appearance through sexual and political competition) and convergent types (ESE, SEI: 'nature' dyad, maintaining unity of population appearance, adapting it to habitat)." },
+                { name: "Characteristic Weaknesses", color: C.sf, icon: "○", content: "Subjectivism and lack of sober skepticism. Often overestimate their ability to influence through unofficial arrangements rather than evaluating objective factors. In Big Five terms: low Openness to Experience, which manifests as resistance to abstract ideas and preference for the familiar. May be dismissive of theoretical knowledge and intellectualism." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 18, marginBottom: 6, opacity: 0.6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 8 }}>{item.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ COGNITIVE ARCHITECTURE ═══════════════════ */}
+        {activeSection === "cognitive" && <>
+          <Divider label="Types of Thinking" color={C.teal} />
+          <Card>
+            <SectionTitle color={C.teal}>The 2×2 Cognitive Matrix</SectionTitle>
+            <Prose>
+              Romanov's framework (socionavigator.com) crosses the two primary Strength dichotomies to produce four fundamental modes of thinking. The horizontal axis, Calculation vs. Suggestion (T/F), determines whether cognition targets objects or subjects. The vertical axis, Imagination vs. Sense (N/S), determines whether cognition operates in abstract or concrete space. Each cell is a distinct cognitive style with its own goals, methods, and products.
+            </Prose>
+            <QuadrantDiagram
+              color={C.teal}
+              topLabel="IMAGINATION (N) ↑"
+              bottomLabel="↓ SENSE (S)"
+              leftLabel="CALCULATION (T) ←"
+              rightLabel="→ SUGGESTION (F)"
+              quadrants={[
+                { label: "NT: Abstract-Symbolic", sub: "Goal: change objective world via new technologies", color: C.nt },
+                { label: "NF: Implicit-Figurative", sub: "Goal: change internal states via inspiring images", color: C.nf },
+                { label: "ST: Explicit-Technical", sub: "Goal: change objective world via mechanical work", color: C.st },
+                { label: "SF: Visceral-Impressionist", sub: "Goal: change body condition via material provision", color: C.sf },
+              ]}
+            />
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.teal}>Divergent vs. Convergent Cognition Within Clubs</SectionTitle>
+            <Prose>
+              Each Club further splits into a divergent dyad and a convergent dyad based on the Q/D (Questimity/Declatimity) dichotomy. Divergent thinking (Questim) emphasizes authorship, originality, and the creation of new knowledge or forms. Convergent thinking (Declatim) emphasizes adaptation, standardization, and the reproduction of existing knowledge or forms. This produces eight cognitive specializations, the finest granularity of the Strength system.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                { dyad: "Business", types: "LIE + ILI", club: "NT", quadra: "Gamma", mode: "Convergent", color: C.nt, desc: "Maintaining market unity. Adapting abstract concepts to specific situations and real people." },
+                { dyad: "Knowledge", types: "ILE + LII", club: "NT", quadra: "Alpha", mode: "Divergent", color: C.nt, desc: "Creating and keeping paradigms. Scientific picture of the world through competition of independent thinkers." },
+                { dyad: "Power", types: "SLE + LSI", club: "ST", quadra: "Beta", mode: "Convergent", color: C.st, desc: "Maintaining state unity through power structures and organizational discipline." },
+                { dyad: "Production", types: "LSE + SLI", club: "ST", quadra: "Delta", mode: "Divergent", color: C.st, desc: "Forming ergonomic environments through competition of independent craftsmen. Innovative manufacturing." },
+                { dyad: "Nature", types: "ESE + SEI", club: "SF", quadra: "Alpha", mode: "Convergent", color: C.sf, desc: "Maintaining unity of population appearance, adapting it to natural habitat of the population." },
+                { dyad: "Ownership", types: "SEE + ESI", club: "SF", quadra: "Gamma", mode: "Divergent", color: C.sf, desc: "Shaping appearance of people through sexual and political competition of independent evaluators." },
+                { dyad: "Culture", types: "IEE + EII", club: "NF", quadra: "Delta", mode: "Convergent", color: C.nf, desc: "Maintaining language-cultural unity. Adapting cultural forms for social reproduction." },
+                { dyad: "Art", types: "EIE + IEI", club: "NF", quadra: "Beta", mode: "Divergent", color: C.nf, desc: "Forming high art through competition of independent artists. Creating original cultural products." },
+              ].map((d, i) => (
+                <div key={i} style={{ background: `${d.color}06`, border: `1px solid ${d.color}18`, borderRadius: 10, padding: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: d.color, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1 }}>{d.club} ({d.quadra})</span>
+                    <span style={{ fontSize: 10, color: C.textDim }}>·</span>
+                    <span style={{ fontSize: 10, color: C.textDim }}>{d.mode}</span>
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: d.color, marginBottom: 2 }}>{d.dyad}</div>
+                  <div style={{ fontSize: 10, color: C.textMuted, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>{d.types}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{d.desc}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Big Five Aspect Loading by Club</SectionTitle>
+            <Prose>
+              Each Club shows a characteristic loading pattern on the Big Five personality aspects (per DeYoung's 10-aspect model). The <strong style={{ color: C.text }}>primary aspect</strong> captures the Club's most salient trait expression; the <strong style={{ color: C.text }}>secondary aspect</strong> captures a second, less obvious but structurally predictable loading; the <strong style={{ color: C.text }}>inverse aspect</strong> captures a characteristic negative loading (the trait the Club tends to score <em>low</em> on). Factors are abbreviated by their Big Five letter: (O)penness, (C)onscientiousness, (E)xtraversion, (A)greeableness, and (N)euroticism.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, color: C.textMuted }}>
+                <thead>
+                  <tr>
+                    {["Club", "Primary Aspect (Factor)", "Secondary Aspect (Factor)", "Inverse Aspect (Factor)", "Rationale"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["NT", "Intellect (O)", "Orderliness (C)", "Compassion (A)", "Abstract reasoning (N) drives Intellect; Ti-style logical categorization (T) produces conceptual orderliness even where behavioral Industriousness varies; impersonal task-focus depresses empathic warmth."],
+                    ["NF", "Openness to Experience (O)", "Compassion (A)", "Orderliness (C)", "Imaginative richness (N) drives aesthetic Openness; empathic orientation (F) drives Compassion; idealism and fluid associative thinking resist rigid procedural order."],
+                    ["ST", "Orderliness (C)", "Assertiveness (E)", "Openness to Experience (O)", "Concrete focus (S) plus systematic logic (T) drives methodical Orderliness; agentic command-and-control tendency (the ST 'muscular' mode) produces Assertiveness; narrow perceptual filters and present-moment grounding resist the full Openness to Experience factor across both its Intellect and Aesthetics aspects."],
+                    ["SF", "Enthusiasm (E)", "Politeness (A)", "Intellect (O)", "Sensory sociability (S) plus relational warmth (F) drives social Enthusiasm and polite cooperation; concrete, present-moment focus resists abstract theorizing."],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} style={{
+                          padding: "8px",
+                          borderBottom: `1px solid ${C.border}20`,
+                          color: j === 0 ? [C.nt, C.nf, C.st, C.sf][i] : j === 3 ? "#e57373" : C.textMuted,
+                          fontWeight: j === 0 ? 700 : 400,
+                          fontFamily: j === 0 ? "'JetBrains Mono', monospace" : "inherit",
+                          fontSize: j === 4 ? 11 : 12,
+                          minWidth: j === 4 ? 180 : undefined,
+                          fontStyle: j === 3 ? "italic" : "normal",
+                        }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ DEMOCRATIC / ARISTOCRATIC ═══════════════════ */}
+        {activeSection === "demari" && <>
+          <Divider label="Talanov's Autocatalysis Hypothesis" color={C.democrat} />
+          <Card>
+            <SectionTitle color={C.democrat}>Why NT / SF are Democratic and NF / ST are Aristocratic</SectionTitle>
+            <Prose>
+              A persistent structural observation in Socionics is that NT and SF Clubs are Democratic (individualistic, liberal) while NF and ST Clubs are Aristocratic (collectivistic, paternalistic). This is not arbitrary; it follows from the algebraic product ab (Democratic/Aristocratic = Logic × Intuition OR Ethics × Sensing). But <em>why</em> should this product have social meaning? Romanov's autocatalysis hypothesis provides a compelling mechanistic explanation.
+            </Prose>
+            <Prose>
+              The key insight is that in Aristocratic clubs (NF and ST), the <em>instrument of action</em> and the <em>target of action</em> share the same ontological nature. In Democratic clubs (NT and SF), they differ. This difference in instrument-target homology determines whether a group can form a self-reinforcing collective identity, an autocatalytic cycle, or must remain a collection of individuals.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.aristocrat}>Aristocratic Clubs: Same-Nature Autocatalysis</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div style={{ background: `${C.nf}08`, border: `1px solid ${C.nf}20`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.nf, marginBottom: 8 }}>NF: Information → Information</div>
+                <SmallProse style={{ color: C.textMuted }}>
+                  The Humanitarian uses <em>information</em> (imagination, ideas, images) to act upon the <em>information in other people's consciousness</em> (moods, attitudes, beliefs). Instrument and target are both informational. Result: it becomes impossible to distinguish whose information is whose: all ideas feel like collective property. The individual author dissolves into a shared "information field" of culture and art. This is why NF groups naturally form collective creative movements, schools, and traditions where individual authorship is secondary to the shared aesthetic vision. <em>Aristocratic identity: "We who share this vision."</em>
+                </SmallProse>
+              </div>
+              <div style={{ background: `${C.st}08`, border: `1px solid ${C.st}20`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.st, marginBottom: 8 }}>ST: Material → Material</div>
+                <SmallProse style={{ color: C.textMuted }}>
+                  The Pragmatist uses <em>material instruments</em> (tools, machines, administrative systems) to act upon <em>material objects</em> (buildings, products, organizational structures). Instrument and target are both material. Result: every tool is the product of someone else's labor, and every product becomes someone else's tool. All material instruments form a single interconnected machine in which the individual is a transmission link stripped of individuality. This is why ST groups naturally form hierarchies, standardized procedures, and state structures. <em>Aristocratic identity: "We who serve this system."</em>
+                </SmallProse>
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.democrat}>Democratic Clubs: Cross-Nature Independence</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div style={{ background: `${C.nt}08`, border: `1px solid ${C.nt}20`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.nt, marginBottom: 8 }}>NT: Information → Material</div>
+                <SmallProse style={{ color: C.textMuted }}>
+                  The Researcher uses <em>information</em> (theories, models, ideas) to act upon the <em>material world</em> (physical objects, technologies, measurable outcomes). Instrument and target differ in nature. The Researcher's information remains distinctly their own: it doesn't dissolve into the material world it transforms. Individual authorship is preserved because the information-material boundary prevents autocatalytic merging. This is why NT types naturally form as independent thinkers, each developing their own paradigm. <em>Democratic identity: "I who created this theory."</em>
+                </SmallProse>
+              </div>
+              <div style={{ background: `${C.sf}08`, border: `1px solid ${C.sf}20`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.sf, marginBottom: 8 }}>SF: Material → Information</div>
+                <SmallProse style={{ color: C.textMuted }}>
+                  The Social uses <em>material resources</em> (food, clothing, physical comfort) to act upon <em>people's subjective states</em> (mood, satisfaction, well-being). Instrument and target differ in nature. The Social's material provisions remain distinctly material: they don't dissolve into the subjective states they influence. Individual agency is preserved because the material-informational boundary prevents autocatalytic merging. This is why SF types naturally form as individual caregivers, each managing their own sphere of influence. <em>Democratic identity: "I who provided this comfort."</em>
+                </SmallProse>
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Structural Implications</SectionTitle>
+            <Prose>
+              The autocatalysis hypothesis explains why Democratic/Aristocratic (ab) correlates with Club membership despite being algebraically a second-tier product dichotomy. It is not that D/A <em>causes</em> club behavior: rather, the same underlying condition (instrument-target homology) independently produces both the club's cognitive style and its social-identity orientation. NT types are Democratic because information-to-material transformation inherently preserves individual authorship. ST types are Aristocratic because material-to-material transformation inherently dissolves it into the machine.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              This also explains why Talanov reassigns D/A from the Strength triad to the Value triad: D/A's semantic content (liberalism vs. paternalism, progressivism vs. conservatism) is more about <em>what you want</em> than <em>what you can do</em>. The fact that it correlates with Clubs is a consequence of the deeper autocatalytic mechanism, not evidence that it determines functional strength. Q/D (separateness vs. acceptance) is the true third Strength axis: it independently modulates how each Club deploys its cognitive style (divergently or convergently).
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ CROSS-SYSTEM ═══════════════════ */}
+        {activeSection === "systems" && <>
+          <Divider label="Cross-System Correspondences" color={C.rose} />
+          <Card>
+            <SectionTitle color={C.rose}>The Universal Cognitive Fourfold</SectionTitle>
+            <Prose>
+              The four-club structure recurs across independently developed frameworks, from vocational psychology to brain dominance theory to neurotyping. The convergence across these systems: each using different methodologies and theoretical starting points: provides strong evidence that the NT/NF/ST/SF partition captures something real about human cognitive specialization.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: C.textMuted }}>
+                <thead>
+                  <tr>
+                    {["System", "NT Analog", "NF Analog", "ST Analog", "SF Analog", "Basis"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Socionics", "Researchers", "Humanitarians", "Pragmatists", "Socials", "Club (a × b)"],
+                    ["RIASEC Axis", "Ideas × Things", "Ideas × People", "Data × Things", "Data × People", "Prediger dimensions"],
+                    ["RIASEC Type", "Investigative (I)", "Artistic (A)", "Realistic (R)", "Social (S)", "Holland hexagon"],
+                    ["HBDI", "A+D (Analytical+Experimental)", "C+D (Relational+Experimental)", "A+B (Analytical+Practical)", "B+C (Practical+Relational)", "Herrmann Brain Dominance"],
+                    ["Neurotyping", "Lexical × Lateral", "Impressionistic × Lateral", "Lexical × Linear", "Impressionistic × Linear", "Cognitive style grid"],
+                    ["Big Five Primary", "+Openness (Intellect)", "+Openness (Aesthetics)", "+Conscientiousness", "+Agreeableness", "DeYoung aspects"],
+                    ["Societal Tissue", "Nervous tissue", "Covering tissue", "Muscular tissue", "Connective tissue", "Danidin/Talanov"],
+                    ["Thinking Mode", "Abstract-symbolic", "Abstract-figurative", "Subject-instrumental", "Visceral-impressionist", "Romanov"],
+                    ["Social Posture", "Democratic", "Aristocratic", "Aristocratic", "Democratic", "Autocatalysis"],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} style={{
+                          padding: "8px",
+                          borderBottom: `1px solid ${C.border}20`,
+                          color: j === 0 ? C.text : j === 1 ? C.nt : j === 2 ? C.nf : j === 3 ? C.st : j === 4 ? C.sf : C.textDim,
+                          fontWeight: j === 0 ? 600 : 400,
+                          fontFamily: j === 0 ? "inherit" : "'JetBrains Mono', monospace",
+                          fontSize: j === 0 ? 12 : 10,
+                          whiteSpace: "nowrap",
+                        }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>RIASEC: The Prediger Dimensional Bridge</SectionTitle>
+            <Prose>
+              Holland's RIASEC hexagon can be decomposed into two orthogonal dimensions (Prediger, 1982): Ideas–Data and Things–People. These map directly onto the two primary Club dichotomies: N/S ≈ Ideas–Data, T/F ≈ Things–People. The mapping is not metaphorical; it reflects the same underlying cognitive specializations discovered independently through vocational interest inventories and through Socionics' information-metabolism framework.
+            </Prose>
+            <Prose>
+              The six RIASEC types then correspond to positions on and between the four Club quadrants. Investigative (I) occupies the NT space (Ideas × Things). Artistic (A) occupies the NF space (Ideas × People). Realistic (R) occupies the ST space (Data × Things). Social (S) occupies the SF space (Data × People). Enterprising (E) sits between SF and ST (People-oriented but data-practical). Conventional (C) sits between ST and SF (Data-oriented and procedural). This means the RIASEC hexagon is a six-point sampling of the continuous Club space.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>HBDI: The Herrmann Whole Brain Model</SectionTitle>
+            <Prose>
+              The Herrmann Brain Dominance Instrument divides thinking preferences into four quadrants: A (Analytical/blue), B (Practical/green), C (Relational/red), D (Experimental/yellow). The two axes are Cerebral–Limbic (top–bottom) and Left–Right (rational–intuitive). Each Socionics Club maps to the intersection of two adjacent HBDI quadrants, because each Club combines one "thinking domain" axis (N/S ≈ Cerebral/Limbic) with one "orientation" axis (T/F ≈ Left/Right).
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                { club: "NT", hbdi: "A + D", color: C.nt, desc: "Upper half (cerebral): combines Analytical precision (A, left-brain logic) with Experimental vision (D, right-brain innovation). The full cerebral span, with analytical rigor meeting creative hypothesis." },
+                { club: "NF", hbdi: "C + D", color: C.nf, desc: "Right side (intuitive): combines Relational warmth (C, limbic empathy) with Experimental imagination (D, cerebral vision). The intuitive-feeling span, with empathic insight meeting creative expression." },
+                { club: "ST", hbdi: "A + B", color: C.st, desc: "Left side (rational): combines Analytical logic (A, cerebral precision) with Practical organization (B, limbic structure). The rational-procedural span, with logical analysis meeting hands-on implementation." },
+                { club: "SF", hbdi: "B + C", color: C.sf, desc: "Lower half (limbic): combines Practical attention to detail (B, left-brain procedure) with Relational sensitivity (C, right-brain empathy). The embodied-social span, with concrete care meeting emotional attunement." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}08`, border: `1px solid ${item.color}20`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: item.color, fontFamily: "'JetBrains Mono', monospace" }}>{item.club}</span>
+                    <span style={{ fontSize: 11, color: C.textDim }}>≈ HBDI {item.hbdi}</span>
+                  </div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.desc}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>Neurotyping: The Lexical–Impressionistic × Lateral–Linear Grid</SectionTitle>
+            <Prose>
+              The Neurotyping matrix uses two axes: Lexical–Impressionistic (≈ T/F) and Lateral–Linear (≈ N/S): to generate a 16-region grid of cognitive styles. The four Club quadrants occupy the four corners: NT (Lexical × Lateral) in the upper-left, NF (Impressionistic × Lateral) in the upper-right, ST (Lexical × Linear) in the lower-left, SF (Impressionistic × Linear) in the lower-right. This independent derivation using completely different terminology and methodology confirms the robustness of the fourfold Club structure.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              The Neurotyping system extends beyond Socionics by treating each axis as continuous rather than binary, producing gradient archetypes like "Human Calculator" (extreme NT), "Newtype" (extreme NF), "Bookkeeper" (extreme ST), and "Pure Instinct" (extreme SF), with intermediate positions like "Analyst," "Fascinator," "Quick-Witted," and "Aesthetician" capturing mixed-Club profiles. This continuous treatment aligns with sociotype.xyz's approach of using profile compositions rather than rigid type assignments.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════════════ STRUCTURAL INTEGRATION ═══════════════════ */}
+        {activeSection === "struct" && <>
+          <Divider label="The 3 × 3 Dichotomy Architecture" color={C.accent4} />
+          <Card>
+            <SectionTitle color={C.accent4}>Clubs in the Triadic Framework</SectionTitle>
+            <Prose>
+              The 15 Reinin dichotomies organize into a 3 × 3 matrix of three triads, each generating a distinct layer of type structure. Clubs occupy the Strength triad, determining <em>what you can do</em>. Temperaments occupy the Temperament triad, determining <em>how you do it</em>. Quadras occupy the Value triad, determining <em>what you want to do</em>. These three layers are algebraically orthogonal: every combination of Club × Temperament × Quadra is possible and produces exactly one sociotype.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { label: "Strength (Clubs)", desc: "a, b, c", color: C.accent1, sub: "What you can do", detail: "N/S, T/F, Q/D" },
+                { label: "Temperament", desc: "x, abc, abcx", color: C.accent4, sub: "How you do it", detail: "E/I, St/Dy, P/J" },
+                { label: "Quadra Values", desc: "ac, bc, ab", color: C.accent2, sub: "What you want to do", detail: "Jud/Dec, Mer/Ser, Dem/Ari" },
+              ].map((cell, i) => (
+                <div key={i} style={{ background: C.card, padding: "16px 12px", textAlign: "center" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: cell.color, marginBottom: 4 }}>{cell.label}</div>
+                  <Mono>{cell.desc}</Mono>
+                  <div style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", marginTop: 6 }}>{cell.sub}</div>
+                  <div style={{ fontSize: 10, color: C.textDim, marginTop: 4 }}>{cell.detail}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Club Distribution Across Quadras</SectionTitle>
+            <Prose>
+              Unlike temperaments (where every quadra contains all four), each quadra contains exactly <em>two</em> Clubs, each represented by a dual pair. Alpha and Gamma share NT + SF (the two Democratic clubs), while Beta and Delta share NF + ST (the two Aristocratic clubs). This is not coincidental; it follows from the algebraic relationship between Club dichotomies (a, b) and Value dichotomies (ac, bc), where the product ab (Democratic/Aristocratic) is shared between quadras that pair the same clubs together.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { q: "Alpha", types: [{ t: "ILE", club: "NT", c: C.nt }, { t: "ESE", club: "SF", c: C.sf }, { t: "SEI", club: "SF", c: C.sf }, { t: "LII", club: "NT", c: C.nt }] },
+                { q: "Beta", types: [{ t: "SLE", club: "ST", c: C.st }, { t: "EIE", club: "NF", c: C.nf }, { t: "IEI", club: "NF", c: C.nf }, { t: "LSI", club: "ST", c: C.st }] },
+                { q: "Gamma", types: [{ t: "SEE", club: "SF", c: C.sf }, { t: "LIE", club: "NT", c: C.nt }, { t: "ILI", club: "NT", c: C.nt }, { t: "ESI", club: "SF", c: C.sf }] },
+                { q: "Delta", types: [{ t: "IEE", club: "NF", c: C.nf }, { t: "LSE", club: "ST", c: C.st }, { t: "SLI", club: "ST", c: C.st }, { t: "EII", club: "NF", c: C.nf }] },
+              ].map((qd, i) => (
+                <div key={i} style={{ background: C.card, padding: 12, textAlign: "center" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.text, marginBottom: 8 }}>{qd.q}</div>
+                  {qd.types.map((t, j) => (
+                    <div key={j} style={{ fontSize: 11, marginBottom: 4 }}>
+                      <span style={{ color: t.c, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{t.club}</span>
+                      <span style={{ color: C.textDim }}> {t.t}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <SmallProse>
+              The two Democratic clubs (NT + SF) always co-occur in Alpha and Gamma quadras, which are themselves each other's anti-quadras. The two Aristocratic clubs (NF + ST) always co-occur in Beta and Delta quadras, which are also each other's anti-quadras. This means Democratic/Aristocratic is not independent of quadra values: it is algebraically entangled with them through the ab product. Within each quadra, the two Club representatives form dual pairs: in Alpha, ILE (NT) is dual to SEI (SF), and LII (NT) is dual to ESE (SF).
+            </SmallProse>
+          </Card>
+
+          <Card>
+            <SectionTitle>Club × Temperament: The 16-Cell Matrix</SectionTitle>
+            <Prose>
+              Crossing the four Clubs with the four Temperaments produces exactly 16 cells: one for each sociotype. This means every sociotype is uniquely defined by specifying its Club (cognitive domain) and its Temperament (energy metabolism). The Club tells you <em>what</em> the type thinks about; the Temperament tells you <em>how</em> it deploys energy while doing so. An EP Researcher (ILE) and an IJ Researcher (LII) share the same cognitive domain but radically different behavioral rhythms.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textAlign: "left" }}></th>
+                    {["EP", "IJ", "EJ", "IP"].map((t, i) => (
+                      <th key={i} style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}`, color: [C.nt, C.nf, C.st, C.sf][i], fontSize: 10, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textAlign: "center" }}>{t}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { club: "NT", color: C.nt, types: ["ILE", "LII", "LIE", "ILI"] },
+                    { club: "NF", color: C.nf, types: ["IEE", "EII", "EIE", "IEI"] },
+                    { club: "ST", color: C.st, types: ["SLE", "LSI", "LSE", "SLI"] },
+                    { club: "SF", color: C.sf, types: ["SEE", "ESI", "ESE", "SEI"] },
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ padding: "8px", borderBottom: `1px solid ${C.border}20`, color: row.color, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{row.club}</td>
+                      {row.types.map((t, j) => (
+                        <td key={j} style={{ padding: "8px", borderBottom: `1px solid ${C.border}20`, color: C.textMuted, textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{t}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>The Carrier Wave Metaphor, Revisited</SectionTitle>
+            <Prose>
+              In the Temperament report, we described temperament as the "carrier wave upon which all information metabolism signals are transmitted." If temperament is the carrier wave, then the Club is the <em>frequency band</em>: the domain of information the signal occupies. Two types in the same Club but different Temperaments are broadcasting on the same frequency but at different amplitudes and rhythms. Two types in the same Temperament but different Clubs are broadcasting at the same rhythm but in completely different frequency bands.
+            </Prose>
+            <Prose>
+              The Quadra, then, is the <em>modulation pattern</em>: the specific values, orientations, and priorities encoded into the signal. A full sociotype specification requires all three: what band you're broadcasting on (Club), what rhythm you're using (Temperament), and what message you're encoding (Quadra). Notably, while Temperament is fully independent of both Club and Quadra, Club and Quadra are partially entangled through the ab (Democratic/Aristocratic) dichotomy: which is why Democratic clubs (NT, SF) always appear together in certain quadras, and Aristocratic clubs (NF, ST) in others. This entanglement is itself informative: it reveals that <em>what you can do</em> and <em>what you want to do</em> are not entirely separable dimensions of personality.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Understanding Clubs is prerequisite to understanding intertype relations at the cognitive level: because Club determines which <em>information domains</em> two types share. Same-Club types (identity, mirror, quasi-identity, super-ego) share strong function pairs and can engage in substantive dialogue about the same topics. Cross-Club types share fewer strong functions and may experience each other's cognitive style as more foreign: not in energy (temperament) or values (quadra), but in what they can even <em>talk about</em> with mutual depth. Notably, duality always pairs types within the same Club: your dual shares your cognitive domain but complements your energy metabolism.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* FOOTER */}
+        <div style={{ textAlign: "center", marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+            SOURCES: Talanov VL questionnaire data · Romanov I (socionavigator.com) · Vincent V (Model A, Dichotomy Spaces) · Gulenko VV (Activity Orientations) · Danidin (sociotoday.narod.ru) · sociotype.xyz · Holland JL (RIASEC) · Prediger DJ (1982) · Herrmann N (HBDI) · Neurotyping (reddit.com/r/Neurotyping) · DeYoung CG (Big Five Aspects)
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<ClubReport />, document.getElementById('root'));
+</script>
+</body>
+</html>

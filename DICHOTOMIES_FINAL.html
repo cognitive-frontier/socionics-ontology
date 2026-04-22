@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 24-Dichotomy Socion &amp; the 16-Element Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;--text:#e8e6e3;--textMuted:#9a96a0;--textDim:#6a6670;--accent1:#c8a0ff;--accent2:#70d4a8;--accent3:#ff9070;--accent4:#70b8ff;--tencer:#ffd166;--reinin:#70d4a8;--conjunct:#ff6b9d;--hybrid:#c8a0ff;--conventional:#70b8ff;--pos:#a8d8a0;--neg:#d8a0a0;--asking:#a0c8d8;--declaring:#d8c8a0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+.mono{font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px;letter-spacing:.5px;color:var(--textDim)}
+.display{font-family:'Playfair Display',Georgia,serif}
+.card{background:var(--card);border:1px solid #2a2a3a30;border-radius:12px;padding:20px 18px;margin-bottom:16px}
+h2.sec{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;margin:0 0 14px;line-height:1.3}
+h3.sec{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:600;margin:16px 0 10px;line-height:1.3}
+p.body{font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:var(--textMuted);margin:0 0 12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;font-family:'JetBrains Mono','Fira Code',monospace;letter-spacing:.5px}
+.badge-sm{padding:2px 7px;font-size:9px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:28px;padding:12px 0;border-bottom:1px solid var(--border)}
+.nav button{padding:7px 16px;border-radius:8px;font-size:12px;font-family:-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-weight:600;letter-spacing:-.2px;background:transparent;color:var(--textDim);border:1px solid transparent;cursor:pointer;transition:all .2s}
+.nav button.active{font-weight:700}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.grid-el{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
+.grid-conj{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.dicrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #2a2a3a20}
+.dicrow .code{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;width:62px;flex-shrink:0}
+.dicrow .name{font-family:'Source Serif 4',Georgia,serif;font-size:13px;color:var(--text);flex:1}
+.dicrow .poles{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--textDim)}
+.el-card{border-radius:8px;padding:10px 12px;min-width:130px}
+.el-card .sym{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;margin-bottom:4px}
+.el-card .lbl{font-family:'Source Serif 4',Georgia,serif;font-size:11px;color:var(--textMuted);margin-bottom:6px}
+.el-card .tags{display:flex;flex-wrap:wrap;gap:3px}
+.hero{padding:40px 24px 28px;text-align:center;border-bottom:1px solid var(--border);background:radial-gradient(ellipse at 30% 0%,#c8a0ff06,transparent 60%),radial-gradient(ellipse at 70% 100%,#ffd16604,transparent 50%)}
+.hero h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,5vw,36px);font-weight:700;line-height:1.2;margin:12px 0 8px;background:linear-gradient(135deg,var(--text),var(--textMuted));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.content{max-width:760px;margin:0 auto;padding:0 16px}
+.callout{border-radius:10px;padding:16px}
+.stat-card{text-align:center}
+.stat-card .val{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:700;margin:8px 0 4px}
+.itr-box{border-radius:8px;padding:10px}
+.itr-box .items{margin-top:6px;font-family:'Source Serif 4',Georgia,serif;font-size:12px;color:var(--textMuted)}
+.sum-row{display:flex;gap:14px;align-items:flex-start}
+.sum-num{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800}
+.sum-title{font-family:'Playfair Display',Georgia,serif;font-size:15px;font-weight:600;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px}
+td{padding:8px 10px;border-bottom:1px solid #2a2a3a20;color:var(--textMuted)}
+.section{display:none}.section.active{display:block}
+.tet-box{border-radius:8px;padding:12px}
+.ring-box{padding:8px 12px;border-radius:6px}
+.reconc{border-radius:10px;padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<div class="hero">
+  <span class="mono" style="color:var(--accent1)">Socionics · Structural Theory</span>
+  <h1>The 24-Dichotomy Socion &amp; the 16-Element Framework</h1>
+  <p class="body" style="max-width:580px;margin:0 auto;text-align:center;font-size:13px">How Reinin Space, Minaiev Space, Hybrid Elements, and the Presence Cube connect to form a unified algebraic model of personality.</p>
+</div>
+<div class="content">
+  <div class="nav" id="nav"></div>
+  <div id="sections"></div>
+</div>
+<script>
+const C={bg:"#0a0a0f",card:"#12121a",border:"#2a2a3a",text:"#e8e6e3",textMuted:"#9a96a0",textDim:"#6a6670",accent1:"#c8a0ff",accent2:"#70d4a8",accent3:"#ff9070",accent4:"#70b8ff",tencer:"#ffd166",reinin:"#70d4a8",conjunct:"#ff6b9d",hybrid:"#c8a0ff",conventional:"#70b8ff",pos:"#a8d8a0",neg:"#d8a0a0",asking:"#a0c8d8",declaring:"#d8c8a0"};
+const badge=(t,c,sm)=>`<span class="badge${sm?' badge-sm':''}" style="background:${c}18;color:${c};border:1px solid ${c}30">${t}</span>`;
+const card=(html,c)=>`<div class="card" style="border-color:${c||C.border}30">${html}</div>`;
+const h2=(t,c)=>`<h2 class="sec" style="color:${c||C.text}">${t}</h2>`;
+const h3=(t,c)=>`<h3 class="sec" style="color:${c||C.text}">${t}</h3>`;
+const p=(t,s)=>`<p class="body"${s?' style="'+s+'"':''}>${t}</p>`;
+const mono=(t,c)=>`<span class="mono" style="color:${c||C.textDim}">${t}</span>`;
+const dicrow=(name,code,color,poles)=>`<div class="dicrow"><span class="code" style="color:${color}">${code}</span><span class="name">${name}</span><span class="poles">${poles}</span></div>`;
+const elCard=(sym,name,dics,isH)=>{const c=isH?C.hybrid:C.conventional;const row1=dics.slice(0,3).map(d=>badge(d.l,d.c,true)).join('');const row2=dics.slice(3).map(d=>badge(d.l,d.c,true)).join('');return`<div class="el-card" style="background:${c}08;border:1px solid ${c}20"><div class="sym" style="color:${c}">${sym}</div><div class="lbl">${name}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${row1}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px">${row2}</div></div>`;};
+
+function vennSVG(){return`<svg viewBox="0 0 580 290" style="width:100%;max-width:560;display:block;margin:18px auto">
+<ellipse cx="200" cy="140" rx="170" ry="110" fill="${C.reinin}10" stroke="${C.reinin}" stroke-width="1.8"/>
+<ellipse cx="380" cy="140" rx="170" ry="110" fill="${C.tencer}10" stroke="${C.tencer}" stroke-width="1.8"/>
+<text x="290" y="92" text-anchor="middle" fill="${C.conjunct}" font-family="'JetBrains Mono',monospace" font-size="10.5" font-weight="700">CONJUNCT PLANE</text>
+<text x="290" y="110" text-anchor="middle" fill="${C.conjunct}" font-family="'JetBrains Mono',monospace" font-size="10">8 shared</text>
+<text x="130" y="92" text-anchor="middle" fill="${C.reinin}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700">REININ</text>
+<text x="130" y="110" text-anchor="middle" fill="${C.reinin}" font-family="'JetBrains Mono',monospace" font-size="10">8 unique</text>
+<text x="450" y="92" text-anchor="middle" fill="${C.tencer}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700">TENCER</text>
+<text x="450" y="110" text-anchor="middle" fill="${C.tencer}" font-family="'JetBrains Mono',monospace" font-size="10">8 unique</text>
+${["N/S","T/F","Mer/Ser","Jud/Dec","Tac/Str","Con/Emo","Yie/Obs","Car/Far"].map((d,i)=>`<text x="${95+(i%2)*70}" y="${135+Math.floor(i/2)*20}" text-anchor="middle" fill="${C.reinin}" font-family="'JetBrains Mono',monospace" font-size="9" opacity="0.78">${d}</text>`).join('')}
+${["P/J","E/I","Sta/Dyn","Pos/Neg","Ask/Dec","Dem/Ari","Pro/Res","Valid"].map((d,i)=>`<text x="${265+(i%2)*50}" y="${135+Math.floor(i/2)*20}" text-anchor="middle" fill="${C.conjunct}" font-family="'JetBrains Mono',monospace" font-size="9" opacity="0.88">${d}</text>`).join('')}
+${["NT/SF 1st","NF/ST 1st","NT/SF 2nd","NF/ST 2nd","A/\u0393 1st","\u0394/\u0392 1st","A/\u0393 2nd","\u0394/\u0392 2nd"].map((d,i)=>`<text x="${420+(i%2)*60}" y="${135+Math.floor(i/2)*20}" text-anchor="middle" fill="${C.tencer}" font-family="'JetBrains Mono',monospace" font-size="9" opacity="0.78">${d}</text>`).join('')}
+<text x="290" y="278" text-anchor="middle" fill="${C.text}" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">24 total unique+important dichotomies</text>
+</svg>`;}
+
+function cubeSVG(){
+const ps={f1:{x:200,y:30},f2:{x:120,y:110},f6:{x:200,y:110},f8:{x:280,y:110},f3:{x:120,y:200},f5:{x:200,y:200},f7:{x:280,y:200},f4:{x:200,y:280}};
+const lc={f1:C.accent3,f2:"#e8c060",f6:"#e8c060",f8:"#e8c060",f3:C.accent4,f5:C.accent4,f7:C.accent4,f4:C.textDim};
+const ll={f1:"4L",f2:"3L",f6:"3L",f8:"3L",f3:"2L",f5:"2L",f7:"2L",f4:"1L"};
+const el={f1:"Ne",f2:"Fe",f3:"Si",f4:"Fi",f5:"Se",f6:"Ti",f7:"Ni",f8:"Te"};
+const edges=[["f1","f2"],["f1","f6"],["f1","f8"],["f2","f3"],["f2","f5"],["f6","f3"],["f6","f7"],["f8","f5"],["f8","f7"],["f3","f4"],["f5","f4"],["f7","f4"]];
+const dim=[["f1","f8"],["f6","f7"],["f5","f2"],["f4","f3"]];
+const pri=[["f1","f2"],["f6","f3"],["f5","f8"],["f4","f7"]];
+let s=`<svg viewBox="0 0 400 330" style="width:100%;max-width:400;display:block;margin:0 auto">`;
+edges.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.border}" stroke-width="1"/>`;});
+dim.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent3}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
+pri.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent4}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
+Object.entries(ps).forEach(([k,v])=>{s+=`<g><circle cx="${v.x}" cy="${v.y}" r="18" fill="${C.card}" stroke="${lc[k]}" stroke-width="2"/><text x="${v.x}" y="${v.y-2}" text-anchor="middle" dominant-baseline="middle" fill="${lc[k]}" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">${el[k]}</text><text x="${v.x}" y="${v.y+11}" text-anchor="middle" dominant-baseline="middle" fill="${C.textDim}" font-family="'JetBrains Mono',monospace" font-size="7">${ll[k]}</text></g>`;});
+s+=`<text x="50" y="155" text-anchor="middle" fill="${C.accent3}" font-family="'JetBrains Mono',monospace" font-size="9" opacity="0.7" transform="rotate(-90,50,155)">Dimensionality</text>`;
+s+=`<text x="350" y="155" text-anchor="middle" fill="${C.accent4}" font-family="'JetBrains Mono',monospace" font-size="9" opacity="0.7" transform="rotate(90,350,155)">Priority</text>`;
+s+=`<text x="200" y="318" text-anchor="middle" fill="${C.textDim}" font-family="'JetBrains Mono',monospace" font-size="9">Presence Cube for ILE</text></svg>`;
+return s;}
+
+function phaseSVG(){
+const y1=42,y2=97,leftLabelX=24,axisStartX=78;
+// Columns: Intuition (was N, now leftmost), Irrational (was P/J), Pos/Neg or E/I, Ask/Dec or St/Dy, Mer/Ser or Jud/Dec
+const cols=[axisStartX+50,axisStartX+150,axisStartX+250,axisStartX+350,axisStartX+450];
+const svgW=axisStartX+520;
+let s=`<svg viewBox="0 0 ${svgW} 140" style="width:100%;max-width:${svgW};display:block;margin:12px auto">`;
+// Left-side example labels (Ne above, N+ below) showing the worked examples being tracked
+s+=`<text x="${leftLabelX}" y="${y1+4}" fill="${C.conventional}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">Ne</text>`;
+s+=`<text x="${leftLabelX}" y="${y2+4}" fill="${C.hybrid}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">N+</text>`;
+// Vertical separator between example labels and axis grid
+s+=`<line x1="${leftLabelX+24}" y1="${y1-18}" x2="${leftLabelX+24}" y2="${y2+18}" stroke="${C.border}" stroke-width="1"/>`;
+// Row identifier badges (CONV / HYB) just to the right of the separator
+s+=`<text x="${leftLabelX+38}" y="${y1+4}" fill="${C.conventional}" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700">CONV</text>`;
+s+=`<text x="${leftLabelX+38}" y="${y2+4}" fill="${C.hybrid}" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700">HYB</text>`;
+// CONV row badges
+const convLabels=["Intuition","Irrational","E/I","St/Dy","Jud/Dec"];
+convLabels.forEach((d,i)=>{const w=(d==="Intuition"||d==="Irrational")?80:60;s+=`<rect x="${cols[i]-w/2}" y="${y1-13}" width="${w}" height="24" rx="4" fill="${C.conventional}18" stroke="${C.conventional}40" stroke-width="1"/><text x="${cols[i]}" y="${y1+3}" text-anchor="middle" fill="${C.conventional}" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="600">${d}</text>`;});
+// HYB row badges
+const hybLabels=["Intuition","Irrational","Pos/Neg","Ask/Dec","Mer/Ser"];
+hybLabels.forEach((d,i)=>{const w=(d==="Intuition"||d==="Irrational")?80:60;s+=`<rect x="${cols[i]-w/2}" y="${y2-13}" width="${w}" height="24" rx="4" fill="${C.hybrid}18" stroke="${C.hybrid}40" stroke-width="1"/><text x="${cols[i]}" y="${y2+3}" text-anchor="middle" fill="${C.hybrid}" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="600">${d}</text>`;});
+// "same" connectors for columns 0 and 1 (Intuition and Irrational)
+[0,1].forEach(i=>{s+=`<line x1="${cols[i]}" y1="${y1+15}" x2="${cols[i]}" y2="${y2-15}" stroke="${C.textDim}" stroke-width="1" stroke-dasharray="2,2"/><text x="${cols[i]}" y="${(y1+y2)/2+3}" text-anchor="middle" fill="${C.textDim}" font-family="'JetBrains Mono',monospace" font-size="7.5">same</text>`;});
+// "swap" connectors for columns 2, 3, 4
+[2,3,4].forEach(i=>{s+=`<line x1="${cols[i]}" y1="${y1+15}" x2="${cols[i]}" y2="${y2-15}" stroke="${C.accent1}" stroke-width="1.5"/><text x="${cols[i]}" y="${(y1+y2)/2+3}" text-anchor="middle" fill="${C.accent1}" font-family="'JetBrains Mono',monospace" font-size="7.5" font-weight="700">swap</text>`;});
+s+=`</svg>`;return s;}
+
+function aspectAxisMatrix(){
+  // 4x4: columns = N T S F (Aspects), rows = Jud Mer Dec Ser (Axes)
+  // Cells where (col is P AND row is P) or (col is J AND row is J) are CONVENTIONAL
+  const cols=[{l:"N",p:"Ne/Ni"},{l:"T",p:"Ti/Te"},{l:"S",p:"Se/Si"},{l:"F",p:"Fe/Fi"}];
+  const rows=[{l:"Jud",p:"Ne/Si",f:"P"},{l:"Mer",p:"Ti/Fe",f:"J"},{l:"Dec",p:"Se/Ni",f:"P"},{l:"Ser",p:"Te/Fi",f:"J"}];
+  const colF={N:"P",T:"J",S:"P",F:"J"};
+  const els=[
+    ["Ne","T\u2212","Si","F+"],
+    ["N+","Ti","S\u2212","Fe"],
+    ["Ni","T+","Se","F\u2212"],
+    ["N\u2212","Te","S+","Fi"]
+  ];
+  let s=`<div style="display:grid;grid-template-columns:78px repeat(4,1fr);gap:0;max-width:560px;margin:14px auto 0;font-family:'JetBrains Mono',monospace">`;
+  // Top-left corner
+  s+=`<div></div>`;
+  // Column headers
+  cols.forEach(c=>{
+    s+=`<div style="text-align:center;padding:8px 0 12px"><div style="font-size:16px;font-weight:700;color:${C.text};line-height:1.2">${c.l}</div><div style="font-size:9.5px;color:${C.textDim};margin-top:3px;font-weight:500">(${c.p})</div></div>`;
+  });
+  // Body rows
+  rows.forEach((r,ri)=>{
+    s+=`<div style="text-align:right;padding:0 12px 0 0;display:flex;flex-direction:column;align-items:flex-end;justify-content:center"><div style="font-size:12px;font-weight:600;color:${C.textMuted};letter-spacing:.5px;line-height:1.2">${r.l}</div><div style="font-size:9px;color:${C.textDim};margin-top:2px">(${r.p})</div></div>`;
+    cols.forEach((c,ci)=>{
+      const isConv=(colF[c.l]===r.f);
+      const bg=isConv?`${C.conventional}14`:`${C.hybrid}18`;
+      const border=isConv?`${C.conventional}40`:`${C.hybrid}50`;
+      const fg=isConv?C.conventional:C.hybrid;
+      s+=`<div style="background:${bg};border:1px solid ${border};padding:14px 0;text-align:center;font-size:17px;font-weight:800;color:${fg};letter-spacing:.5px">${els[ri][ci]}</div>`;
+    });
+  });
+  s+=`</div>`;
+  s+=`<div style="display:flex;justify-content:center;gap:18px;margin-top:14px;flex-wrap:wrap">`;
+  s+=`<span style="display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.textMuted}"><span style="display:inline-block;width:11px;height:11px;background:${C.conventional}14;border:1px solid ${C.conventional}40"></span>Conventional</span>`;
+  s+=`<span style="display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.textMuted}"><span style="display:inline-block;width:11px;height:11px;background:${C.hybrid}18;border:1px solid ${C.hybrid}50"></span>Hybrid</span>`;
+  s+=`</div>`;
+  return s;
+}
+
+function torusSVG(){
+  // Returns placeholder div + canvas. Animation initialized after render via initTorus().
+  return `<div style="display:flex;justify-content:center;margin:8px 0 4px"><canvas data-torus="1" width="960" height="720" style="width:100%;max-width:480px;height:auto;display:block"></canvas></div>`;
+}
+
+function initTorus(canvas){
+  if(!canvas || canvas.dataset.torusInit==="1") return;
+  canvas.dataset.torusInit="1";
+  const ctx=canvas.getContext("2d");
+  const W=canvas.width, H=canvas.height;
+  ctx.scale(2,2); // retina; logical 480x360
+  const lW=W/2, lH=H/2;
+  const cx=lW/2, cy=lH/2-10;
+
+  // Torus geometry
+  const R=130;  // major radius
+  const r=46;   // minor (tube) radius
+
+  // 4 aspects at 4 cardinal theta positions on the major circle
+  // 4 elements per aspect at 4 cardinal phi positions on the cross-section
+  // Color tokens: conv = blue, hybrid = purple
+  const CONV="#70b8ff", HYB="#c8a0ff";
+  const aspects=[
+    {theta:-Math.PI/2, label:"N", elements:[
+      {phi:0,         label:"Ne", color:CONV},
+      {phi:Math.PI/2, label:"N+", color:HYB},
+      {phi:Math.PI,   label:"Ni", color:CONV},
+      {phi:3*Math.PI/2, label:"N\u2212", color:HYB}
+    ]},
+    {theta:0, label:"T", elements:[
+      {phi:0,         label:"T\u2212", color:HYB},
+      {phi:Math.PI/2, label:"Ti", color:CONV},
+      {phi:Math.PI,   label:"T+", color:HYB},
+      {phi:3*Math.PI/2, label:"Te", color:CONV}
+    ]},
+    {theta:Math.PI/2, label:"S", elements:[
+      {phi:0,         label:"Si", color:CONV},
+      {phi:Math.PI/2, label:"S\u2212", color:HYB},
+      {phi:Math.PI,   label:"Se", color:CONV},
+      {phi:3*Math.PI/2, label:"S+", color:HYB}
+    ]},
+    {theta:Math.PI, label:"F", elements:[
+      {phi:0,         label:"F+", color:HYB},
+      {phi:Math.PI/2, label:"Fe", color:CONV},
+      {phi:Math.PI,   label:"F\u2212", color:HYB},
+      {phi:3*Math.PI/2, label:"Fi", color:CONV}
+    ]}
+  ];
+
+  let yaw=0;
+  const tilt=-0.55; // negative: closer side of torus shows larger nodes (perspective fix)
+
+  // Project a 3D point through tilt + yaw + perspective
+  function project(x,y,z){
+    // Tilt around X
+    const y1=y*Math.cos(tilt) - z*Math.sin(tilt);
+    const z1=y*Math.sin(tilt) + z*Math.cos(tilt);
+    // Yaw around Y
+    const x2=x*Math.cos(yaw) + z1*Math.sin(yaw);
+    const z2=-x*Math.sin(yaw) + z1*Math.cos(yaw);
+    // Perspective
+    const persp=520;
+    const f=persp/(persp - z2);
+    return {x:cx + x2*f, y:cy + y1*f, depth:z2, scale:f};
+  }
+
+  function torusPoint(theta,phi){
+    const x=(R + r*Math.cos(phi))*Math.cos(theta);
+    const y=(R + r*Math.cos(phi))*Math.sin(theta);
+    const z=r*Math.sin(phi);
+    return {x,y,z};
+  }
+
+  function frame(){
+    if(!document.contains(canvas)) return; // stop animation when removed from DOM
+    ctx.clearRect(0,0,lW,lH);
+
+    // ========= Wireframe =========
+    // Major circles at several phi values (rings going around the donut hole)
+    const phiSteps=[0, Math.PI/4, Math.PI/2, 3*Math.PI/4, Math.PI, 5*Math.PI/4, 3*Math.PI/2, 7*Math.PI/4];
+    phiSteps.forEach(phi=>{
+      const segs=80;
+      const pts=[];
+      for(let i=0;i<=segs;i++){
+        const t=i/segs*Math.PI*2;
+        const p=torusPoint(t,phi);
+        pts.push(project(p.x,p.y,p.z));
+      }
+      ctx.beginPath();
+      pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+      // Highlight the 4 cardinal phi rings (E/I and Pos/Neg axes); dim the diagonal ones
+      const isCardinal=(phi%(Math.PI/2)<0.001);
+      ctx.strokeStyle=isCardinal?"rgba(112,184,255,0.18)":"rgba(150,150,180,0.07)";
+      ctx.lineWidth=isCardinal?0.9:0.6;
+      ctx.stroke();
+    });
+    // Minor circles (cross-section tubes) at the 4 aspect positions, plus a few intermediate
+    const thetaSteps=[];
+    for(let i=0;i<16;i++) thetaSteps.push(i*Math.PI/8);
+    thetaSteps.forEach(theta=>{
+      const segs=40;
+      const pts=[];
+      for(let i=0;i<=segs;i++){
+        const ph=i/segs*Math.PI*2;
+        const p=torusPoint(theta,ph);
+        pts.push(project(p.x,p.y,p.z));
+      }
+      ctx.beginPath();
+      pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+      const isAspect=([0,4,8,12].indexOf(Math.round(theta/(Math.PI/8)))>=0);
+      ctx.strokeStyle=isAspect?"rgba(200,160,255,0.22)":"rgba(150,150,180,0.06)";
+      ctx.lineWidth=isAspect?1.0:0.5;
+      ctx.stroke();
+    });
+
+    // ========= Nodes (depth-sorted) =========
+    const nodes=[];
+    aspects.forEach(asp=>{
+      asp.elements.forEach(el=>{
+        const p=torusPoint(asp.theta, el.phi);
+        const proj=project(p.x,p.y,p.z);
+        nodes.push({...proj, label:el.label, color:el.color, aspectLabel:asp.label, isHybrid:(el.color===HYB)});
+      });
+    });
+    nodes.sort((a,b)=>a.depth-b.depth);
+    nodes.forEach(n=>{
+      const baseR=n.isHybrid?9:11;
+      const radius=baseR*Math.max(0.6, Math.min(1.4, n.scale));
+      // glow
+      const grad=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,radius*1.6);
+      grad.addColorStop(0, n.color+"33");
+      grad.addColorStop(1, n.color+"00");
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,radius*1.6,0,Math.PI*2);
+      ctx.fill();
+      // disc
+      ctx.fillStyle="#0a0a0f";
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,radius,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle=n.color;
+      ctx.lineWidth=1.6;
+      ctx.stroke();
+      // label
+      ctx.fillStyle=n.color;
+      ctx.font=`700 ${Math.round(9*Math.max(0.7,Math.min(1.25,n.scale)))}px JetBrains Mono, monospace`;
+      ctx.textAlign="center";
+      ctx.textBaseline="middle";
+      ctx.fillText(n.label, n.x, n.y);
+    });
+
+    yaw += 0.0055;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+const convEls=[{s:"Ne",d:[{l:"P",c:C.accent3},{l:"E",c:C.conventional},{l:"St",c:C.conventional},{l:"N",c:"#a8d8a0"},{l:"Jud",c:"#d8c8a0"},{l:"Tac",c:C.textDim},{l:"Car",c:C.textDim}]},{s:"Se",d:[{l:"P",c:C.accent3},{l:"E",c:C.conventional},{l:"St",c:C.conventional},{l:"S",c:"#d8a0a0"},{l:"Dec",c:"#d8c8a0"},{l:"Str",c:C.textDim},{l:"Car",c:C.textDim}]},{s:"Ti",d:[{l:"J",c:C.accent3},{l:"I",c:C.conventional},{l:"St",c:C.conventional},{l:"T",c:"#a0c8d8"},{l:"Mer",c:"#d8c8a0"},{l:"Emo",c:C.textDim},{l:"Obs",c:C.textDim}]},{s:"Fi",d:[{l:"J",c:C.accent3},{l:"I",c:C.conventional},{l:"St",c:C.conventional},{l:"F",c:"#d8a0d8"},{l:"Ser",c:"#d8c8a0"},{l:"Con",c:C.textDim},{l:"Obs",c:C.textDim}]}];
+const hybEls=[{s:"N+",d:[{l:"P",c:C.accent3},{l:"Ask",c:C.asking},{l:"Pos",c:C.pos},{l:"N",c:"#a8d8a0"},{l:"Mer",c:"#d8c8a0"},{l:"Tac",c:C.textDim},{l:"Yie",c:C.textDim}]},{s:"S+",d:[{l:"P",c:C.accent3},{l:"Ask",c:C.asking},{l:"Pos",c:C.pos},{l:"S",c:"#d8a0a0"},{l:"Ser",c:"#d8c8a0"},{l:"Str",c:C.textDim},{l:"Obs",c:C.textDim}]},{s:"T\u2212",d:[{l:"J",c:C.accent3},{l:"Ask",c:C.asking},{l:"Neg",c:C.neg},{l:"T",c:"#a0c8d8"},{l:"Jud",c:"#d8c8a0"},{l:"Emo",c:C.textDim},{l:"Far",c:C.textDim}]},{s:"F\u2212",d:[{l:"J",c:C.accent3},{l:"Ask",c:C.asking},{l:"Neg",c:C.neg},{l:"F",c:"#d8a0d8"},{l:"Dec",c:"#d8c8a0"},{l:"Con",c:C.textDim},{l:"Car",c:C.textDim}]}];
+
+const reininRanked=[
+{rank:1,variance:'18%',color:'#4ade80',code:'x \u00b7 basis',name:'Extraversion / Introversion',tr:'Extraversion / Introversion',xyz:'Extraverted / Introverted',desc:`Excess vs deficit of nervous energy (hyperthymia vs dysthymia), with predominance of cortical excitation vs inhibition reactions. Extraversion drives outward activity, breadth and superficiality of interest, expressive risk-tolerance, and a quantity-over-quality bet, mapping onto sanguine and choleric temperaments. Introversion conserves what is already possessed, preferring depth, quality, slower pace, and risk-aversion, mapping onto phlegmatic and melancholic temperaments. Tied with Logic/Ethics as the largest single contributor to overall personality variance.`},
+{rank:2,variance:'18%',color:'#5fd874',code:'a \u00b7 basis',name:'Logic / Ethics',tr:'Calculation / Suggestion',xyz:'Systematizing / Empathizing',desc:`Calculation vs cognitive empathy. Logic abstracts from subjective coloration to operate on formal criteria; the "logical" brain functions like a computer, with localized signal chains and cold indifference to others' suffering (extreme expression: schizoid PD; correlates with psychopathic traits at the rivalness pole). Ethics reads subjective content from behavioral nuance, with diffusive nervous excitation across whole brain regions enabling affective resonance (extreme: histrionic and dependent disorders). The largest sex-linked dichotomy of all 15: testosterone supports logic, oxytocin and estrogen support ethics, with a difference of nearly one full sigma between the sexes.`},
+{rank:3,variance:'15%',color:'#74d266',code:'b \u00b7 basis',name:'Intuition / Sensing',tr:'Imagination / Sense',xyz:'Intuitive / Sensory',desc:`Width of perceptual filters between subconscious and consciousness. Intuition uses wider filters letting more (riskier, more error-prone) signals through, enabling abstract thinking, theoretical orientation, and detection of distant or improbable possibilities; correlates with schizotypy, with schizotypal PD as the extreme. Sensing uses narrower filters tuned for detailed reality-tracking, with concrete thinking, somatic awareness, household competence, and here-and-now orientation; correlates with elevated central acetylcholine activity, marked by immune strength, muscle tone, and mucosal hydration. Intuition develops the biosocial "software", sensing the "hardware".`},
+{rank:4,variance:'11%',color:'#8acc56',code:'abcx \u00b7 4\u00b0 product',name:'Rationality / Irrationality',tr:'Control / Spontaneity',xyz:'Judging / Perceiving',desc:`Frontal-cortical activity dominates the difference. Rationality means self-control, self-discipline, planning (including long-term), regulated and ritualistic behavior, predictability, and a strong sense of duty, supported by high frontal-lobe activity in the neocortex; the extreme expression is anankastic (obsessive-compulsive) personality. Irrationality means impulsivity, spontaneity, improvisation, love of surprises, and pursuit of pleasant impressions, tied to deficits in frontal neocortical activity arising from various causes; carries traits of unstable personality accentuation. A basis dichotomy in conventional Reinin space, but the maximal 4th-order product XABC in Talanov's XABC encoding.`},
+{rank:5,variance:'9%',color:'#a1c545',code:'ac \u00b7 2\u00b0 product',name:'Judicious / Decisive',tr:'Peacefulness / Rivalness',xyz:'Cooperation / Competition',desc:`Whether the world is felt as fundamentally cooperative or fundamentally competitive. Judicious types are peaceful, altruistic, equality-oriented, generous with resources, supportive of the weak, and slow to violence, with a parental dynamic in close relationships and a large credit of trust toward others. Decisive types are contest-oriented, escalatory, hoarding and usurping, attracted to strength and contemptuous of weakness, with sado-masochistic dynamics in close relationships, ready to use violence, and prone to endorphin-driven stress-seeking; the rivalness extreme correlates strongly with the Dark Triad (Machiavellianism, narcissism, antisocial psychopathy). The only Reinin product approaching Jungian-basis strength; Romanov treats it as the 5th core axis.`},
+{rank:6,variance:'5%',color:'#b8be33',code:'bc \u00b7 2\u00b0 product',name:'Merry / Serious',tr:'Universalisation / Specialisation',xyz:'Passionarism / Pragmatism',desc:`Whether life-meaning is anchored in fundamental existential ground or in private, local goals. Merry types feel pulled toward the first causes of being, transpersonal universal meanings, and willingness for self-sacrifice; their cognition is paradigmatic-holistic, their art "high style" (epic, drama, religious awe), and their psychology that of "young souls" learning universal knowledge. Serious types retreat into specialization, family and professional pragmatics, suppression of strong affect, mosaic-algorithmic thinking, and "low style" art (comedy, anecdote, situation), with the psychology of "old souls" focused on selected partners and selected craft. Sometimes called subjectivism vs objectivism, or values of ascending vs descending quadras.`},
+{rank:7,variance:'4%',color:'#cfb720',code:'c \u00b7 basis (Talanov)',name:'Asking / Declaring',tr:'Separateness / Acceptance',xyz:'Differentiation / Fusion',desc:`Threshold of irritation and breadth of personally permissible. Asking types have a lower threshold and a narrower acceptable range: more environmental signals trigger reactions of disgust or protest, with squeamishness toward physical and moral filth, fear of bodily harm, defense of personal uniqueness, and rejection of mainstream conformity; tied to insular cortex activity and homeostatic vigilance, embodying the force of social divergence. Declaring types have a higher threshold and a broader acceptable range, with tolerance, willingness to engage with morally murky business, fatalism, and "common person" identification; correlates with elevated central vasopressin activity, embodying the force of social convergence. The basis dichotomy C in Talanov's XABC encoding.`},
+{rank:8,variance:'3%',color:'#f5b00a',code:'abc \u00b7 3\u00b0 product',name:'Static / Dynamic',tr:'Will / Adaptation',xyz:'Invariant Stability / Contextual Lability',desc:`Whether attention is focused on capacities (immutable properties) or on needs (metabolic flows). Statics perceive reality as a cross-section perpendicular to time, a balance of stable potentials shaping the world's "force-field"; they carry an internal core of unchanging convictions, are self-sufficient, defend principles by will, and serve as guardians of their quadra's values even in foreign-quadra environments. Dynamics perceive reality as a cross-section along time, flows of resources connecting everything; they are pliable to external influences, fashion currents, and market conjuncture, mastering adaptation to whatever will dominates the moment, and shifting more readily into other quadras' values when displaced.`},
+{rank:9,variance:'3%',color:'#f59e0b',code:'ab \u00b7 2\u00b0 product',name:'Democratic / Aristocratic',tr:'Liberalism / Paternalism',xyz:'Horizontal Individualism / Vertical Collectivism',desc:`Liberalism vs paternalism as the operating model of society. Democratic types treat individual interests as primary and institutions as merely representative; they favor meritocracy, cosmopolitanism, free trade, progressivism oriented to society's future, and behavior anchored to objective biological reality (bodily separateness as the basis of property, biological norms as the basis of universal values). Aristocratic types treat traditional institutions of inequality as primary, favoring dynasty, caste, and nationalism, xenophobia, protectionism, and conservatism oriented to society's past; their behavior is ritualized by subjective cultural reality, with elevated risk of group delusion. One of the three quadra-value dichotomies.`},
+{rank:10,variance:'3%',color:'#f48f15',code:'abx \u00b7 3\u00b0 product',name:'Positivist / Negativist',tr:'Contentment / Discontent',xyz:'Positive Salience / Negative Salience',desc:`Where attention naturally fixates. Positivists find their attention captured by virtues, advantages, and possibilities, with benevolent faith and contentment regarding what is. Negativists find their attention captured by flaws, risks, and dangers, with skepticism, dissatisfaction, and pre-emptive hedging against the probable worst. The Positivist axis correlates with cognitive priors weighted toward expected reward; the Negativist axis with priors weighted toward expected loss.`},
+{rank:11,variance:'3%',color:'#f3801f',code:'cx \u00b7 2\u00b0 product',name:'Process / Result',tr:'Complication / Simplification',xyz:'Elaboration / Gestalt',desc:`Whether cognition tends to enrich and complicate or to compress and simplify. Process types are drawn to systems with many rules and intricate interconnections, with neuroticism arising from over-elaboration of self-image and world-image; their interest in society's structural mechanisms makes them politicized (correlates with the merry pole). Result types compress all variety into a small set of simple rules, with apolitical pragmatism. Romanov's hypothesis: in Process types, dyadic and quadral values contribute more to personality (so a suitable social environment matters more for survival), while in Result types, individual features dominate (so dual complementarity matters more).`},
+{rank:12,variance:'3%',color:'#f17128',code:'bcx \u00b7 3\u00b0 product',name:'Constructivist / Emotivist',tr:'Depression / Hopefulness',xyz:'Affective Gravity / Affective Buoyancy',desc:`Inertia vs game in the emotional sphere. Constructivists exhibit emotional "stickiness" on the past, with soul-anguish, self-blame, depressive baseline, and feelings of hopelessness; their emotional states accumulate and complicate. Emotivists exhibit emotional mobility and play, with no tendency to "wind oneself up" or fixate on what has passed, and a light, hopeful relation to life. Romanov reframes the pair more directly as Depression vs Hopefulness; the dichotomy governs whether the emotional sphere acts as a sticky integrator or as a lossy filter that resets between events.`},
+{rank:13,variance:'2%',color:'#ee5f2a',code:'ax \u00b7 2\u00b0 product',name:'Yielding / Obstinate',tr:'Naivety / Sophistication',xyz:'Admittance / Impedance',desc:`Whether the world is taken at face value or treated as multilayered. Yielding types believe in a simple, unambiguous reality where what one sees is what is; they show congruence between declared and enacted, naive directness in communication, and aggression that manifests in actual life rather than in fantasy (correlates with judicious). Obstinate types believe in a complex, multilayered reality where the first glance is always misleading; they mask intentions behind social masks in a "theatrical" or intelligence-officer style, with sophistication, indirection, and aggression that manifests primarily in imagination (correlates with decisive).`},
+{rank:14,variance:'2%',color:'#ed5520',code:'acx \u00b7 3\u00b0 product',name:'Tactical / Strategic',tr:'Ornamentalism / Symbolism',xyz:'Granular Perception / Global Perception',desc:`Tactical types exhibit uncontrolled imagination producing excessive detailing of the unfolding picture, with absorption in many small facts and chance associations, sublimation of desires into social games, and immersion in the texture of the situation. Strategic types exhibit uncontrolled sensation crystallizing the desired into a single compelling symbolic image, with focus on the principal goal, dominance of the basic drive (hedonistic for sensors, ascetic for intuitives), and willingness to discard inessential detail in service of that drive. Romanov labels the pair "ornamentalism" vs "symbolism" to emphasize this aesthetic-cognitive contrast.`},
+{rank:15,variance:'2%',color:'#f97316',code:'bx \u00b7 2\u00b0 product',name:'Carefree / Farsighted',tr:'Field-dependence / Field-independence',xyz:'Ambient Sufficiency / Ambient Deficiency',desc:`Field-dependence vs field-independence in cognition. Carefree types orient to the environment, delegating control to social structures and preferring predictable surroundings; their cognition is shaped by ambient context, and they rely on the structures around them to absorb risk. Farsighted types maintain personal control over situations, ready for radical environmental change at their own decision; their cognition operates independently of immediate context. Romanov notes that the semantic core of this dichotomy is still partly hypothetical, though statistically supported by his data; further refinement is ongoing.`}
+];
+const reininRow=(it,i,arr)=>`<div style="display:flex;gap:14px;align-items:flex-start;padding:14px 2px;border-bottom:${i<arr.length-1?'1px solid #2a2a3a40':'none'}">
+<div style="flex:0 0 78px;text-align:center">
+<div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:${C.textDim};font-weight:600;letter-spacing:.5px">#${String(it.rank).padStart(2,'0')}</div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:800;color:${it.color};margin-top:5px;line-height:1">${it.variance}</div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:${C.textDim};margin-top:5px;letter-spacing:.3px;opacity:.75;line-height:1.35">${it.code}</div>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-family:'Source Serif 4',Georgia,serif;font-size:15.5px;font-weight:600;color:${C.text};line-height:1.3">${it.name}</div>
+<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:5px">
+<div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#a8a4ac"><span style="color:${C.textDim};opacity:.7">T-R \u00b7 </span>${it.tr}</div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#a8a4ac"><span style="color:${C.textDim};opacity:.7">xyz \u00b7 </span>${it.xyz}</div>
+</div>
+<p class="body" style="margin:10px 0 0;font-size:12.5px;line-height:1.65">${it.desc}</p>
+</div>
+</div>`;
+
+const sections=[
+{label:"Overview",color:C.accent1,html:()=>
+card(h2("What This Overview Covers",C.accent1)+
+p('Classical Socionics operates with 8 information metabolism elements (Ne, Ni, Se, Si, Te, Ti, Fe, Fi) placed into 8 function positions, producing 16 types. The mathematical backbone, Reinin\'s 15 dichotomies, seemed to be the complete algebraic story. But it was only half.')+
+p('In recent years, Socionists Ibrahim Minaiev and Yurii Minaiev independently discovered a <em>second</em> set of 16 dichotomies (sharing 8 with Reinin\'s), bringing the total to <strong>24 unique dichotomies</strong>. Meanwhile, Viktor Gulenko\'s Model G introduced "signed" elements (functions with + or \u2212 charges) that seemed to double the element count to 16 without clear mathematical justification.')+
+p('This report connects these two developments: the 8 additional "hybrid" elements are the element-level realization of Minaiev space, just as the conventional 8 elements realize Reinin space. Together, the 16 elements tile a toroidal structure that encodes all 24 dichotomies, completing the algebraic description of the Socion.','color:'+C.text+';font-weight:500'),C.accent1)+
+vennSVG()+
+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin:18px auto 0">${[{n:"Reinin Space",v:"16 dichotomies",c:C.reinin,s:"8 unique + 8 shared"},{n:"Minaiev Space",v:"16 dichotomies",c:C.tencer,s:"8 unique + 8 shared"},{n:"Conjunct Plane",v:"8 shared",c:C.conjunct,s:"Where both spaces meet"},{n:"Total Unique",v:"24 dichotomies",c:C.accent1,s:"The complete Socion"}].map(i=>card(`<div class="stat-card"><span class="mono" style="color:${i.c};font-size:13px">${i.n}</span><div class="val" style="color:${i.c}">${i.v}</div>${mono(i.s)}</div>`,i.c)).join('')}</div>`},
+
+{label:"Two Trait Spaces",color:C.reinin,html:()=>
+card(h2("Two Independent Trait Spaces",C.accent1)+p('The full algebra of the Socion needs <em>two</em> dichotomy spaces, not one. Reinin space is generated by the four Jungian basis axes and yields 15 derived dichotomies, but eight natural type groupings cannot be produced by any combination of Reinin dichotomies. Minaiev space picks up exactly those orphans. The two spaces overlap on a shared 8-dichotomy <strong>Conjunct Plane</strong>, giving 8 Reinin-unique + 8 Minaiev-unique + 8 shared = <strong>24 meaningful dichotomies total</strong>. This section covers both spaces, their generation, and why neither alone is sufficient.'),C.accent1)+
+
+card(h2("The Reinin Space",C.reinin)+p('Reinin proved that from 4 independent "basis" dichotomies (E/I, N/S, T/F, P/J), you can algebraically generate 11 additional dichotomies through Z\u2082 multiplication, producing every possible way to split 16 types into two groups of 8 while preserving the group structure. Add the identity dichotomy (Valid/Null), and you get 16 total.')+p('The generation works like a Fano pyramid: take any two basis dichotomies, multiply them (XOR their type assignments), and you get a new dichotomy. Multiply three, or all four, and you get more. Every product is itself a valid dichotomy.'),C.reinin)+
+card(h3("The 4 Basis Dichotomies")+
+dicrow("Extraversion / Introversion","E _ _ _",C.reinin,"x")+dicrow("Intuition / Sensing","_ N _ _",C.reinin,"b")+dicrow("Logic / Ethics","_ _ T _",C.reinin,"a")+dicrow("Irrationality / Rationality","_ _ _ P",C.reinin,"abcx")+
+h3("The 11 Derived Dichotomies")+
+dicrow("Static / Dynamic","E _ _ P",C.reinin,"abc")+dicrow("Democratic / Aristocratic","_ N T _",C.reinin,"ab")+dicrow("Merry / Serious","E _ T P",C.reinin,"bc")+dicrow("Judicious / Decisive","E N _ P",C.reinin,"ac")+dicrow("Positivist / Negativist","E N T _",C.conjunct,"abx")+dicrow("Asking / Declaring","E N T P",C.conjunct,"c")+dicrow("Process / Result","_ N T P",C.conjunct,"cx")+dicrow("Constructivist / Emotivist","_ _ T P",C.reinin,"bcx")+dicrow("Yielding / Obstinate","E _ T _",C.reinin,"ax")+dicrow("Tactical / Strategic","_ N _ P",C.reinin,"acx")+dicrow("Carefree / Farsighted","E N _ _",C.reinin,"bx")+
+p('Note: Positivist/Negativist, Asking/Declaring, and Process/Result are highlighted. These sit on the '+badge("Conjunct Plane",C.conjunct)+' shared with Minaiev space.','margin-top:10px;font-size:12px'))+
+card(h3("The 15 Reinin Dichotomies, Ranked by Variance Contribution",C.reinin)+
+p('Talanov\'s factor-analytic data, replicated and visualized by sociotype.xyz, shows that the 15 Reinin dichotomies are not equal in their contribution to overall personality variance. The four Jungian basis axes (E/I, T/F, N/S, P/J) account for the lion\'s share, and Judicious/Decisive is the only Reinin product approaching their strength. The remaining ten cluster between 5% and 2%. Each row pairs the conventional name with Romanov\'s revised label and sociotype.xyz\'s modern label, with descriptions synthesizing the psychological, behavioral, and structural attributes drawn from socionavigator\'s function and trait pages.')+
+reininRanked.map(reininRow).join(''),C.reinin)+
+
+card(h2("The Minaiev Space (The Missing Half)",C.tencer)+p('Some natural groupings in Socionics, like the 8 types whose base function is either Intuitive or Logical (the "Abstract Base" or NT-1st group: ILE, IEI, ILI, IEE, LII, LSI, LIE, LSE), cannot be generated by intersecting any two Reinin dichotomies. These groups cut across Reinin\'s algebra entirely, requiring a <em>different</em> basis to formalize.')+p('Minaiev discovered that these "orphan" groupings can be structured as a parallel dichotomy space with its own set of 8 unique generators. Like Reinin space, Minaiev space also contains 16 dichotomies total, but 8 of them are new and 8 overlap with Reinin on the Conjunct Plane.'),C.tencer)+
+card(h3("How Minaiev Dichotomies Are Generated")+p('The key insight: the 16 types can be split into four groups ("tetrads") by which Jungian aspect leads their base function (N-leads, S-leads, T-leads, F-leads). These tetrachotomies are real and part of classical Jungian typology, but no combination of Reinin dichotomies can produce them. When you merge pairs of these groups into binary splits, new dichotomies emerge:')+
+`<div class="grid-2" style="margin:12px 0"><div class="tet-box" style="background:${C.tencer}10">${mono("Tetrad 1: By Leading (1st)",C.tencer)}<div style="margin-top:8px"><div style="margin-bottom:6px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.tencer}">A: Abstract / Involved Base</div><div style="font-family:'Source Serif 4',Georgia,serif;font-size:11px;color:${C.textDim}">N-leads &amp; T-leads vs S-leads &amp; F-leads</div></div><div style="margin-bottom:6px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.tencer}">B: Implicit / Explicit Base</div><div style="font-family:'Source Serif 4',Georgia,serif;font-size:11px;color:${C.textDim}">N-leads &amp; F-leads vs S-leads &amp; T-leads</div></div></div></div><div class="tet-box" style="background:${C.tencer}10">${mono("Tetrad 2: By Creative (2nd)",C.tencer)}<div style="margin-top:8px"><div style="margin-bottom:6px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.tencer}">C: Abstract / Involved Creative</div><div style="font-family:'Source Serif 4',Georgia,serif;font-size:11px;color:${C.textDim}">N and T-creatives vs S and F-creatives</div></div><div style="margin-bottom:6px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${C.tencer}">D: Implicit / Explicit Creative</div><div style="font-family:'Source Serif 4',Georgia,serif;font-size:11px;color:${C.textDim}">N and F-creatives vs S and T-creatives</div></div></div></div></div>`+
+p('Similarly, tetrachotomies 3 and 4 split types by quadra-value alignment of their base and creative functions, producing dichotomies like "Alpha/Gamma Base" and "Delta/Beta Creative."'))+
+card(h3("The Conjunct Plane: Where Both Spaces Meet",C.conjunct)+p('When you cross-multiply Minaiev dichotomies with each other, some products reproduce Reinin dichotomies exactly. These 8 shared dichotomies form the <strong>Conjunct Plane</strong>, the structural bridge between both spaces:')+
+`<div class="grid-conj" style="grid-template-columns:repeat(4,1fr)">${["Valid / Null","Irrational / Rational","Extravert / Introvert","Static / Dynamic","Democrat / Aristocrat","Process / Result","Positive / Negative","Asking / Declaring"].map(d=>`<div style="padding:6px 10px;border-radius:6px;font-size:11px;font-family:'JetBrains Mono',monospace;background:${C.conjunct}12;color:${C.conjunct};border:1px solid ${C.conjunct}25;text-align:center">${d}</div>`).join('')}</div>`+
+p('This means: <strong>8 Reinin-unique + 8 Minaiev-unique + 8 shared = 24 meaningful dichotomies</strong> (16 per space, 32 total minus 8 overlap).','margin-top:12px'))+
+card(h3("Why Both Spaces Are Necessary")+p('Neither space alone can generate all 16 intertype relations:')+
+`<div class="grid-2" style="margin-top:8px">${[{l:"Reinin Only",c:C.reinin,i:["Mirror","Conflict","Activity","Quasi-Identical"]},{l:"Minaiev Only",c:C.tencer,i:["Kindred","Business","Semi-dual","Illusionary"]},{l:"Either Space",c:C.conjunct,i:["Identity","Super-Ego","Dual","Extinguishment"]},{l:"Both Required",c:C.accent1,i:["Benefactor","Beneficiary","Supervisor","Supervisee"]}].map(g=>`<div class="itr-box" style="background:${g.c}08;border:1px solid ${g.c}20">${mono(g.l,g.c)}<div class="items">${g.i.map(x=>`<div>${x}</div>`).join('')}</div></div>`).join('')}</div>`+
+p('For example: ILE and LII are Mirrors. They share the same club (NT) and quadra values but differ on E/I, which is a Reinin-unique dichotomy with no Minaiev-space equivalent. Since distinguishing ILE from LII requires E/I, the Mirror relation can only be defined in Reinin space. Conversely, ILE and IEE are Kindred: both are N-leads (Intuitive Leading), a grouping that emerges from Minaiev\'s Abstract/Involved and Implicit/Explicit dichotomies. No combination of Reinin dichotomies can produce the "N-leading" group, so Kindred can only be defined in Minaiev space. The asymmetric relations (Benefit and Supervision rings) require cross-multiplication of one Reinin dichotomy with one Minaiev dichotomy, which is why they cannot be defined within either space alone.','margin-top:10px'))},
+
+{label:"Presence Cube",color:C.accent3,html:()=>
+card(h2("The Presence Cube and Its Limitation",C.accent3)+p('The Presence Cube arranges Model A\'s 8 functions as a 3D cube using the alleged three most externally visible function dichotomies:')+`<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${badge("Strong / Weak",C.accent3)}${badge("Valued / Subdued",C.accent3)}${badge("Bold / Cautious",C.accent3)}</div>`+p('The same cube also accommodates <strong>Model G</strong>: switching between the two models effectively swaps the overarching dichotomy that the cube\'s 8 vertices are organized around, from <strong>Democratic / Aristocratic</strong> (Model A) to <strong>Process / Result</strong> (Model G). Both are valid 8-element structural representations and both form part of the backbone of the Socion. Dem/Ari governs how aspects pair into axes within a quadra, while Pro/Res governs the progression sequence between aspects and axes (the directionality of information flow). Two cubes, one geometry, two organizing principles.','margin-top:12px'),C.accent3)+
+card(h3("What the Cube Reveals")+cubeSVG()+p('Two projections emerge from this cube:','margin-top:8px')+`<div class="grid-2"><div style="background:${C.accent3}08;border-radius:8px;padding:12px">${mono("Dimensionality (Strong \u00d7 Bold)",C.accent3)}${p('4D (Base + Demo) \u2192 3D (Creative + Ignoring) \u2192 2D (Role + Mobilizing) \u2192 1D (Vuln + Suggestive)','font-size:12px;margin-top:6px;margin-bottom:0')}</div><div style="background:${C.accent4}08;border-radius:8px;padding:12px">${mono("Priority (Valued \u00d7 Bold)",C.accent4)}${p('4P (Base + Mobiliz) \u2192 3P (Creative + Suggest) \u2192 2P (Role + Demo) \u2192 1P (Vuln + Ignoring)','font-size:12px;margin-top:6px;margin-bottom:0')}</div></div>`+p('Their average produces <strong>Level</strong>: L = (D+P)/2, a composite measure of how present each function is in cognition and behavior.','margin-top:10px'))+
+card(h3("The Problem: Separate Cubes for Democrats and Aristocrats",C.neg)+p('The three presence traits span only the Reinin-side function dichotomies, encoding 8 vertices (one per conventional element). The cube can only represent one Dem/Ari configuration at a time (or one Pro/Res configuration, in the Model G framing). To see the other half of the Socion, you need to swap the entire cube.')+p('This is a dimensional deficiency. The cube is trying to represent a 16-element space with only 8 vertices.','color:'+C.text+';font-weight:500'))+
+card(h3("The Resolution: The Dual-Cube Structure",C.hybrid)+p('The hybrid elements supply the missing dimension. The full 16-element Presence structure consists of <strong>two interlocking 3-cubes</strong> sharing a common axis (P/J):')+`<div class="grid-2" style="margin:12px 0"><div style="background:${C.conventional}08;border:1px solid ${C.conventional}20;border-radius:8px;padding:14px">${mono("Reinin Cube (Conventional)",C.conventional)}${p('Axes: Strong/Weak \u00d7 Valued/Subdued \u00d7 Bold/Cautious','font-size:12px;margin-top:6px;margin-bottom:0')}${p('Addresses elements via E/I + St/Dy','font-size:11px;margin-bottom:0;color:'+C.textDim)}</div><div style="background:${C.hybrid}08;border:1px solid ${C.hybrid}20;border-radius:8px;padding:14px">${mono("Minaiev Cube (Hybrid)",C.hybrid)}${p('Axes: Minaiev-analogues of the three presence traits','font-size:12px;margin-top:6px;margin-bottom:0')}${p('Addresses elements via Pos/Neg + Ask/Dec','font-size:11px;margin-bottom:0;color:'+C.textDim)}</div></div>`+p('Dem/Ari and Pro/Res emerge as diagonal projections of the shared edge: the emergent properties that appear only where the two cubes intersect. The external toggle is gone. The supralocal dichotomies become internal properties of the unified structure.'),C.hybrid)+
+card(h3("From Cube to Torus: The Unified Architecture",C.accent4)+`<div class="callout" style="background:linear-gradient(135deg,${C.accent4}10,${C.hybrid}10);border:1px solid ${C.accent4}30">`+p('The dual-cube resolution is itself a stepping stone. Where two interlocking cubes need an external scaffold to relate them, the <strong>Torus Model</strong> dissolves the scaffold entirely: every relationship the Presence Cube can express, including the Dem/Ari toggle of Model A and the Pro/Res toggle of Model G, lives natively on a single toroidal surface. The torus represents what both cubes do <em>simultaneously</em>, with no model-switching needed.','margin-bottom:8px;color:'+C.text)+p('More importantly, the torus reveals "elements" that the cube literally cannot show. The 8 hybrid elements (N+, N\u2212, T+, T\u2212, S+, S\u2212, F+, F\u2212) appear naturally as antipodal nodes on the inner ring of the torus, structurally indistinguishable from the conventional 8 except by which sublattice they occupy. The cube has 8 vertices and runs out of room; the torus has 16 nodes arranged as 8 rings, with each cardinal cross-section housing all four elements of one Aspect simultaneously. The hidden half of the Socion was always there; it just needed the right surface to land on. The next section makes that surface concrete.','margin-bottom:0')+`</div>`,C.accent4)},
+
+{label:"16 Element Torus",color:C.hybrid,html:()=>
+card(h2("The Toroidal Architecture",C.accent4)+p('Picking up where the Presence Cube left off: when the Reinin and Minaiev dichotomy spaces are unified on a single surface, the 16 information elements organize into a toroidal lattice with <strong>8 rings</strong> and <strong>32 nodes</strong> total. The 8 rings are parameterized by both poles of four addressing dichotomies: '+badge("E/I",C.conventional)+' '+badge("St/Dy",C.conventional)+' '+badge("Ask/Dec",C.hybrid)+' '+badge("Pos/Neg",C.hybrid)+'. Half of the 32 nodes lie in the hemisphere where the 4 Aspects (N, T, S, F) intersect with the 4 Axes (Judicious, Merry, Decisive, Serious). The other half occupy the dual hemisphere where the 4 Clubs intersect with the 4 Quadras.')+p('This section focuses on the <strong>Aspect \u00d7 Axis hemisphere</strong>, which produces the 16 information elements at the heart of Model A and Model G. Each cell in the matrix below is the intersection of one Aspect (column) with one Axis (row). Conventional and hybrid elements interleave in a checkerboard pattern: where an irrational Aspect meets an irrational Axis (or rational meets rational) a conventional element emerges; where the parities cross, a hybrid element appears.')+aspectAxisMatrix(),C.accent4)+
+
+card(h3("The Unified Torus Model (The Brain Bagel)",C.accent4)+p('All 16 elements lie on a single toroidal surface. The conventional 8 form an outer ring, the hybrid 8 form an inner ring, and antipodal pairs across the torus correspond to the Jungian counterparts (Ne\u2194Se, Ti\u2194Fi, etc.) that compete for the same processing channel. The dashed diagonal lines represent the two interlocking sublattice rings, one parameterized by Reinin-unique addressing dichotomies (E/I, St/Dy) and the other by Minaiev-unique ones (Pos/Neg, Ask/Dec).')+torusSVG()+p('Antipodal positioning encodes the fundamental opposition: when the Base function activates, its counterpart is suppressed to the Ignoring position because both demand the same energetic-informational channel. The ring structure also makes visible why Model A and Model G feel like different theories: they are projections of the same toroidal lattice onto different sublattice rings.','margin-top:14px;font-size:12px'),C.accent4)+
+
+card(h2("The 8 Conventional Elements",C.conventional)+p('Each conventional IME is defined by 7 dichotomies. Three come from temperament (P/J, E/I, Static/Dynamic), one is the base aspect (N/S or T/F), and the remaining three are "cross-dichotomies" that natively match the element\'s rational/irrational domain.')+p('The addressing dichotomies, '+badge("E/I",C.conventional)+' and '+badge("St/Dy",C.conventional)+', are <em>Reinin-unique</em>. These elements live on the Reinin sublattice.')+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:14px auto 0">${convEls.map(e=>elCard(e.s,"Conventional",e.d,false)).join('')}</div>`+`<div style="margin-top:12px;text-align:center">${mono("Top row: Extraverted (Ne, Se) \u00b7 Bottom row: Introverted (Ti, Fi) \u00b7 Showing 4 of 8")}</div>`,C.conventional)+
+
+card(h2("The 8 Hybrid Elements",C.hybrid)+p('The hybrids are generated by a precise algebraic operation: replace the Reinin-unique addressing dichotomies with their Minaiev-unique counterparts. '+badge("E/I",C.conventional)+' is swapped for '+badge("Pos/Neg",C.hybrid)+', and '+badge("St/Dy",C.conventional)+' is swapped for '+badge("Ask/Dec",C.hybrid)+'. The cross-dichotomy also swaps domains: irrational elements get a rational cross-dichotomy (Merry/Serious) and vice versa (Judicious/Decisive).')+p('This is a <strong>Z\u2082 phase-shift</strong>: the same base aspect, operating under the Minaiev addressing system instead of the Reinin one.')+phaseSVG()+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:14px auto 0">${hybEls.map(e=>elCard(e.s,"Hybrid",e.d,true)).join('')}</div>`+`<div style="margin-top:12px;text-align:center">${mono("Top row: Positivist (N+, S+) \u00b7 Bottom row: Negativist (T\u2212, F\u2212) \u00b7 Showing 4 of 8")}</div>`,C.hybrid)+
+
+card(h3("The Critical Structural Constraint")+`<div class="callout" style="background:${C.accent3}10;border:1px solid ${C.accent3}25">`+p('Neither conventional NOR hybrid elements can carry Democratic/Aristocratic or Process/Result.','color:'+C.accent3+';font-weight:600;margin-bottom:8px')+p('These two dichotomies require the algebraic product of N/S \u00d7 T/F (for Dem/Ari) and P/J \u00d7 N/S \u00d7 T/F (for Pro/Res). Every individual element is either rational <em>or</em> irrational; it carries either T/F or N/S, never both simultaneously. Dem/Ari and Pro/Res can therefore only emerge at the <strong>pair level</strong>, when a P element and a J element combine into a functional block.')+p('This is why the <strong>block</strong> (not the individual element) is the minimum unit of complete type information. A single element lives in a 7-dimensional subspace of the full 15-dimensional Reinin space. A P+J pair completes it.','margin-bottom:0')+`</div>`)+
+
+card(h3("How Conventional and Hybrid Elements Express Each Other")+p('Each element can be decomposed into components from the other system:')+`<div class="grid-2" style="margin-top:8px"><div style="background:${C.conventional}08;border-radius:8px;padding:12px;border:1px solid ${C.conventional}20">${mono("Conventional \u2192 Hybrids",C.conventional)}<div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${C.text};margin:8px 0;white-space:nowrap;overflow-x:auto">Ne \u2248 N+ \u2229 T\u2212 \u2229 N\u2212 \u2229 F+</div>${p('Ne = Aspect N + Judicious axis (Alpha NT + Delta NF mirror pair)','font-size:11px;margin-bottom:0')}</div><div style="background:${C.hybrid}08;border-radius:8px;padding:12px;border:1px solid ${C.hybrid}20">${mono("Hybrid \u2192 Conventionals",C.hybrid)}<div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${C.text};margin:8px 0;white-space:nowrap;overflow-x:auto">N+ \u2248 Ne \u2229 Ti \u2229 Ni \u2229 Fe</div>${p('N+ = Aspect N + Merry axis (Alpha NT + Beta NF mirror pair)','font-size:11px;margin-bottom:0')}</div></div>`+p('What the hybrid elements really show is the deeper connective tissue between the four small-group regions of the Socion. Take Alpha NT (LII, ILE) as a worked example. Alpha NT and Delta NF (EII, IEE) are unified by <strong>Ne</strong>: both groups have Ne in the Ego block, so Ne is the conventional element that bridges them. Alpha NT and Beta ST (LSI, SLE) are unified by <strong>Ti</strong>: both groups have Ti in the Ego block. The hybrid elements pick up the connections that the conventional ones miss: Alpha NT and Beta NF (IEI, EIE) are unified by <strong>N+</strong>, and Alpha NT and Delta ST (LSE, SLI) are unified by <strong>T\u2212</strong>. So the 16-element framework completes a connection map across all six pairwise links between the four NT/NF/ST/SF clubs at the leading-block level, where the conventional 8 elements alone can only span four of those six links.','margin-top:14px')+p('A friendly note on level: this is genuinely intro-series material that already puts you ahead of where most people stop in this theory. The conventional 8 elements are what matters most for now and what the rest of this primer will lean on. The hybrid 8 are introduced here so the structure is on the table when later documents go deeper into the element-space; if some of this still feels abstract, that is normal and expected at this stage.','margin-top:10px;font-size:12.5px;color:'+C.textMuted+';font-style:italic'))+
+
+card(h3("Model G's \"Signed\" Functions Demystified")+p('In Gulenko\'s Model G, every function carries a + or \u2212 sign corresponding to Positivism/Negativism. This has always been somewhat opaque. The hybrid framework resolves it:')+p('<strong>Model G\'s "Ne+" represents one half of the hybrid element N+</strong> (the other half being Ni+). N+ is not "positive Ne" but a distinct hybrid element with its own 7-dichotomy signature (Positivist, Asking, Merry, Tactical, Yielding...). The sign is not a modifier applied to a conventional element. It is a <em>coordinate in the Minaiev sublattice</em>.','color:'+C.text)+p('This is why Model G has 4 "unique" positional dichotomies (Energetic/Passive, Excitable/Inhibitable, Tensioned/Relaxed, Impressionable/Unimpressionable). These correspond to the hybrid element poles. The ? and ! markers used in Model G notation could be understood as Asking and Declaring applied at the element level, though Model G does not currently formalize them this way.'))+
+
+card(h3("The Reconciliation in One Sentence")+`<div class="reconc" style="background:linear-gradient(135deg,${C.reinin}08,${C.tencer}08);border:1px solid ${C.accent1}30">`+p('Model A and Model G are two different ring systems on the same torus: one parameterized by Reinin-unique dichotomies, the other by Minaiev-unique dichotomies, converging at the pair level where Democratic/Aristocratic and Process/Result emerge as algebraic products of both.','color:'+C.text+';font-size:16px;font-family:Playfair Display,Georgia,serif;font-weight:600;margin-bottom:0')+`</div>`)},
+
+{label:"Neuroticism",color:C.neg,html:()=>
+card(h2("Empirical Validation: The Big Five Completion",C.neg)+p('Classical Socionics maps cleanly onto 4 of the Big Five personality factors: Extraversion (E/I), Openness (N/S), Agreeableness (T/F), and Conscientiousness (P/J). But <strong>Neuroticism</strong>, the 5th factor accounting for emotional instability and negative affect, has always been structurally orphaned.')+p('The hybrid elements solve this. Talanov\'s factor-analytic research shows that two Reinin dichotomies, Negativism and Asking (Questimity), have statistically significant loadings on Big Five Neuroticism:'),C.neg)+
+card(`<table><thead><tr>${["Hybrid Element","Ask/Dec","Pos/Neg","Neuroticism Loading"].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${[["T+, F+","Declaring","Positivist",'Lowest ("Calm")'],["N+, S+","Asking","Positivist","Moderate"],["N\u2212, S\u2212","Declaring","Negativist","Moderate"],["T\u2212, F\u2212","Asking","Negativist",'Highest ("Limbic")']].map((r,i)=>`<tr>${r.map((c,j)=>`<td style="color:${j===3?(i===0?C.pos:i===3?C.neg:C.textMuted):C.textMuted};font-family:${j===0?"'JetBrains Mono',monospace":"'Source Serif 4',Georgia,serif"};font-weight:${j===3?600:400}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`+
+p('The Neuroticism axis runs diagonally through hybrid element space. The two extremes are clear: T+/F+ (Declaring + Positivist) load lowest, T\u2212/F\u2212 (Asking + Negativist) load highest. The two middle quadrants (N+/S+ and N\u2212/S\u2212) cluster near the moderate midpoint, with their relative ordering still empirically unresolved.','margin-top:12px')+
+p('The 16-element framework does not merely "expand" the Socion. It formally derives what 16Personalities treats as an ad hoc 5th letter. The "missing" Big Five factor was always encoded in the Pos/Neg \u00d7 Ask/Dec product; it simply required expanding from 8 to 16 elements to become visible at the element level.','color:'+C.text+';font-weight:500'))+
+
+card(h3("Speculations from Empirical Data",C.neg)+
+p('The Pos/Neg \u00d7 Ask/Dec product locates Neuroticism at the element level, but it does not exhaust where the construct shows up across the rest of the system. Pulling on the most empirically-loaded threads from sociotype.xyz/2025 (which synthesizes Talanov\'s factor data with the HiTOP psychopathology taxonomy) suggests Neuroticism is best understood not as a single dichotomy but as a <em>cluster of accentuated configurations</em> that compromise the Sociotype\'s self-regulation. Several of these are worth flagging.')+
+
+`<div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">`+
+`<div style="background:${C.neg}08;border-left:3px solid ${C.neg};border-radius:4px;padding:12px 14px"><div class="mono" style="color:${C.neg};font-size:13px;font-weight:700;letter-spacing:.4px">1. The Internalizing Spectrum \u2248 Affective Gravity + Contextual Lability</div>${p('Per the HiTOP mapping in sociotype.xyz/2025, the Internalizing Spectrum (general risk factor for mood disorders, anxiety, depression) approximates Affective Gravity + Contextual Lability \u2014 in classical terms, <strong>Constructivist + Dynamic</strong>. This is the closest single-construct cousin to Big Five Neuroticism in the dichotomy space, and it does not depend on the hybrid elements to surface; it falls out of two strong, well-replicated Reinin/Romanov dichotomies.','margin-top:6px;margin-bottom:0;font-size:13px')}</div>`+
+
+`<div style="background:${C.neg}08;border-left:3px solid ${C.neg};border-radius:4px;padding:12px 14px"><div class="mono" style="color:${C.neg};font-size:13px;font-weight:700;letter-spacing:.4px">2. The p-factor formula</div>${p('sociotype.xyz/2025 proposes an explicit psychopathology risk factor: <code style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:'+C.text+'">p \u2248 Affective Gravity \u00b1 (Intro/Extra) + Perceiving + Contextual Lability + Passionarism + Intuiting + Differentiation + Elaboration + Negative Charge</code>. Several of these terms are dichotomy poles; others are sub-trait facets. The shape of the formula is the relevant insight: Neuroticism-adjacent dysfunction loads on roughly seven to nine accentuated dimensions simultaneously, none of which is solely responsible.','margin-top:6px;margin-bottom:0;font-size:13px')}</div>`+
+
+`<div style="background:${C.neg}08;border-left:3px solid ${C.neg};border-radius:4px;padding:12px 14px"><div class="mono" style="color:${C.neg};font-size:13px;font-weight:700;letter-spacing:.4px">3. Accentuation as the cybernetic risk signal</div>${p('From sociotype.xyz/2025: <em>"An accentuated dichotomy\'s pole gives a person uniqueness and distinction from others, while at the same time increasing their chances of maladaptation."</em> Neuroticism, on this view, is less about <em>which</em> pole someone sits at and more about <em>how far</em> from the median they sit on multiple dichotomies at once. The same source frames psychopathology generally as a cybernetic failure: a dysregulated Sociotype is one whose goal-pursuit and feedback loops have stopped self-correcting, leaving the person stuck in an entropic state. Neuroticism is the affective signal that this is happening.','margin-top:6px;margin-bottom:0;font-size:13px')}</div>`+
+
+`<div style="background:${C.neg}08;border-left:3px solid ${C.neg};border-radius:4px;padding:12px 14px"><div class="mono" style="color:${C.neg};font-size:13px;font-weight:700;letter-spacing:.4px">4. Disharmonious configurations: anti-temperaments, anti-quadras</div>${p('A natural extension (speculative, but consistent with the accentuation framing): "imbalanced" profiles, where someone\'s expressed dichotomy pattern fights itself, should produce elevated Neuroticism even when no individual dichotomy is extreme. Possibilities worth investigating in later documents include subtype-temperament mismatches (e.g., a Static-Rational core under chronic Dynamic-Irrational environmental pressure), cross-quadra accentuations (Beta values overlaid on a Delta core), and disintegration states under acute stress where the Sociotype temporarily expresses its opposing-quadra shadow. None of these are formally validated in the cited sources, but the accentuation principle plus the cybernetic framing make them the natural next-step hypotheses.','margin-top:6px;margin-bottom:0;font-size:13px')}</div>`+
+
+`<div style="background:${C.neg}08;border-left:3px solid ${C.neg};border-radius:4px;padding:12px 14px"><div class="mono" style="color:${C.neg};font-size:13px;font-weight:700;letter-spacing:.4px">5. What this means for diagnostics</div>${p('A high-Neuroticism reading on a self-report should be treated as <em>diagnostic noise as well as signal</em>. It can reflect (a) genuine accentuation on the Internalizing-cluster dichotomies, (b) a transient disintegrating state rather than the stable core type, or (c) a measurement artifact from heightened self-criticism during the test itself. sociotype.xyz/2025 explicitly cautions against testing while in a depressed state for this reason. Reliable typing of Neuroticism-adjacent profiles benefits from longitudinal observation and cross-reference reports rather than single self-assessments.','margin-top:6px;margin-bottom:0;font-size:13px')}</div>`+
+`</div>`+
+
+p('Citations: HiTOP and Internalizing Spectrum mapping, p-factor formula, accentuation principle, and cybernetic-failure framing all drawn from sociotype.xyz/2025. Underlying factor-analytic data: Talanov\'s questionnaires (socionavigator.com/Talanov/statistics_en) and Romanov\'s revised dichotomy nomenclature (socionavigator.com).','margin-top:14px;font-size:11px;color:'+C.textDim+';font-style:italic'),C.neg)},
+
+{label:"Summary",color:C.accent1,html:()=>
+card(h2("Summary: The Complete Picture",C.accent1)+`<div style="display:grid;grid-template-columns:1fr;gap:16px">${[{n:"1",t:"Two Dichotomy Spaces",d:"Reinin (15+1) and Minaiev (8 unique + 8 shared) together produce 24 meaningful dichotomies: the minimum needed to generate all 16 intertype relations.",c:C.reinin},{n:"2",t:"Two Element Systems",d:"8 conventional elements encode Reinin space at the element level (addressed by E/I + St/Dy). 8 hybrid elements encode Minaiev space (addressed by Pos/Neg + Ask/Dec). Both share P/J and the base aspect.",c:C.hybrid},{n:"3",t:"One Torus",d:"The conventional and hybrid elements tile two interlocking sublattices on a single toroidal surface. Model A projects onto the conventional sublattice; Model G projects onto the full 16-element torus.",c:C.accent4},{n:"4",t:"Emergent Properties at the Pair Level",d:"Dem/Ari and Pro/Res cannot exist at the individual element level. They require P+J pairing. This makes the block (not the function) the atom of complete type information.",c:C.accent3},{n:"5",t:"Big Five Completion",d:"The hybrid element space encodes Neuroticism through the Negativism \u00d7 Asking product: the one Big Five factor classical Socionics could not locate. The 16-element framework is empirically complete relative to both Big Five and Cloninger.",c:C.neg}].map(i=>`<div class="sum-row"><div class="sum-num" style="background:${i.c}18;border:1px solid ${i.c}40;color:${i.c}">${i.n}</div><div><div class="sum-title" style="color:${i.c}">${i.t}</div>${p(i.d,'margin-bottom:0')}</div></div>`).join('')}</div>`,C.accent1)+
+card(`<div style="text-align:center;padding:8px">${mono("Framework Development")}<div class="display" style="font-size:18px;color:${C.text};margin:8px 0">The hybrid elements are not an ad hoc extension.</div><div class="display" style="font-size:18px;color:${C.accent1};font-weight:600">They are the minimum mathematical apparatus needed to express what both Model A and Model G are doing simultaneously.</div></div>`)+
+card(`${mono("Sources",C.textDim)}${p('Presence Cube: Minaiev, Vincent (2020)','font-size:11px;margin-bottom:4px;margin-top:8px')}${p('Minaiev Dichotomy Space: Yurii Minaiev','font-size:11px;margin-bottom:4px')}${p('Torus Model: Andrew Joynton','font-size:11px;margin-bottom:4px')}${p('Model G and Signed Elements: Viktor Gulenko, School of Humanitarian Socionics','font-size:11px;margin-bottom:4px')}${p('Reinin Dichotomies: Grigoriy Reinin','font-size:11px;margin-bottom:4px')}${p('Factor-Analytic Research: Vladimir Talanov','font-size:11px;margin-bottom:0')}`)}
+];
+
+let active=0;
+function render(){
+  const nav=document.getElementById('nav');
+  nav.innerHTML=sections.map((s,i)=>`<button class="${i===active?'active':''}" style="${i===active?`background:${s.color}20;color:${s.color};border-color:${s.color}40`:''}" onclick="setActive(${i})">${s.label}</button>`).join('');
+  document.getElementById('sections').innerHTML=sections[active].html();
+  // Init any animated canvases in the freshly-rendered section
+  document.querySelectorAll('canvas[data-torus]').forEach(initTorus);
+}
+function setActive(i){active=i;render();}
+render();
+</script>
+</body>
+</html>

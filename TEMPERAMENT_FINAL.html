@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Temperament Dichotomies & Their Structural Significance</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; }
+  ::-webkit-scrollbar-track { background: #12121a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#0a0a0f", card: "#12121a", cardHover: "#1a1a25", border: "#2a2a3a",
+  accent1: "#f59e0b", accent2: "#06b6d4", accent3: "#8b5cf6", accent4: "#ef4444",
+  text: "#e4e4e7", textMuted: "#9ca3af", textDim: "#6b7280",
+  extravert: "#f59e0b", introvert: "#6366f1", static_: "#ef4444", dynamic_: "#06b6d4",
+  rational: "#10b981", irrational: "#f97316",
+  ep: "#f59e0b", ij: "#6366f1", ej: "#10b981", ip: "#06b6d4",
+  rose: "#ec4899", teal: "#14b8a6", lime: "#84cc16", amber: "#d97706",
+};
+
+const Divider = ({ label, color }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
+    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
+  </div>
+);
+
+const Card = ({ children, color = C.border, style = {} }) => (
+  <div style={{ background: C.card, border: `1px solid ${color}30`, borderRadius: 14, padding: 24, marginBottom: 8, ...style }}>{children}</div>
+);
+
+const Tag = ({ label, color }) => (
+  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+);
+
+const Prose = ({ children, style = {} }) => (
+  <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, margin: "0 0 16px", ...style }}>{children}</p>
+);
+
+const SmallProse = ({ children, style = {} }) => (
+  <p style={{ fontSize: 12, color: C.textDim, lineHeight: 1.65, margin: 0, ...style }}>{children}</p>
+);
+
+const SectionTitle = ({ children, color = C.text }) => (
+  <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color, margin: "0 0 14px" }}>{children}</h3>
+);
+
+const Mono = ({ children, color = C.textDim }) => (
+  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color }}>{children}</span>
+);
+
+const Bar = ({ label, value, color, max = 100 }) => (
+  <div style={{ marginBottom: 10 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+      <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>{label}</span>
+      <Mono>{value}%</Mono>
+    </div>
+    <div style={{ height: 6, borderRadius: 3, background: C.border }}>
+      <div style={{ height: "100%", borderRadius: 3, width: `${(value / max) * 100}%`, background: `linear-gradient(90deg, ${color}, ${color}99)` }} />
+    </div>
+  </div>
+);
+
+const PoleCard = ({ title, subtitle, color, items, icon }) => (
+  <div style={{ flex: 1, minWidth: 280, background: `linear-gradient(135deg, ${color}08, ${color}04)`, border: `1px solid ${color}25`, borderRadius: 12, padding: "24px 20px", position: "relative", overflow: "hidden" }}>
+    <div style={{ position: "absolute", top: -30, right: -20, fontSize: 80, opacity: 0.04, fontWeight: 900, color, lineHeight: 1 }}>{icon}</div>
+    <div style={{ fontSize: 18, fontWeight: 700, color, marginBottom: 4, fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</div>
+    <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>{subtitle}</div>
+    {items.map((item, i) => (
+      <div key={i} style={{ fontSize: 13, color: C.text, lineHeight: 1.65, marginBottom: 8, paddingLeft: 14, position: "relative" }}>
+        <span style={{ position: "absolute", left: 0, top: 6, width: 5, height: 5, borderRadius: "50%", background: color, opacity: 0.7 }} />
+        {item}
+      </div>
+    ))}
+  </div>
+);
+
+const TempCard = ({ name, code, types, color, desc, traits }) => (
+  <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
+        <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{types}</div>
+      </div>
+    </div>
+    <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, margin: "0 0 10px" }}>{desc}</p>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+      {traits.map((t, i) => (
+        <span key={i} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: `${color}10`, color: `${color}cc`, border: `1px solid ${color}20` }}>{t}</span>
+      ))}
+    </div>
+  </div>
+);
+
+const TabBtn = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} style={{ padding: "8px 18px", borderRadius: 8, border: active ? `1px solid ${color}50` : `1px solid ${C.border}`, background: active ? `${color}15` : "transparent", color: active ? color : C.textMuted, fontSize: 12, fontWeight: 600, cursor: "pointer", letterSpacing: 0.5, fontFamily: "'JetBrains Mono', monospace" }}>{label}</button>
+);
+
+const LensCard = ({ lens, color, content }) => (
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 10, padding: "16px 14px" }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>{lens}</div>
+    <SmallProse style={{ color: C.textMuted }}>{content}</SmallProse>
+  </div>
+);
+
+const EFRadial = ({ name, code, color, wm, ic, cf }) => {
+  const r = 32, cx = 50, cy = 50;
+  const angles = [-90, 150, 30];
+  const vals = [wm, ic, cf];
+  const points = vals.map((v, i) => {
+    const a = (angles[i] * Math.PI) / 180;
+    const dist = (v / 100) * r;
+    return `${cx + dist * Math.cos(a)},${cy + dist * Math.sin(a)}`;
+  }).join(" ");
+  return (
+    <div style={{ textAlign: "center", flex: "1 1 140px", minWidth: 140 }}>
+      <svg viewBox="0 0 100 100" width="120" height="120">
+        {[25, 50, 75, 100].map(pct => (
+          <circle key={pct} cx={cx} cy={cy} r={(pct / 100) * r} fill="none" stroke={C.border} strokeWidth={0.5} />
+        ))}
+        {angles.map((a, i) => {
+          const rad = (a * Math.PI) / 180;
+          return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(rad)} y2={cy + r * Math.sin(rad)} stroke={C.border} strokeWidth={0.4} />;
+        })}
+        <polygon points={points} fill={`${color}25`} stroke={color} strokeWidth={1.5} />
+        {vals.map((v, i) => {
+          const rad = (angles[i] * Math.PI) / 180;
+          const dist = (v / 100) * r;
+          return <circle key={i} cx={cx + dist * Math.cos(rad)} cy={cy + dist * Math.sin(rad)} r={2.5} fill={color} />;
+        })}
+        <text x={cx} y={cy - r - 5} textAnchor="middle" fontSize="5" fill={C.textDim}>WM</text>
+        <text x={cx - r - 3} y={cy + r * 0.6 + 4} textAnchor="middle" fontSize="5" fill={C.textDim}>IC</text>
+        <text x={cx + r + 3} y={cy + r * 0.6 + 4} textAnchor="middle" fontSize="5" fill={C.textDim}>CF</text>
+      </svg>
+      <div style={{ fontSize: 14, fontWeight: 700, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div style={{ fontSize: 10, color: C.textDim }}>{name}</div>
+    </div>
+  );
+};
+
+function TemperamentReport() {
+  const [activeTab, setActiveTab] = useState("ei");
+  const [activeSection, setActiveSection] = useState("core");
+
+  const sections = [
+    { id: "core", label: "Core Theory", color: C.accent1 },
+    { id: "exec", label: "Executive Function", color: C.accent3 },
+    { id: "onto", label: "Ontology", color: C.teal },
+    { id: "struct", label: "Structure", color: C.accent4 },
+    { id: "systems", label: "Cross-System", color: C.rose },
+    { id: "anti", label: "Anti-Temperament", color: C.lime },
+  ];
+
+  const tabs = {
+    ei: {
+      label: "Energy Throughput (E/I)", color: C.accent1, title: "Extraversion / Introversion", code: "x",
+      dispersion: "17–20",
+      mathNote: 'Coded as "x" in Reinin algebra. The single highest-variance dichotomy in Talanov\'s factor analyses, contributing 17–20% of total trait dispersion across the population (>90% for the most pronounced individual subjects).',
+      structNote: "In Vincent's framework, E/I is determined by the Bold/Cautious function dichotomy: if Bold functions are Extroverted, then Cautious functions are Introverted. This dichotomy partitions Skew Blocks into Extravert vs Introvert pairs in the Presence Cube.",
+      poles: [
+        { title: "Extraversion", subtitle: "Energy excess · Hyperthymia", color: C.extravert, icon: "E",
+          items: [
+            "Predominance of excitation in higher nervous activity, with higher baseline arousal and reward-sensitivity",
+            "Initiative-taking, risk-seeking, sociable, and actively engages with the environment",
+            "Favors quantity in work output; oriented toward breadth of social contact and action radius",
+            "Energizing information elements (Ne, Se, Fe, Te) occupy Bold function positions",
+            "Behaviorally: louder voice, faster speech tempo, wider personal space utilization",
+            "Talanov correlates: linked to hyperthymia and manic accentuation; inversely correlated with dysthymia",
+          ],
+        },
+        { title: "Introversion", subtitle: "Energy deficit · Dysthymia", color: C.introvert, icon: "I",
+          items: [
+            "Predominance of inhibition in higher nervous activity, with lower baseline arousal, more internal processing",
+            "Waits for others' initiative, risk-averse, prefers seclusion, and conserves resources through withdrawal",
+            "Favors quality over quantity; deeper but narrower engagement across fewer domains",
+            "Integrating information elements (Ni, Si, Fi, Ti) occupy Bold function positions",
+            "Behaviorally: quieter speech, longer response latency, smaller social networks",
+            "Talanov correlates: linked to dysthymia and depressive tendencies; inversely correlated with hyperthymia",
+          ],
+        },
+      ],
+    },
+    sd: {
+      label: "Signal Continuity (Dy/St)", color: C.accent4, title: "Static / Dynamic", code: "abc",
+      dispersion: "3–5",
+      mathNote: 'Coded as "abc", the product of all three Jungian function dichotomies. Despite being a tertiary product, its semantic payload is coherent. Contributes 3–5% population-average dispersion (~15% subject max), ranking 8th of 15 Reinin dichotomies.',
+      structNote: "In Model A, Static/Dynamic determines the Mental ring composition: if a Mental function is Static, all Mental functions are Static and all Vital functions are Dynamic. In the Presence Cube, it partitions information blocks.",
+      poles: [
+        { title: "Static", subtitle: "Will · Rigidity · Principles", color: C.static_, icon: "St",
+          items: [
+            "Perception of reality as discrete potentials and distances: snapshot cognition",
+            "Volitional adherence to principles; self-sufficient stance ('one person can be enough'",
+            "Processes signals digitally: categorical, black/white, boundary-aware perception",
+            "Exists subjectively outside the flow of time, seeing states rather than transitions",
+            "Behaviorally: firmer stances in debate, less social fluidity, angular decision-making",
+            "Cybernetically: holding-pattern regulator, maintaining set-points against perturbation",
+          ],
+        },
+        { title: "Dynamic", subtitle: "Adaptation · Pliability · Needs", color: C.dynamic_, icon: "Dy",
+          items: [
+            "Perception of reality as flows and resource streams: process-oriented cognition",
+            "Adapts to another's will; follows shifting needs rather than fixed principles",
+            "Processes signals analogically: gradient, continuous, contextually-embedded perception",
+            "Exists subjectively inside the flow of time, experiencing transitions and trajectories",
+            "Behaviorally: smoother pivots, greater social adaptability, more fluid movement patterns",
+            "Cybernetically: flow-regulator, adjusting throughput to match environmental demands",
+          ],
+        },
+      ],
+    },
+    pj: {
+      label: "Executive Restraint (J/P)", color: C.accent3, title: "Irrational / Rational", code: "abcx",
+      dispersion: "10–12",
+      mathNote: 'Coded as "abcx", the product of all four basis dichotomies, the maximal composite. Contributes 10–12% population-average dispersion (~65% subject max). Talanov emphasizes this dichotomy is deeply tied to frontal lobe executive functioning.',
+      structNote: "In Model A, Rationality/Irrationality determines which elements can be blocked together: a Rational element can only be blocked with an Irrational element. In the Conjunct Plane, shared between Reinin and Tencer spaces.",
+      poles: [
+        { title: "Irrationality", subtitle: "Spontaneity · Perception · Impulse", color: C.irrational, icon: "P",
+          items: [
+            "Deficit of frontal neocortical activity, with reduced executive inhibition, more spontaneous action",
+            "Perception-first processing: gathers data before judging; improvisation over planning",
+            "Oriented toward vital needs: free time, pleasure, sensory experience prioritized",
+            "Talanov: correlated with impulsivity, openness, lower conscientiousness",
+            "Behaviorally: variable schedules, reactive routines, comfort with ambiguity",
+            "Phenomenologically: experience feels open-ended, possibility-saturated",
+          ],
+        },
+        { title: "Rationality", subtitle: "Control · Judgment · Planning", color: C.rational, icon: "J",
+          items: [
+            "Higher frontal lobe activity, enabling stronger executive control, planning, self-regulation",
+            "Judgment-first processing: evaluates and structures before perceiving",
+            "Oriented toward social needs: belonging, collaborative activity, structured engagement",
+            "Talanov: extreme form correlates with anankastic (obsessive-compulsive) features",
+            "Behaviorally: regular schedules, proactive planning, discomfort with unstructured situations",
+            "Phenomenologically: experience feels bounded, organized, temporally disciplined",
+          ],
+        },
+      ],
+    },
+  };
+
+  const current = tabs[activeTab];
+
+  return (
+    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif", background: C.bg, color: C.text, minHeight: "100vh", padding: "0 0 60px" }}>
+      {/* HERO */}
+      <div style={{ background: `radial-gradient(ellipse at 30% 0%, ${C.accent1}08, transparent 60%), radial-gradient(ellipse at 70% 100%, ${C.accent3}06, transparent 50%)`, padding: "48px 28px 36px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
+        <Mono color={C.accent2}>Socionics · Talanov / Romanov / Gulenko / Vincent Paradigms</Mono>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, margin: "14px 0", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          Temperament Dichotomies & Their Structural Significance
+        </h1>
+        <Prose style={{ maxWidth: 660, margin: "0 auto 18px", textAlign: "center" }}>
+          A comprehensive analysis of E/I, Static/Dynamic, and Rational/Irrational, the three dichotomies generating the four Socionics temperaments, explored through executive function, ontological foundations, structural connections to the broader Socion, and cross-system correspondences.
+        </Prose>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+          {["Executive Function", "Ontological", "Structure", "Cross-System", "Anti-Temperament"].map((l, i) => (
+            <Tag key={i} label={l} color={[C.accent3, C.teal, C.accent4, C.rose, C.lime][i]} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
+        {/* SECTION NAV */}
+        <div style={{ display: "flex", gap: 0, padding: "0 8px", borderBottom: `1px solid ${C.border}55`, overflowX: "auto", justifyContent: "center", marginTop: 20, marginBottom: 8 }}>
+          {sections.map(s => (
+            <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
+              padding: "12px 14px", border: "none", fontSize: 12, fontWeight: 700,
+              background: "transparent",
+              color: activeSection === s.id ? s.color : C.textDim,
+              borderBottom: activeSection === s.id ? `2px solid ${s.color}` : "2px solid transparent",
+              transition: "all 0.2s", whiteSpace: "nowrap", letterSpacing: 0.3, cursor: "pointer",
+              fontFamily: "'Inter', -apple-system, sans-serif"
+            }}>{s.label}</button>
+          ))}
+        </div>
+
+        {/* CORE THEORY */}
+        {activeSection === "core" && <>
+          <Divider label="Scope & Variance Contribution" color={C.accent2} />
+          <Card>
+            <Prose>
+              Talanov's large-scale questionnaire analyses reveal that not all 15 Reinin dichotomies contribute equally to the variance of personality traits. The three "temperament" dichotomies occupy very different positions in this hierarchy: E/I dominates, while Static/Dynamic has modest variance despite its deep structural role.
+            </Prose>
+            <Bar label="Extraversion / Introversion (x)" value={18.5} color={C.extravert} />
+            <Bar label="Rational / Irrational (abcx)" value={11} color={C.accent3} />
+            <Bar label="Static / Dynamic (abc)" value={4} color={C.static_} />
+            <SmallProse style={{ marginTop: 12 }}>
+              Variance values represent approximate population-average trait dispersion percentages from Talanov's factor analyses. E/I alone accounts for more than the other two combined, a psychometric asymmetry reflecting its deep ties to cortical excitation/inhibition balance.
+            </SmallProse>
+          </Card>
+
+          <Divider label="Dichotomy Deep Dives" color={current.color} />
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+            {Object.entries(tabs).map(([k, t]) => (
+              <TabBtn key={k} label={t.label} active={activeTab === k} onClick={() => setActiveTab(k)} color={t.color} />
+            ))}
+          </div>
+
+          <Card color={current.color}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: `${current.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 16, fontWeight: 800, color: current.color, fontFamily: "'JetBrains Mono', monospace" }}>{current.code}</span>
+              </div>
+              <div>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22, color: current.color, margin: 0 }}>{current.title}</h2>
+                <Mono>Dispersion: {current.dispersion}% pop. avg.</Mono>
+              </div>
+            </div>
+            <Card style={{ background: `${current.color}06`, border: `1px solid ${current.color}12`, marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: current.color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Algebraic Identity</div>
+              <SmallProse style={{ color: C.textMuted }}>{current.mathNote}</SmallProse>
+            </Card>
+            <Card style={{ background: `${current.color}06`, border: `1px solid ${current.color}12`, marginBottom: 0 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: current.color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Structural Role</div>
+              <SmallProse style={{ color: C.textMuted }}>{current.structNote}</SmallProse>
+            </Card>
+          </Card>
+
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 8 }}>
+            {current.poles.map((p, i) => <PoleCard key={i} {...p} />)}
+          </div>
+
+          <Divider label="The Four Temperaments" color={C.accent2} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <TempCard name="Flexible-Turning" code="EP" types="SLE · ILE · SEE · IEE" color={C.ep} desc="High energy + low frontal control + static processing. The explosive, novelty-seeking pattern, with broad environmental scanning with minimal self-censorship." traits={["Impulsive","Initiating","Broad","Sanguine"]} />
+            <TempCard name="Balanced-Stable" code="IJ" types="LSI · EII · ESI · LII" color={C.ij} desc="Low energy + high frontal control + static processing. The methodical, principle-driven pattern, featuring deep analysis within controlled parameters." traits={["Deliberate","Systematic","Deep","Melancholic"]} />
+            <TempCard name="Linear-Assertive" code="EJ" types="ESE · LIE · EIE · LSE" color={C.ej} desc="High energy + high frontal control + dynamic processing. The sustained, directed-action pattern, with organized drive toward external goals." traits={["Driven","Organized","Persistent","Choleric"]} />
+            <TempCard name="Receptive-Adaptive" code="IP" types="SEI · ILI · IEI · SLI" color={C.ip} desc="Low energy + low frontal control + dynamic processing. The sensitive, environmentally-attuned pattern, with responsive adaptation to shifting conditions." traits={["Receptive","Flexible","Sensitive","Phlegmatic"]} />
+          </div>
+
+          <Divider label="Multi-Lens Analysis" color={C.accent2} />
+          <Card>
+            <SectionTitle>Six Analytical Frames</SectionTitle>
+            <Prose>
+              The temperament dichotomies can be approached through multiple theoretical lenses, each revealing different aspects of the same underlying structure. These six frames, from clinical affect to algebraic structure, demonstrate that temperament is not a single-dimension phenomenon but an overdetermined intersection of biological, psychological, and formal properties.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+              <LensCard lens="Affective" color={C.accent4}
+                content="E/I maps onto the hyperthymia–dysthymia axis: extraversion correlates with manic-spectrum traits, introversion with depressive-spectrum; St/Dy modulates emotional processing: Static types exhibit emotional fixation (digital), Dynamic types show labile, gradient-style affect. P/J connects to executive-emotional regulation: Rationals channel emotion through frontal control, Irrationals let affect flow freely." />
+              <LensCard lens="Cybernetic" color={C.accent2}
+                content="E/I represents the system's energy throughput: extraverts as open systems with high environmental exchange, introverts as more closed systems conserving internal states. St/Dy describes regulation strategy: Static as set-point maintenance (discrete error-correction), Dynamic as flow-matching (continuous adjustment). P/J determines control architecture: Rationals via feedback-driven planning loops, Irrationals via feedforward impulse-response." />
+              <LensCard lens="Behavioral" color={C.accent1}
+                content="E/I is the most externally observable: louder, faster, wider versus quieter, slower, deeper. St/Dy manifests in conversational style: Statics hold positions and argue from principle, Dynamics pivot fluidly and negotiate from context. P/J shows in scheduling and routine: Rationals maintain regular rhythms, Irrationals improvise and tolerate disorder." />
+              <LensCard lens="Phenomenological" color={C.rose}
+                content="E/I shapes the felt boundary between self and world: extraverts project outward, introverts contain inward. St/Dy determines temporal phenomenology: Statics experience discrete states, Dynamics experience continuous flows. P/J modulates agentive experience: Rationals feel themselves as deliberate authors of action, Irrationals as responsive participants in unfolding events." />
+              <LensCard lens="Evolutionary-Strategic" color={C.lime}
+                content="Romanov's survival framework: E/I determines energy investment strategy (expansive colonization vs. intensive niche-holding). St/Dy determines adaptive mode (principled defense vs. flexible resource-seeking). P/J determines behavioral governance (programmatic social coordination vs. opportunistic individual action). Together, four fundamental survival phenotypes recurring across social species." />
+              <LensCard lens="Structural-Algebraic" color={C.accent3}
+                content="These three occupy the Conjunct Plane, the 8-dichotomy intersection shared by both Reinin and Tencer dichotomy spaces. E/I partitions Skew Blocks in the Presence Cube. St/Dy constrains ring composition in Model A. P/J constrains element blocking rules. Together they form one axis of the 3×3 dichotomy classification: Temperament (how you do it), Function Strength (what you can do), and Quadra Values (what you want to do)." />
+            </div>
+          </Card>
+        </>}
+
+        {/* EXECUTIVE FUNCTION */}
+        {activeSection === "exec" && <>
+          <Divider label="Executive Function & Temperament" color={C.accent3} />
+          <Card>
+            <SectionTitle color={C.accent3}>The Three Components of Executive Functioning</SectionTitle>
+            <Prose>
+              Executive function (EF) refers to the family of top-down cognitive processes mediated primarily by the prefrontal cortex. The three core components, Working Memory, Inhibitory Control, and Cognitive Flexibility, map onto the temperament dichotomies in a structurally elegant way, with each temperament group exhibiting a distinct EF profile.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14, marginBottom: 20 }}>
+              {[
+                { name: "Working Memory", abbr: "WM", color: C.accent1, desc: "The capacity to hold and manipulate information in active attention. Requires sufficient cortical excitation to maintain representations against interference. E/I is the primary determinant: Extraverts' higher baseline arousal provides a more energized workspace for active information maintenance." },
+                { name: "Inhibitory Control", abbr: "IC", color: C.accent3, desc: "The ability to suppress prepotent responses, resist temptation, and maintain self-control. Directly indexes prefrontal executive strength. P/J is the primary determinant: Talanov explicitly links Rationality to higher frontal lobe activity and stronger impulse inhibition." },
+                { name: "Cognitive Flexibility", abbr: "CF", color: C.teal, desc: "The capacity to shift between mental sets, adapt to new rules, and see problems from multiple perspectives. Requires both adequate energy to explore alternatives AND low enough rigidity to release prior frames. The combination of introversion + high control creates the conditions most resistant to flexibility." },
+              ].map((ef, i) => (
+                <div key={i} style={{ background: `${ef.color}08`, border: `1px solid ${ef.color}20`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 6, background: `${ef.color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: ef.color, fontFamily: "'JetBrains Mono', monospace" }}>{ef.abbr}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: ef.color }}>{ef.name}</div>
+                  </div>
+                  <SmallProse style={{ color: C.textMuted }}>{ef.desc}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.accent3}>Temperament × Executive Function Profiles</SectionTitle>
+            <Prose>
+              Each temperament exhibits a characteristic EF signature. Crucially, the three EF components relate to the temperaments in different ways, with each group showing optimal functioning in all but one domain, except for EJ, which is optimal across all three. This asymmetry has profound implications for each temperament's cognitive strengths and developmental edges.
+            </Prose>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 20 }}>
+              <EFRadial name="Linear-Assertive" code="EJ" color={C.ej} wm={95} ic={95} cf={90} />
+              <EFRadial name="Receptive-Adaptive" code="IP" color={C.ip} wm={35} ic={85} cf={90} />
+              <EFRadial name="Flexible-Turning" code="EP" color={C.ep} wm={90} ic={35} cf={95} />
+              <EFRadial name="Balanced-Stable" code="IJ" color={C.ij} wm={85} ic={90} cf={35} />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+              {[
+                { code: "EJ", name: "Linear-Assertive", color: C.ej, status: "Optimal across all three", detail: "High cortical excitation (E) provides robust working memory; strong frontal control (J) yields excellent inhibitory control; the combination of adequate energy and organized but outward-directed processing enables flexible set-shifting. This is the executive function 'gold standard': sustained, regulated, and adaptive.", icon: "☆" },
+                { code: "IP", name: "Receptive-Adaptive", color: C.ip, status: "Optimal except Working Memory", detail: "Low excitation (I) limits the energy available for active information maintenance, making working memory the developmental edge. However, low frontal rigidity (P) preserves cognitive flexibility, and the inhibition-dominance of introversion provides a different kind of impulse control, not frontal suppression but passive decay of unnecessary activation.", icon: "◇" },
+                { code: "EP", name: "Flexible-Turning", color: C.ep, status: "Optimal except Inhibitory Control", detail: "High excitation (E) fuels robust working memory; low frontal control (P) is the core deficit: impulsivity, difficulty suppressing prepotent responses. Yet this same combination produces the highest cognitive flexibility: broad sampling from high energy plus low rigidity from irrational processing. Talanov's data links extreme irrationality with ADHD-spectrum features.", icon: "○" },
+                { code: "IJ", name: "Balanced-Stable", color: C.ij, status: "Optimal except Cognitive Flexibility", detail: "Strong frontal control (J) provides excellent inhibitory control; the organized allocation of introverted energy supports adequate working memory through focused attention. But the combination of inhibition-dominance (I) + high frontal rigidity (J) creates the conditions most resistant to set-shifting. Talanov links extreme rationality with anankastic (OCD-spectrum) features, the prototypical flexibility deficit.", icon: "■" },
+              ].map((t, i) => (
+                <div key={i} style={{ background: `${t.color}08`, border: `1px solid ${t.color}20`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 20, marginBottom: 4 }}>{t.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.color, marginBottom: 2 }}>{t.code}: {t.name}</div>
+                  <div style={{ fontSize: 10, color: t.color, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{t.status}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{t.detail}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>The Asymmetry Insight</SectionTitle>
+            <Prose>
+              The fact that EJ alone is optimal across all three EF components, while each other temperament has precisely one deficit, reveals something fundamental about the EJ configuration. It is the only temperament combining high excitation <em>and</em> high frontal control, the two neurophysiological prerequisites for comprehensive executive functioning. This maps directly to why Gulenko calls it "Linear-Assertive": it is the temperament of sustained, directed, regulated action. In developmental terms, EJ types face the fewest EF bottlenecks but may compensate by underdeveloping other capacities (e.g., receptivity, spontaneous insight) that flourish in EF-deficit temperaments.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Conversely, each deficit maps to a compensatory strength: IP's working memory gap correlates with heightened sensitivity to environmental gradients (noticing without actively holding); EP's inhibitory deficit enables the highest creative throughput (producing without filtering); IJ's flexibility gap produces the deepest sustained analysis (persisting without pivoting). The deficit <em>is</em> the gift, viewed from a different angle.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ONTOLOGICAL FOUNDATIONS */}
+        {activeSection === "onto" && <>
+          <Divider label="Ontological & Epistemological Foundations" color={C.teal} />
+          <Card>
+            <SectionTitle color={C.teal}>What Are Temperaments, Really?</SectionTitle>
+            <Prose>
+              The four Socionics temperaments are not merely behavioral descriptors or typological conveniences. They sit at a precise intersection of three distinct but interlocking dimensions, Energetics, Needs, and Information Architecture, making them simultaneously about <em>how much</em> energy is available, <em>what</em> drives its deployment, and <em>how</em> information is structured in processing. This triple grounding is what gives temperaments their unusual theoretical stability across otherwise incompatible frameworks.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 14, marginBottom: 20 }}>
+              {[
+                { name: "Energetics", color: C.accent1, icon: "◈", desc: "E/I determines the baseline energy budget: how much excitation the system generates versus conserves. P/J determines how that energy is regulated, whether through frontal executive control or through impulse-response patterns. St/Dy determines the allocation pattern: discrete state-holding versus continuous flow-matching. Together: the complete energy management profile." },
+                { name: "Needs Orientation", color: C.accent4, icon: "◎", desc: "Static types are oriented toward Principles, self-sufficient standards that hold regardless of context. Dynamic types are oriented toward Needs, adaptive requirements that shift with circumstances. This is not merely behavioral preference but a fundamental difference in what governs the organism's decision-making substrate: invariant rules versus contextual demands." },
+                { name: "Information Architecture", color: C.accent3, icon: "△", desc: "E/I determines whether the system preferentially processes external objects (extraverted elements) or internal relationships (introverted elements). St/Dy determines signal processing mode: digital/categorical versus analog/gradient. P/J determines processing sequence: judgment-first (rational) versus perception-first (irrational). This triple determines the complete information metabolism style." },
+              ].map((d, i) => (
+                <div key={i} style={{ background: `${d.color}06`, border: `1px solid ${d.color}20`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>{d.icon}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: d.color, marginBottom: 8 }}>{d.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{d.desc}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.teal}>Temperament Across Four Jungian-Inspired Approaches</SectionTitle>
+            <Prose>
+              The four temperaments appear foundational across all major Jungian-derived systems, yet each tradition treats them with different emphasis and theoretical framing. This divergence itself is informative, as it reveals which aspects of temperament each system considers primary.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, color: C.textMuted }}>
+                <thead>
+                  <tr>
+                    {["Dimension", "Socionics (Talanov)", "Socionics (Gulenko/SHS)", "Sociotype.XYZ", "OPS", "CT (Vultology)"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Primary ontology", "Psychophysiological substrate (excitation/inhibition thresholds)", "Energy-information exchange patterns", "Biological-statistical trait clusters", "Cognitive tracking modalities", "Visual-energetic signal patterns"],
+                    ["P/J nature", "Frontal executive control strength; conscientiousness axis", "Behavioral governance: programmatic vs. opportunistic", "Frontal regulation continuum", "Processing order (Oi/Oe before Di/De or vice versa)", "Rigidity vs. fluidity of visual signal transitions"],
+                    ["E/I nature", "Cortical excitation–inhibition balance; hyperthymia–dysthymia axis", "Energy throughput: open vs. closed system", "Measurable trait axis with continuous distribution", "Sensory modality width (broad vs. narrow)", "Observable animation level in face/body"],
+                    ["St/Dy nature", "Signal processing architecture: digital vs. analog", "Regulation strategy: set-point vs. flow-matching", "Principles vs. Needs orientation", "Not explicitly theorized as independent axis", "Implicit in charge dynamics (potential vs. kinetic)"],
+                    ["Temperament status", "Empirically validated via dispersion statistics", "Core behavioral grouping for subtypes (DCNH)", "Background variable in composite profiles", "Implicit in Animal stack but not primary", "Emergent from energetics observations"],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} style={{ padding: "8px", borderBottom: `1px solid ${C.border}20`, verticalAlign: "top", lineHeight: 1.5, color: j === 0 ? C.text : C.textMuted, fontWeight: j === 0 ? 600 : 400, minWidth: j === 0 ? 100 : 130 }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>The Epistemological Synthesis</SectionTitle>
+            <Prose>
+              What emerges from cross-system comparison is that temperament is <em>none</em> of the three dimensions (energetics, needs, architecture) alone; it is their <em>intersection</em>. Talanov approaches it from psychophysiology (energetics-first). Gulenko approaches it from behavioral observation (needs/energetics hybrid). OPS approaches it from cognitive tracking (architecture-first). CT approaches it from visual-energetic signals (energetics as observable surface). Each captures a real facet of the same underlying phenomenon.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              The epistemological implication is significant: temperament cannot be fully understood from any single theoretical lens. It requires triangulation across biological measurement (Talanov's questionnaires and dispersion analysis), structural mathematics (Vincent's algebraic proofs), behavioral observation (Gulenko's DCNH experiments), and cross-system validation (Fisher's neurochemistry, DiSC's behavioral profiles). This convergence from radically different methodologies toward the same four-fold structure is itself the strongest evidence that temperament groupings reflect something real about human cognitive-behavioral variation.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* STRUCTURAL */}
+        {activeSection === "struct" && <>
+          <Divider label="Lead & Role Function Dynamics" color={C.accent4} />
+          <Card>
+            <SectionTitle color={C.accent4}>The Lead–Role Axis as Temperament Phenomenon</SectionTitle>
+            <Prose>
+              The Lead (position 1) and Role (position 3) functions in Model A have a unique structural relationship: they share the same domain (both judge or both perceive) but are inverted on all other dichotomies. The Role function sits in the Super-Ego block, normatively accessible but energetically expensive. This makes the Lead–Role axis fundamentally a <em>temperament-level</em> phenomenon: the Role asks you to simulate the opposite temperament.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {[
+                { lens: "Cognitive", color: C.accent3, content: "Role is Lead's 'opposite within same domain': both judge or both perceive, but inverted on all other dichotomies. Creates oscillation: when Lead is active, Role is suppressed. Role in Super-Ego block = normatively accessible but energetically expensive. The system cannot run both simultaneously at full capacity." },
+                { lens: "Behavioral", color: C.accent1, content: "Produces visible 'mask-switching': Lead = natural tempo, Role = performative social conformity. Temperament determines switching rhythm: Static types switch abruptly (discrete state change), Dynamic types transition fluidly (gradient blend). The Role 'mask' is always detectable by its slightly off-tempo quality." },
+                { lens: "Social", color: C.teal, content: "Role represents social demand, i.e. what society expects competence in. Super-Ego relation (your Role = their Lead) is the most psychologically challenging intertype relation. Temperament determines which demands feel most foreign: EP↔IJ and EJ↔IP are maximally distant temperament pairs, making these Super-Ego pairings feel like performing in an alien energy metabolism." },
+                { lens: "Developmental", color: C.rose, content: "Lead at Level 4 Presence (strong+valued+bold), Role at Level 2 (weak+subdued+bold). The gap is structurally fixed; Role can never match Lead's depth. Healthy development requires accepting Role as conscious effort, not natural flow. The developmental task is not to 'strengthen' the Role to Lead-level but to deploy it skillfully within its inherent constraints." },
+              ].map((item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: "16px 14px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: item.color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>{item.lens}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Divider label="Temperament in Clubs, Quadras & Rings" color={C.accent4} />
+          <Card>
+            <SectionTitle>Each Quadra Contains All Four Temperaments</SectionTitle>
+            <Prose>
+              A foundational structural fact: every quadra contains exactly one type from each temperament group. Alpha contains ILE (EP), SEI (IP), ESE (EJ), and LII (IJ). This is not accidental; it is algebraically necessary because quadra membership is determined by the function-content and quadra-value dichotomies, which are orthogonal to the temperament dichotomies. The consequence is profound: any well-functioning quadra requires all four energy metabolisms operating in concert.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { q: "Alpha", types: [{ t: "ESE", temp: "EJ", c: C.ej }, { t: "ILE", temp: "EP", c: C.ep }, { t: "LII", temp: "IJ", c: C.ij }, { t: "SEI", temp: "IP", c: C.ip }] },
+                { q: "Beta", types: [{ t: "EIE", temp: "EJ", c: C.ej }, { t: "SLE", temp: "EP", c: C.ep }, { t: "LSI", temp: "IJ", c: C.ij }, { t: "IEI", temp: "IP", c: C.ip }] },
+                { q: "Gamma", types: [{ t: "LIE", temp: "EJ", c: C.ej }, { t: "SEE", temp: "EP", c: C.ep }, { t: "ESI", temp: "IJ", c: C.ij }, { t: "ILI", temp: "IP", c: C.ip }] },
+                { q: "Delta", types: [{ t: "LSE", temp: "EJ", c: C.ej }, { t: "IEE", temp: "EP", c: C.ep }, { t: "EII", temp: "IJ", c: C.ij }, { t: "SLI", temp: "IP", c: C.ip }] },
+              ].map((qd, i) => (
+                <div key={i} style={{ background: C.card, padding: "16px 14px", textAlign: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 10 }}>{qd.q}</div>
+                  {qd.types.map((t, j) => (
+                    <div key={j} style={{ fontSize: 13, marginBottom: 6 }}>
+                      <span style={{ color: t.c, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{t.temp}</span>
+                      <span style={{ color: C.textMuted, marginLeft: 4 }}>{t.t}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Clubs: Shared Strengths, Divergent Energies</SectionTitle>
+            <Prose>
+              Clubs (Researchers, Socials, Humanitarians, Pragmatists) group types that share strong function pairs, i.e. what you <em>can</em> do. Like quadras, each club contains all four temperaments. But where quadras share values (what you <em>want</em>), clubs share capabilities. The interplay between temperament and club membership determines the <em>style</em> in which shared capabilities are deployed. An EP Researcher (ILE) explores possibilities explosively; an IJ Researcher (LII) analyzes them methodically, same toolkit, completely different rhythm.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle>Benefit & Supervision Rings: Temperament as Energy Gradient</SectionTitle>
+            <Prose>
+              The Benefit ring (zakaz) creates asymmetric energetic relationships where the Benefactor's Lead function targets the Beneficiary's Suggestive function. Crucially, Benefit always flows across temperament boundaries: the Benefactor and Beneficiary never share the same temperament. This creates an inherent energy mismatch that powers the ring's characteristic dynamic: the Beneficiary feels energized but can't fully reciprocate in kind, because the energy pattern itself is different.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              In Supervision (reviziya), the Supervisor's Lead targets the Supervisee's Vulnerable function. Again, Supervisor and Supervisee belong to different temperaments. The asymmetry is starker; not only does the energy mismatch exist, but it targets the Supervisee's least resilient position. Gulenko's insight that Benefit rings map to the "Clock of the Socion," the quadra progression Alpha→Beta→Gamma→Delta, reveals temperament as the engine driving societal-level energy flows. Each quadra transition requires all four temperaments to re-calibrate simultaneously, and the Benefit ring provides the mechanism.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* CROSS-SYSTEM */}
+        {activeSection === "systems" && <>
+          <Divider label="Cross-System Correspondences" color={C.rose} />
+          <Card>
+            <SectionTitle color={C.rose}>The Universal Four-Fold Pattern</SectionTitle>
+            <Prose>
+              The same four-fold temperament structure recurs across systems developed independently, from different theoretical starting points, using different methodologies. This convergence is the strongest available evidence that these four behavioral-energetic phenotypes are real and not artifacts of any particular theory.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: C.textMuted }}>
+                <thead>
+                  <tr>
+                    {["System", "EP Analog", "IJ Analog", "EJ Analog", "IP Analog", "Basis"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Socionics", "Flexible-Turning", "Balanced-Stable", "Linear-Assertive", "Receptive-Adaptive", "Dichotomy algebra"],
+                    ["DCNH (Gulenko)", "Creative (C)", "Normalizing (N)", "Dominant (D)", "Harmonizing (H)", "Group role observation"],
+                    ["Helen Fisher", "Explorer (Dopamine)", "Builder (Serotonin)", "Director (Testosterone)", "Negotiator (Estrogen)", "Neurochemistry"],
+                    ["DiSC", "Influence (I)", "Conscientiousness (C)", "Dominance (D)", "Steadiness (S)", "Behavioral assessment"],
+                    ["PAEI (Adizes)", "Entrepreneur (E)", "Administrator (A)", "Producer (P)", "Integrator (I)", "Management roles"],
+                    ["CPI Vector", "Vector 3 (Flexibility)", "Vector 1 (Norm-favoring)", "Vector 2 (Self-realization)", "Vector 4 (Sensitivity)", "California Personality Inventory"],
+                    ["Hippocrates", "Sanguine", "Melancholic", "Choleric", "Phlegmatic", "Classical humoral theory"],
+                    ["Goal Orientation", "Mastery-Approach", "Performance-Avoidance", "Performance-Approach", "Mastery-Avoidance", "Achievement motivation"],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} style={{
+                          padding: "8px 8px",
+                          borderBottom: `1px solid ${C.border}20`,
+                          color: j === 0 ? C.text : j === 1 ? C.ep : j === 2 ? C.ij : j === 3 ? C.ej : j === 4 ? C.ip : C.textDim,
+                          fontWeight: j === 0 ? 600 : 400,
+                          fontFamily: j === 0 ? "inherit" : "'JetBrains Mono', monospace",
+                          fontSize: j === 0 ? 12 : 10,
+                          whiteSpace: "nowrap",
+                        }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>DCNH: Temperament as Subtype</SectionTitle>
+            <Prose>
+              Gulenko's DCNH system is the most direct Socionics-internal mapping of temperament to subtype. Each DCNH subtype strengthens the function pair corresponding to one temperament group: Dominant strengthens Te+Fe (EJ-pattern), Creative strengthens Se+Ne (EP-pattern), Normalizing strengthens Ti+Fi (IJ-pattern), Harmonizing strengthens Si+Ni (IP-pattern). This means every individual operates with their type's temperament <em>modulated</em> by a subtype that may reinforce or cross-cut it.
+            </Prose>
+            <Prose>
+              The DCNH benefit ring (D→C→N→H→D) mirrors the temperament interaction dynamics: Dominant activates Creative (EJ energizes EP), Creative stimulates Normalizing (EP provokes IJ), Normalizing grounds Harmonizing (IJ steadies IP), and Harmonizing paradoxically re-energizes Dominant (IP's subtle manipulation re-engages EJ). The DCNH supervision ring runs opposite, creating a complete energetic circulation at the subtype level.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>Helen Fisher: Neurochemical Convergence</SectionTitle>
+            <Prose>
+              Fisher's identification of four temperament types from neurochemistry, entirely independent of Socionics, provides powerful biological validation. The mapping is not arbitrary; Explorer (dopamine) shares EP's core traits of novelty-seeking, risk-taking, spontaneity, and mental flexibility. Builder (serotonin) shares IJ's conscientiousness, rule-following, caution, and stability. Director (testosterone) shares EJ's decisiveness, goal-orientation, and systematic drive. Negotiator (estrogen/oxytocin) shares IP's empathy, contextual thinking, and adaptive sensitivity.
+            </Prose>
+            <Prose>
+              The correspondence extends to mate-selection patterns: Fisher found that Explorers prefer Explorers and Builders prefer Builders (like-attracts-like), while Directors and Negotiators prefer each other (opposites-attract). In Socionics terms, this maps to the observation that EP-EP and IJ-IJ pairs share the same static processing mode, while EJ-IP duality pairs are the prototypical complementary dynamic configuration.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.rose}>Torus & Presence Cube: Geometric Representation</SectionTitle>
+            <Prose>
+              On the Socionics Torus (as visualized in the Observable notebook), the 16 types are arranged on a toroidal surface where the two fundamental cycles correspond to the two independent temperament dichotomies. Temperament groups form bands running around the torus: EP and IJ types (the two <em>static</em> temperaments) occupy antipodal positions on one cycle, while EJ and IP types (the two <em>dynamic</em> temperaments) occupy antipodal positions on the other. Intertype relations emerge naturally from topological proximity: duals are adjacent, conflictors are antipodal within their quadra's toroidal region.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              In the Presence Cube, the three temperament dichotomies define the axes of the cube's three-dimensional space for information elements. E/I partitions Skew Blocks (extraverted elements on one face, introverted on the opposite). St/Dy partitions the Mental and Vital rings (all elements in a ring share static/dynamic). P/J partitions blocking rules (only rational+irrational pairs can form functional blocks). The cube thus encodes temperament as the <em>geometry of information space itself</em>, not a behavioral overlay but the coordinate system within which all information metabolism occurs.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ANTI-TEMPERAMENT */}
+        {activeSection === "anti" && <>
+          <Divider label="Anti-Temperaments: A Theoretical Exploration" color={C.lime} />
+          <Card>
+            <SectionTitle color={C.lime}>Can Anti-Temperaments Exist?</SectionTitle>
+            <Prose>
+              Talanov theorizes anti-quadras: groups that share subdued (non-valued) elements, creating a kind of "shadow" societal dynamic. By analogy, could anti-temperaments exist, inversions of one's natural energy metabolism that emerge under specific conditions?
+            </Prose>
+            <Prose>
+              The answer is structurally nuanced. In Talanov's anti-quadra framework, the anti-quadra for Alpha is Gamma (and vice versa), and the anti-quadra for Beta is Delta (and vice versa). These are determined by the quadra-value dichotomies. For temperaments, the analogous inversion would flip the temperament dichotomies, producing diagonal oppositions: EP↔IJ and EJ↔IP. These are already recognized in Socionics as the maximally distant temperament pairs, they share <em>no</em> temperament dichotomy values.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.lime}>Three Possible Anti-Temperament Mechanisms</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 14 }}>
+              {[
+                { name: "Shadow-Function Inversion", color: C.lime, icon: "①", content: "In Model A, the Vital ring has the opposite Static/Dynamic value from the Mental ring, but shares E/I and P/J. This means the 'unconscious' processing operates at a different signal architecture (digital↔analog) while maintaining the same energy level and regulation style. This isn't a full anti-temperament (same temperament group) but represents a St/Dy inversion that may manifest under stress as a shift from principled to needs-driven behavior , a partial anti-temperament." },
+                { name: "DCNH 4th-Position Subtype", color: C.amber, icon: "②", content: "In Gulenko's expanded subtype theory, each person has a hierarchy of all four DCNH subtypes. The 4th-position subtype, the one used 'only as a last resort', represents the anti-temperament in behavioral terms. For a naturally Dominant (EJ-pattern) person, the Harmonizing (IP-pattern) subtype is maximally distant and uncomfortable. Under extreme duress, individuals may collapse into this anti-temperament, exhibiting behavior that feels alien to themselves and others, the 'I don't even recognize myself' phenomenon." },
+                { name: "Stress-Induced Flip", color: C.accent4, icon: "③", content: "Talanov's psychophysiological framework predicts that extreme stress can temporarily invert excitation/inhibition dynamics. An extravert under severe threat may exhibit inhibition-dominance (withdrawal, energy conservation). A rational type under chaos may show irrational emergency responses (impulsive, unplanned). This situational anti-temperament is temporary and metabolically costly; the system snaps back once the stressor resolves. It parallels the grip/loop phenomena described in MBTI developmental theory." },
+              ].map((m, i) => (
+                <div key={i} style={{ background: `${m.color}08`, border: `1px solid ${m.color}20`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ fontSize: 20, marginBottom: 6 }}>{m.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: m.color, marginBottom: 8 }}>{m.name}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{m.content}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.lime}>The Key Difference from Anti-Quadras</SectionTitle>
+            <Prose>
+              Anti-quadras exist as stable, persistent structures in the Socion, Gamma is always Alpha's anti-quadra, regardless of context. Anti-temperaments, by contrast, are more likely <em>states</em> than <em>traits</em>. Temperament, being grounded in psychophysiology (cortical excitation/inhibition balance, frontal lobe activity), is more biologically rigid than quadra values, which involve higher-order preference structures. You can change what you value more readily than you can change your nervous system's baseline excitation level.
+            </Prose>
+            <Prose>
+              This means anti-temperaments are best understood not as permanent shadow structures but as temporary metabolic inversions, the system operating outside its optimal parameters. They are real, observable, and psychologically significant, but they are fundamentally unstable states that the organism works to exit. The closest stable analog would be the DCNH 4th-position subtype, a behavioral mode that is available but perpetually uncomfortable, representing the furthest extension of the personality's adaptive range.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle>Anti-Temperament Pairings</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                { a: "EP", an: "IJ", ac: C.ep, anc: C.ij, label: "Maximum Opposition I", desc: "Flexible-Turning vs Balanced-Stable. High-energy impulsive exploration vs. low-energy principled persistence. The EP's anti-temperament state looks like rigid, methodical withdrawal; the IJ's looks like reckless, unregulated expansiveness." },
+                { a: "EJ", an: "IP", ac: C.ej, anc: C.ip, label: "Maximum Opposition II", desc: "Linear-Assertive vs Receptive-Adaptive. Sustained directed drive vs. passive environmental sensitivity. The EJ's anti-temperament state looks like formless passivity; the IP's looks like forceful, unyielding forward thrust." },
+              ].map((pair, i) => (
+                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: pair.ac, fontFamily: "'JetBrains Mono', monospace" }}>{pair.a}</span>
+                    <span style={{ fontSize: 12, color: C.textDim }}>↔</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: pair.anc, fontFamily: "'JetBrains Mono', monospace" }}>{pair.an}</span>
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: C.text, marginBottom: 6 }}>{pair.label}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{pair.desc}</SmallProse>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>}
+
+        {/* STRUCTURAL SIGNIFICANCE - always visible */}
+        <Divider label="Structural Significance" color={C.accent3} />
+        <Card>
+          <SectionTitle>Why These Three, And Not Others?</SectionTitle>
+          <Prose>
+            The temperament dichotomies are not arbitrarily selected; they emerge from the algebraic structure of the Socion as the three dichotomies that specifically determine behavioral tempo, energy management, and information-processing rhythm.
+          </Prose>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+            {[
+              { label: "Function Strength", desc: "a, b, c", color: C.accent1, sub: "What you can do" },
+              { label: "Quadra Values", desc: "ac, bc, ab", color: C.accent4, sub: "What you want to do" },
+              { label: "Temperament", desc: "x, abc, abcx", color: C.accent2, sub: "How you do it" },
+            ].map((cell, i) => (
+              <div key={i} style={{ background: C.card, padding: "16px 12px", textAlign: "center" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: cell.color, marginBottom: 4 }}>{cell.label}</div>
+                <Mono>{cell.desc}</Mono>
+                <div style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", marginTop: 6 }}>{cell.sub}</div>
+              </div>
+            ))}
+          </div>
+          <SmallProse>
+            Understanding temperament is prerequisite to understanding everything else in Socionics, because temperament determines the <em>energetic substrate</em> on which all other structures (clubs, quadras, rings, intertype relations) operate. Clubs tell you what two people can talk about; quadras tell you what they value; but temperament tells you whether they'll be speaking at the same speed, with the same rhythm, and on the same wavelength. It is the carrier wave upon which all information metabolism signals are transmitted.
+          </SmallProse>
+        </Card>
+
+        {/* FOOTER */}
+        <div style={{ textAlign: "center", marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+            SOURCES: Talanov VL questionnaire data · Romanov I (socionavigator.com) · Vincent V (Model A, Dichotomy Spaces, Presence Cube) · Gulenko VV (DCNH, SHS) · Fisher HE (FTI neurochemistry) · sociotype.xyz · Diamond A (2013) Executive Functions · Miyake et al. (2000)
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<TemperamentReport />, document.getElementById('root'));
+</script>
+</body>
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Information Metabolism Elements: The Valleys of Cognitive Processing</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; cursor: pointer; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #10111a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+  em { font-style: italic; }
+  strong { font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ═══════════ DESIGN TOKENS ═══════════ */
+const C = {
+  bg: "#08090e", card: "#10111a", border: "#252538",
+  text: "#e4e4e7", textMuted: "#9ca3af", textDim: "#6b7280",
+  // IME colors
+  Ne: "#f59e0b", Ni: "#7c3aed", Se: "#ef4444", Si: "#84cc16",
+  Te: "#0ea5e9", Ti: "#06b6d4", Fe: "#ec4899", Fi: "#a78bfa",
+  // Dyad colors
+  Je: "#14b8a6", Pe: "#f97316", Ji: "#6366f1", Pi: "#22c55e",
+  // Aspect colors
+  N: "#a855f7", S: "#d97706", T: "#0891b2", F: "#e11d48",
+  // Axis colors
+  decisive: "#dc2626", merry: "#d946ef", serious: "#3b82f6", judicious: "#10b981",
+  // Section accent
+  accent1: "#06b6d4", accent2: "#8b5cf6", accent3: "#10b981", accent4: "#f59e0b",
+  rose: "#ec4899", teal: "#14b8a6", lime: "#84cc16", amber: "#d97706",
+};
+
+/* ═══════════ SHARED COMPONENTS ═══════════ */
+const Divider = ({ label, color }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
+    <span style={{ fontFamily: "'Inter', -apple-system, sans-serif", fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
+  </div>
+);
+
+const Card = ({ children, color = C.border, style = {} }) => (
+  <div style={{ background: C.card, border: `1px solid ${color}30`, borderRadius: 14, padding: 24, marginBottom: 8, ...style }}>{children}</div>
+);
+
+const Tag = ({ label, color }) => (
+  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+);
+
+const Prose = ({ children, style = {} }) => (
+  <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, margin: "0 0 16px", ...style }}>{children}</p>
+);
+
+const SmallProse = ({ children, style = {} }) => (
+  <p style={{ fontSize: 12, color: C.textDim, lineHeight: 1.65, margin: 0, ...style }}>{children}</p>
+);
+
+const SectionTitle = ({ children, color = C.text }) => (
+  <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color, margin: "0 0 14px" }}>{children}</h3>
+);
+
+const Mono = ({ children, color = C.textDim }) => (
+  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color }}>{children}</span>
+);
+
+const TabBtn = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} style={{ padding: "12px 12px", border: "none", fontSize: 12, fontWeight: 700, background: "transparent", color: active ? color : C.textDim, borderBottom: active ? `2px solid ${color}` : "2px solid transparent", transition: "all 0.2s", whiteSpace: "nowrap", letterSpacing: 0.3, cursor: "pointer", fontFamily: "'Inter', -apple-system, sans-serif" }}>{label}</button>
+);
+
+const LensCard = ({ lens, color, content }) => (
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 10, padding: "16px 14px" }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>{lens}</div>
+    <SmallProse style={{ color: C.textMuted }}>{content}</SmallProse>
+  </div>
+);
+
+const ElementBadge = ({ symbol, label, color, size = 36 }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ width: size, height: size, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.38, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{symbol}</div>
+    {label && <span style={{ fontSize: 13, fontWeight: 600, color }}>{label}</span>}
+  </div>
+);
+
+const DyadCard = ({ name, code, elements, color, desc, reinin, items }) => (
+  <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20, flex: "1 1 220px", minWidth: 220 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
+        <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{elements}</div>
+      </div>
+    </div>
+    <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, margin: "0 0 8px" }}>{desc}</p>
+    {reinin && <div style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: `${color}08`, color: `${color}aa`, border: `1px solid ${color}15`, display: "inline-block", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>{reinin}</div>}
+    {items && items.map((t, i) => (
+      <div key={i} style={{ fontSize: 12, color: C.text, lineHeight: 1.6, marginBottom: 5, paddingLeft: 12, position: "relative" }}>
+        <span style={{ position: "absolute", left: 0, top: 6, width: 4, height: 4, borderRadius: "50%", background: color, opacity: 0.6 }} />
+        {t}
+      </div>
+    ))}
+  </div>
+);
+
+const IMECard = ({ symbol, name, subtitle, color, desc, keywords, dyads }) => (
+  <div style={{ background: `linear-gradient(145deg, ${color}08, ${C.card})`, border: `1px solid ${color}25`, borderRadius: 14, padding: 20, flex: "1 1 280px", minWidth: 280 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+      <div style={{ width: 42, height: 42, borderRadius: 10, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{symbol}</div>
+      <div>
+        <div style={{ fontSize: 16, fontWeight: 700, color, fontFamily: "'Playfair Display', Georgia, serif" }}>{name}</div>
+      </div>
+    </div>
+    <div style={{ fontSize: 9, color: C.textDim, lineHeight: 1.7, marginBottom: 12, fontFamily: "'JetBrains Mono', monospace" }}>
+      {subtitle.split("\n").map((s, i) => <div key={i}>{s}</div>)}
+    </div>
+    <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.65, margin: "0 0 10px" }}>{desc}</p>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+      {dyads.map((d, i) => (
+        <span key={i} style={{ fontSize: 9, padding: "2px 7px", borderRadius: 4, background: `${color}10`, color: `${color}cc`, border: `1px solid ${color}20`, fontFamily: "'JetBrains Mono', monospace" }}>{d.label}</span>
+      ))}
+    </div>
+    <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 8 }}>
+      <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: C.textDim, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>Additional Descriptors</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+        {keywords.map((k, i) => (
+          <span key={i} style={{ fontSize: 9, padding: "2px 8px", borderRadius: 2, background: `${C.border}40`, color: C.textMuted, fontWeight: 500, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>{k}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+/* ═══════════ DATA ═══════════ */
+const IME_DATA = {
+  Ne: { symbol: "Ne", name: "Extraverted Intuition (Potentials)", color: C.Ne,
+    subtitle: "Intuition of Ideas (Model A)\nIntuition of Opportunities (Model G)\nIntuition of Alternatives (Talanov)\nIntuition of Possibilities (XYZ)",
+    desc: "The engine of curiosity and divergent exploration. Ne scans the informational environment for unrealized possibilities, alternative explanations, and novel connections. It expands the field of consideration by generating options rather than converging on conclusions. Behaviorally: scattered attention, rapid interest-shifts, childlike wonder, inadvertent risk-taking due to weak sensory brakes.",
+    dyads: [{ label: "Spontaneity (P)" },{ label: "Extensive (E)" },{ label: "Static (St)" },{ label: "Abstracted (NT)" },{ label: "Implicit (NF)" },{ label: "Generating (A)" },{ label: "Conserving (Δ)" }],
+    keywords: ["Novelty","Alternatives","Curiosity","Innovation","Brainstorming","Experiments","Uniqueness"]
+  },
+  Ni: { symbol: "Ni", name: "Introverted Intuition (Narrative)", color: C.Ni,
+    subtitle: "Intuition of Time (Model A)\nIntuition of Change (Model G)\nIntuition of Metamorphosis (Talanov)\nIntuition of Evolution (XYZ)",
+    desc: "The faculty of temporal depth and convergent insight. Ni narrows the field of attention to a single essential trajectory: the inevitable unfolding of events. It processes hidden patterns beneath surface reality, generating foresight, premonition, and a sense of personal destiny. Behaviorally: withdrawn absorption, contemplative focus, reluctance to diversify, conviction that one path matters.",
+    dyads: [{ label: "Spontaneity (P)" },{ label: "Intensive (I)" },{ label: "Dynamic (Dy)" },{ label: "Abstracted (NT)" },{ label: "Implicit (NF)" },{ label: "Optimizing (Γ)" },{ label: "Mobilizing (Β)" }],
+    keywords: ["Foresight","Imagery","Depth","Timing","Inevitability","Destiny"]
+  },
+  Se: { symbol: "Se", name: "Extraverted Sensing (Kinetics)", color: C.Se,
+    subtitle: "Sensation of Force (Model A)\nSensation of Will (Model G)\nSensation of Domination (Talanov)\nSensation of Power (XYZ)",
+    desc: "The faculty of volitional force and direct environmental control. Se registers the intensity, pressure, and power dynamics of the immediate physical and social space, then acts to reshape them. It expands the organism's territory, influence, and material resources through assertive confrontation. Behaviorally: bold presence, physical assertiveness, competitive drive, impatience with passivity.",
+    dyads: [{ label: "Spontaneity (P)" },{ label: "Extensive (E)" },{ label: "Static (St)" },{ label: "Embedded (SF)" },{ label: "Explicit (ST)" },{ label: "Optimizing (Γ)" },{ label: "Mobilizing (Β)" }],
+    keywords: ["Willpower","Dominance","Territory","Assertiveness","Confrontation","Impact"]
+  },
+  Si: { symbol: "Si", name: "Introverted Sensing (Balance)", color: C.Si,
+    subtitle: "Sense of Somatics (Model A)\nSense of Comfort (Model G)\nSense of Homeostasis (Talanov)\nSense of Harmony (XYZ)",
+    desc: "The faculty of somatic attunement and environmental harmony. Si registers the body's internal states (comfort, pain, vitality, aesthetic pleasure) and seeks to optimize the equilibrium between organism and environment. It refines sensory experience toward balance rather than intensity. Behaviorally: attention to physical comfort, aesthetic sensitivity, health-consciousness, conflict avoidance.",
+    dyads: [{ label: "Spontaneity (P)" },{ label: "Intensive (I)" },{ label: "Dynamic (Dy)" },{ label: "Embedded (SF)" },{ label: "Explicit (ST)" },{ label: "Generating (A)" },{ label: "Conserving (Δ)" }],
+    keywords: ["Comfort","Wellbeing","Aesthetics","Relaxation","Harmony","Health"]
+  },
+  Te: { symbol: "Te", name: "Extraverted Logic (Utility)", color: C.Te,
+    subtitle: "Logic of Pragmatism (Model A)\nLogic of Actions (Model G)\nLogic of Benefit (Talanov)\nLogic of Business (XYZ)",
+    desc: "The faculty of empirical optimization and resource management. Te accumulates procedural knowledge about how things work in practice, then applies it to maximize productivity, efficiency, and measurable results. It expands the scope of factual information available for action. Behaviorally: industriousness, self-reliance, focus on profit/utility, impatience with theory divorced from application.",
+    dyads: [{ label: "Control (J)" },{ label: "Extensive (E)" },{ label: "Dynamic (Dy)" },{ label: "Abstracted (NT)" },{ label: "Explicit (ST)" },{ label: "Optimizing (Γ)" },{ label: "Conserving (Δ)" }],
+    keywords: ["Efficiency","Productivity","Facts","Methods","Resources","Optimization"]
+  },
+  Ti: { symbol: "Ti", name: "Introverted Logic (Structure)", color: C.Ti,
+    subtitle: "Logic of Laws (Model A)\nLogic of Relations (Model G)\nLogic of Principles (Talanov)\nLogic of Composition (XYZ)",
+    desc: "The faculty of structural analysis and principled consistency. Ti organizes factual information into coherent frameworks, axioms, and classifications, filtering out contradictions and redundancies. It refines understanding toward internal consistency rather than external utility. Behaviorally: systematic reasoning, precision of language, insistence on logical correctness, discomfort with ambiguity.",
+    dyads: [{ label: "Control (J)" },{ label: "Intensive (I)" },{ label: "Static (St)" },{ label: "Abstracted (NT)" },{ label: "Implicit (NF)" },{ label: "Generating (A)" },{ label: "Mobilizing (Β)" }],
+    keywords: ["Structure","Axioms","Consistency","Classification","Frameworks","Principles"]
+  },
+  Fe: { symbol: "Fe", name: "Extraverted Ethics (Expression)", color: C.Fe,
+    subtitle: "Ethics of Emotions (Model A)\nEthics of Affect (Model G)\nEthics of Synchrony (Talanov)\nEthics of Moods (XYZ)",
+    desc: "The faculty of emotional broadcasting and group atmosphere management. Fe registers and modulates the collective emotional field: the mood of a room, the energy of a crowd, the social pressure of a cause. It expands participation by making emotions contagious and inclusive. Behaviorally: expressive warmth or dramatic intensity, social leadership, sensitivity to group morale, discomfort with emotional flatness.",
+    dyads: [{ label: "Control (J)" },{ label: "Extensive (E)" },{ label: "Dynamic (Dy)" },{ label: "Embedded (SF)" },{ label: "Implicit (NF)" },{ label: "Generating (A)" },{ label: "Mobilizing (Β)" }],
+    keywords: ["Expression","Atmosphere","Charisma","Morale","Belonging","Passion"]
+  },
+  Fi: { symbol: "Fi", name: "Introverted Ethics (Attitude)", color: C.Fi,
+    subtitle: "Ethics of Relations (Model A)\nEthics of Trust (Model G)\nEthics of Identity (Talanov)\nEthics of Valuation (XYZ)",
+    desc: "The faculty of interpersonal depth and moral discrimination. Fi registers the quality of relationships (trust, loyalty, attraction, betrayal) and filters social connections through personal ethical standards. It refines the social field by selecting who belongs and who does not. Behaviorally: deep personal attachments, selective trust, strong moral convictions, difficulty with superficial socializing.",
+    dyads: [{ label: "Control (J)" },{ label: "Intensive (I)" },{ label: "Static (St)" },{ label: "Embedded (SF)" },{ label: "Explicit (ST)" },{ label: "Optimizing (Γ)" },{ label: "Conserving (Δ)" }],
+    keywords: ["Relationships","Loyalty","Character","Morality","Trust","Attitudes"]
+  },
+};
+
+/* ═══════════ MAIN APP ═══════════ */
+function FunctionsReport() {
+  const [activeSection, setActiveSection] = useState("overview");
+
+  const sections = [
+    { id: "overview", label: "Overview", color: C.teal },
+    { id: "elements", label: "Eight Info-Elements", color: C.accent3 },
+    { id: "energetics", label: "Four Energetic Rhythms", color: C.accent1 },
+    { id: "aspects", label: "Four Jungian Aspects", color: C.accent2 },
+    { id: "axes", label: "Four Quadra Axes", color: C.rose },
+    { id: "dichotomies", label: "Dichotomies", color: C.accent4 },
+  ];
+
+  return (
+    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif", background: C.bg, color: C.text, minHeight: "100vh", padding: "0 0 60px" }}>
+
+      {/* ═══════════ HERO ═══════════ */}
+      <div style={{ background: `radial-gradient(ellipse at 20% 0%, ${C.Ne}06, transparent 55%), radial-gradient(ellipse at 80% 0%, ${C.Ti}06, transparent 55%), radial-gradient(ellipse at 50% 100%, ${C.Fe}05, transparent 50%)`, padding: "48px 28px 36px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
+        <Mono color={C.accent1}>Socionics · Ausra / Gulenko / Reinin / Talanov</Mono>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, margin: "14px 0", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          Information Metabolism Elements
+        </h1>
+        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(16px, 3vw, 22px)", color: C.textMuted, fontStyle: "italic", marginBottom: 16 }}>The Valleys of Cognitive Processing</div>
+        <Prose style={{ maxWidth: 700, margin: "0 auto 18px", textAlign: "center" }}>
+          A comprehensive analysis of the eight information metabolism elements (IMEs), explored through their associated dichotomies and these three organizing concepts: Energetics (how they operate), Aspects (what domain they target), and Axes (how they complement each other in quadra values).
+        </Prose>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+          {["Eight Info-Elements", "Four Energetic Rhythms", "Four Jungian Aspects", "Four Quadra Axes", "Dichotomies"].map((l, i) => (
+            <Tag key={i} label={l} color={[C.accent3, C.accent1, C.accent2, C.rose, C.accent4][i]} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 0, padding: "0 8px", borderBottom: `1px solid ${C.border}55`, overflowX: "auto", justifyContent: "center", marginTop: 20 }}>
+        {sections.map(s => (
+          <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
+        ))}
+      </div>
+
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
+        {/* ═══════════ OVERVIEW ═══════════ */}
+        {activeSection === "overview" && <>
+          <Divider label="What Are Information Metabolism Elements?" color={C.teal} />
+
+          <Card>
+            <SectionTitle>Three Organizing Concepts</SectionTitle>
+            <Prose>
+              The eight IMEs (referred to simply as "functions" by Talanov) are not an arbitrary set. They emerge from the intersection of three binary classifications, yielding exactly 2³ = 8 categories. These classifications also produce three natural ways to group the elements into pairs, each corresponding to a major structural layer of the Socion:
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { label: "Energetics", desc: "Je · Pe · Ji · Pi", color: C.accent1, sub: "How it operates", detail: "Pairs opposite aspects that share the same processing mode; generates Temperament groups" },
+                { label: "Aspects", desc: "T · N · F · S", color: C.accent2, sub: "What domain it targets", detail: "Pairs same-aspect elements that differ in E/I; generates Club groups" },
+                { label: "Axes", desc: "Dec · Mer · Ser · Jud", color: C.rose, sub: "What it complements", detail: "Pairs complementary elements that share quadra values; generates Quadra groups" },
+              ].map((cell, i) => (
+                <div key={i} style={{ background: C.card, padding: "16px 12px", textAlign: "center" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: cell.color, marginBottom: 4 }}>{cell.label}</div>
+                  <Mono>{cell.desc}</Mono>
+                  <div style={{ fontSize: 11, color: C.textMuted, fontStyle: "italic", marginTop: 6 }}>{cell.sub}</div>
+                  <div style={{ fontSize: 10, color: C.textDim, marginTop: 6 }}>{cell.detail}</div>
+                </div>
+              ))}
+            </div>
+            <SmallProse>
+              Each IME is uniquely defined by its position in all three concepts. Ne is simultaneously a <em>Pe</em> element (energetic/spontaneous processing), an <em>N</em> element (intuitive domain), and a member of the <em>Judicious axis</em> (Ne+Si, the divergent perceptual pair). No other element shares all three memberships. The three concepts are not redundant: they capture genuinely different structural properties that converge on the same eight entities from different angles.
+            </SmallProse>
+          </Card>
+
+          <Card>
+            <SectionTitle color={C.teal}>Attentional Basins of Cognitive Structure</SectionTitle>
+            <Prose>
+              Information Metabolism Elements (IMEs) are the eight fundamental categories of information that the human psyche is structured to process. Each IME represents a distinct <em>attentional basin</em>: a stable cognitive configuration in which perceptual resources, evaluative frameworks, and behavioral outputs are organized to handle a specific domain of reality. They are not merely "preferences" in the colloquial sense; they are structural features of how the mind carves the informational world into processable chunks.
+            </Prose>
+            <Prose>
+              The concept originates from Antoni Kepinski's theory of information metabolism: the idea that the psyche operates like a thermodynamic open system, receiving energy-information from the environment, metabolizing it through specialized processing structures, and converting it back into action. Aushra Augusta's central insight (c. 1968) was to identify Jung's eight function-attitudes as corresponding to eight <em>aspects of objective reality</em> that every psyche must process, with each sociotype handling them in a different structural configuration. Her resulting model, Model A (1978), placed all eight elements into an 8-position functional architecture with specific rules governing their arrangement, generating exactly 16 types.
+            </Prose>
+            <Prose>
+              Working alongside Augusta in the early development of Socionics was Victor Gulenko, who went on to become the most prolific contributor to the theory's evolution. Gulenko founded the Humanitarian Socionics School (HSS) in Kiev and shifted the theory's emphasis from purely informational processing toward the integration of <em>energy budgeting and utilization</em> alongside information flow. Where other schools continued to focus primarily on how humans perceive and process information (informational metabolism), HSS highlighted attention on human behavior and performance (energy metabolism). This dual emphasis produced two of Gulenko's most significant contributions: Model G, an alternative functional model that foregrounds the energy dynamics between functions, and the DCNH subtype system (Dominant, Creative, Normalizing, Harmonizing), which treats each of the 16 types as having four continuous subtype variations rather than being monolithic categories.
+            </Prose>
+            <Prose>
+              Modern approaches have since incorporated updated alignment with current knowledge of personality science, neuroendocrinology, cybernetics, and motivation theory. Perhaps the most consequential of these developments is the factor-analytically-anchored work of Viktor Talanov (via socionavigator.com) and the sociotype.xyz platform (see sociotype.xyz/2025 for a broad synopsis). Their data-first, continuous-measurement approach consolidates the structural models more formally while improving the quality of semantic descriptions through ongoing large-scale questionnaire participation and statistical denoising. Sociotype.xyz describes its methodology as extracting the most consistent intersections from collective type images, filtering out noise, and forming stable correlations purely mathematically, with descriptions evolving to align with factor-analytically derived data.
+            </Prose>
+            <Prose>
+              It is important to understand that leading practitioners of Socionics today do not approach type as rigidly as the classical 2×4 grid of Model A might suggest. Gulenko's DCNH system explicitly treats subtypes as continuous modulations, not discrete bins. Each person occupies a position on a spectrum within their type, with their subtype profile reflecting which functions are accentuated and to what degree. Gulenko's communicative distances framework similarly treats social behavior as a gradient phenomenon, not a fixed output.
+            </Prose>
+            <Prose>
+              Talanov's empirical approach reinforces this: his questionnaire-derived profiles show that each dichotomy, measured individually, distributes as a continuous bell curve across the population. There are no hard walls between "Intuitive" and "Sensor." However, the dichotomies are not independent of each other. They intercorrelate, meaning that certain trait combinations co-occur far more often than chance would predict. In the joint, multi-dimensional space of all dichotomies together, these intercorrelations create 16 regions of statistical clustering, stable configurations where large numbers of people converge. These clusters are the types. Sociotype.xyz measures personality along continuous dichotomy spectra rather than sorting into categorical boxes, and its intercorrelation data (sociotype.xyz/dcor) demonstrates precisely how the correlational structure between dichotomies generates the type clusters from continuous inputs.
+            </Prose>
+            <Prose>
+              The result is that type functions as an attractor state in the dynamical-systems sense. Each dichotomy axis is continuous (a bell curve when viewed in isolation), but the correlations between axes create valleys in the joint trait landscape, regions the psyche gravitates toward and tends to stay within. The type is real in the way a valley in a landscape is real: it is a stable configuration that the system tends toward, but the system is never frozen at the exact center. It moves, oscillates, and shifts position within the basin as development, context, and subtype accentuation modulate the profile. Under sufficient pressure, the system can even shift toward an adjacent basin, but it resists doing so because the correlational structure holds it in place.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Crucially, every person possesses all eight IMEs. They differ not in which elements they have, but in the <em>functional position</em> each element occupies. Position determines strength, priority, valuation, and behavioral expression. The same IME in the Base function versus the Vulnerable function produces radically different cognitive and behavioral profiles.
+            </Prose>
+          </Card>
+
+          <Card>
+            <SectionTitle>The Structuring Dichotomies</SectionTitle>
+            <Prose>
+              The eight IMEs are structured by seven elemental dichotomies, binary properties that partition the elements into meaningful groups. Three of these are <em>universal</em> (Spontaneity/Control, Extensive/Intensive, Static/Dynamic): they apply to all eight elements regardless of aspect or quadra, which is why the Energetic/Temperament dichotomies are so fundamental. Two additional dichotomies capture the higher-order partitions corresponding to Club structure, and two more encode Quadra-value partitions.
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+              <LensCard lens="Spontaneity (P) / Control (J)" color={C.teal}
+                content="Formerly known as Irrational/Rational. Spontaneity elements (also referred to as &quot;Survival&quot; by Talanov) register perceptions: Ne, Ni, Se, Si track what is and what could be in phenomenological space, orienting the organism toward opportunities and threats before any evaluation occurs. Control elements (Te, Ti, Fe, Fi) encode judgments: they evaluate, categorize, and decide, imposing symbolic structure onto the raw perceptual field. This is the fundamental divide between perceiving and judging, between referents and the symbols that represent them." />
+              <LensCard lens="Extensive (E) / Intensive (I)" color={C.accent4}
+                content="Extensive elements (Ne, Se, Te, Fe) expand the quantity of information by accumulating more of it, projecting outward toward phenomenological objects. Intensive elements (Ni, Si, Ti, Fi) refine the quality of information by filtering, drawing inward toward interrelationships. This dichotomy determines the Bold/Cautious function placement in Model A. The use of Extensive/Intensive at the element level helps prevent conflating the focus vectors of Socionics elements with Extraversion as understood in the Big Five or MBTI. The corresponding Reinin dichotomy (Extraverted/Introverted), which operates at the type level, aligns more closely with the colloquial understanding of those terms." />
+              <LensCard lens="Static (St) / Dynamic (Dy)" color={C.accent3}
+                content="Static elements (Ne, Se, Ti, Fi) capture discrete states, potentials, and distances: snapshot cognition that perceives reality as comprised of distinct parts. Dynamic elements (Ni, Si, Te, Fe) track continuous flows, transitions, and processes: streaming cognition that perceives reality as an evolving whole. This dichotomy determines the composition of the Mental and Vital rings in Model A." />
+              <LensCard lens="Abstracted (NT) / Embedded (SF)" color={C.accent2}
+                content="Abstracted elements (Ne, Ni, Te, Ti) operate at cognitive distance from visceral experience, processing information mentally and removed from immediate pleasure/pain signals. Embedded elements (Se, Si, Fe, Fi) operate at close range, processing through embodied, visceral experience. This partitions the NT elements from the SF elements, mapping to the Information vs. Energy axis in Socionics' energy-information duality." />
+              <LensCard lens="Implicit (NF) / Explicit (ST)" color={C.rose}
+                content="Implicit elements (Ne, Ni, Fe, Fi) deal with information that is subjectively interpreted: possibilities, hidden patterns, emotional atmospheres, and relational attitudes all require inference beyond the literal signal. Explicit elements (Se, Si, Te, Ti) deal with information that is objectively ascertained: physical properties, measurable data, territorial dynamics, and procedural facts are directly observable. This partitions the NF elements from the ST elements." />
+              <LensCard lens="Generating (A) / Optimizing (Γ)" color={C.judicious}
+                content="Generating elements (Ne, Si, Ti, Fe) are the Alpha-valued set, associated with divergent exploration, cooperative resource-processing, and cyclic temporal perception. Optimizing elements (Ni, Se, Te, Fi) are the Gamma-valued set, associated with convergent exploitation, competitive resource-processing, and focused goal-pursuit. Alpha and Gamma are each other's opposing quadras, maximally different in valued elements." />
+              <LensCard lens="Conserving (Δ) / Mobilizing (Β)" color={C.serious}
+                content="Conserving elements (Ne, Si, Te, Fi) are the Delta-valued set, associated with practical individuation, tradition-based stability, and judicious-serious discourse. Mobilizing elements (Ni, Se, Ti, Fe) are the Beta-valued set, associated with collective intensity, hierarchical drive, and decisive-merry discourse. Delta and Beta are each other's opposing quadras, maximally different in valued elements." />
+            </div>
+          </Card>
+        </>}
+
+        {/* ═══════════ ENERGETICS ═══════════ */}
+        {activeSection === "energetics" && <>
+          <Divider label="Four Energetic Rhythms: The Temperament Dyads" color={C.accent1} />
+          <Card>
+            <SectionTitle color={C.accent1}>The Most Fundamental Partition</SectionTitle>
+            <Prose>
+              Before an element's domain (Logic, Ethics, Intuition, Sensing) or its quadra affiliation matters, it must first be characterized by <em>how it processes</em>: its energetic mode. The four Energetic dyads pair elements that are opposite in aspect but identical in their metabolic signature. Ne and Se are both Extraverted Irrationals: spontaneous, expansive perceptual processors, despite targeting completely different information domains. Ti and Fi are both Introverted Rationals: refined, concentrated evaluative processors, despite judging by entirely different standards.
+            </Prose>
+            <Prose>
+              These are the primary <em>counterpart</em> pairs: Ne↔Se, Ni↔Si, Te↔Fe, Ti↔Fi. They represent two opposite approaches to the same fundamental mode of cognitive operation. Talanov's interfunctional correlation data confirms this: elements within the same Energetic dyad show the strongest <em>negative</em> correlation with each other (they are the primary functional opponents), while showing moderate positive correlation with members of the <em>same</em> dyad across the E/I divide.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              Each Quadra and each Club contains exactly one element from each Energetic dyad, they require all four modes to be structurally complete. The four Energetics also correspond precisely to the four Socionics Temperament groups when mapped through leading functions: Pe-leading types are EP (Flexible-Turning), Pi-leading types are IP (Receptive-Adaptive), Je-leading types are EJ (Linear-Assertive), and Ji-leading types are IJ (Balanced-Stable).
+            </Prose>
+          </Card>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, marginTop: 8 }}>
+            <DyadCard name="Extraverted Judging" code="Je" elements="Te+Fe (Orchestration)" color={C.Je}
+              desc="The Differential mode: expands evaluative scope by broadcasting judgments outward. Both Te and Fe are extraverted rational elements: they actively project evaluative standards onto the external world, seeking to organize it according to their respective criteria."
+              reinin="E + J + Dynamic"
+              items={[
+                "Te expands factual optimization; Fe expands emotional participation",
+                "Both are activating, initiative-taking, and socially directive",
+                "Corresponds to EJ Temperament (Linear-Assertive): sustained, organized drive",
+                "DCNH: Dominant subtype strengthens this dyad",
+                "Highest composite executive functioning profile (WM + IC + CF)"
+              ]} />
+            <DyadCard name="Extraverted Perceiving" code="Pe" elements="Ne+Se (Exploration)" color={C.Pe}
+              desc="The Dispersive mode: expands perceptual scope by projecting awareness outward. Both Ne and Se are extraverted irrational elements: they scan the environment for discrete opportunities, casting broad nets over phenomenological space."
+              reinin="E + P + Static"
+              items={[
+                "Ne expands possibility-space; Se expands territorial control",
+                "Both are spontaneous, novelty-seeking, and environmentally engaged",
+                "Corresponds to EP Temperament (Flexible-Turning): explosive, broad scanning",
+                "DCNH: Creative subtype strengthens this dyad",
+                "Highest cognitive flexibility, lowest inhibitory control"
+              ]} />
+            <DyadCard name="Introverted Judging" code="Ji" elements="Ti+Fi (Codification)" color={C.Ji}
+              desc="The Restrictive mode: refines evaluative quality by concentrating judgment inward. Both Ti and Fi are introverted rational elements: they filter the evaluative field, removing inconsistencies (Ti) or filtering social connections (Fi)."
+              reinin="I + J + Static"
+              items={[
+                "Ti refines structural consistency; Fi refines relational authenticity",
+                "Both are deliberate, principled, and internally self-referencing",
+                "Corresponds to IJ Temperament (Balanced-Stable): methodical persistence",
+                "DCNH: Normalizing subtype strengthens this dyad",
+                "Highest inhibitory control, lowest cognitive flexibility"
+              ]} />
+            <DyadCard name="Introverted Perceiving" code="Pi" elements="Ni+Si (Attunement)" color={C.Pi}
+              desc="The Receptive mode: refines perceptual quality by absorbing environmental signals inward. Both Ni and Si are introverted irrational elements: they register holistic fields of experience, receiving continuous feedback from inner states and temporal patterns."
+              reinin="I + P + Dynamic"
+              items={[
+                "Ni refines temporal vision; Si refines somatic harmony",
+                "Both are receptive, patient, and environmentally sensitive",
+                "Corresponds to IP Temperament (Receptive-Adaptive): responsive adaptation",
+                "DCNH: Harmonizing subtype strengthens this dyad",
+                "Highest environmental sensitivity, lowest working memory activation"
+              ]} />
+          </div>
+
+          <Card style={{ marginTop: 12 }}>
+            <SectionTitle>Energetics and the Socionics Torus</SectionTitle>
+            <div style={{ display: "flex", justifyContent: "center", margin: "8px 0 16px" }}>
+              <svg viewBox="0 0 400 260" style={{ width: "100%", maxWidth: 420, height: "auto" }}>
+                {/* Torus body */}
+                <ellipse cx="200" cy="130" rx="170" ry="60" fill="none" stroke={`${C.border}`} strokeWidth="0.5" strokeDasharray="2,3" />
+                <ellipse cx="200" cy="130" rx="170" ry="60" fill="none" stroke={`${C.accent4}12`} strokeWidth="30" />
+                {/* Inner hole */}
+                <ellipse cx="200" cy="130" rx="65" ry="22" fill={C.bg} stroke={`${C.border}`} strokeWidth="0.5" />
+                {/* Diagonal ring 1 */}
+                <ellipse cx="200" cy="130" rx="118" ry="90" fill="none" stroke={`${C.rose}30`} strokeWidth="1.5" transform="rotate(-25,200,130)" />
+                {/* Diagonal ring 2 */}
+                <ellipse cx="200" cy="130" rx="118" ry="90" fill="none" stroke={`${C.accent1}30`} strokeWidth="1.5" transform="rotate(25,200,130)" />
+                {/* Front surface arcs */}
+                <path d="M 30,130 Q 30,185 200,195 Q 370,185 370,130" fill="none" stroke={`${C.border}80`} strokeWidth="0.8" />
+                <path d="M 30,130 Q 30,75 200,65 Q 370,75 370,130" fill="none" stroke={`${C.border}40`} strokeWidth="0.8" strokeDasharray="3,4" />
+                {/* Meridian lines */}
+                <ellipse cx="117" cy="130" rx="12" ry="46" fill="none" stroke={`${C.border}20`} strokeWidth="0.6" />
+                <ellipse cx="200" cy="130" rx="12" ry="55" fill="none" stroke={`${C.border}20`} strokeWidth="0.6" />
+                <ellipse cx="283" cy="130" rx="12" ry="46" fill="none" stroke={`${C.border}20`} strokeWidth="0.6" />
+                {/* Antipodal lines - all pass through exact center (200,130) */}
+                <line x1="200" y1="72" x2="200" y2="188" stroke={`${C.Pe}40`} strokeWidth="1.3" strokeDasharray="4,4" />
+                <line x1="365" y1="130" x2="35" y2="130" stroke={`${C.Pi}40`} strokeWidth="1.3" strokeDasharray="4,4" />
+                <line x1="317" y1="89" x2="83" y2="171" stroke={`${C.Je}30`} strokeWidth="1.0" strokeDasharray="4,4" />
+                <line x1="83" y1="89" x2="317" y2="171" stroke={`${C.Ji}30`} strokeWidth="1.0" strokeDasharray="4,4" />
+                {/* Element nodes - 8 equidistant points on torus ellipse, perfectly symmetric */}
+                {[
+                  { x: 200, y: 72, label: "Ne", color: C.Ne },
+                  { x: 317, y: 89, label: "Te", color: C.Te },
+                  { x: 365, y: 130, label: "Ni", color: C.Ni },
+                  { x: 317, y: 171, label: "Fi", color: C.Fi },
+                  { x: 200, y: 188, label: "Se", color: C.Se },
+                  { x: 83, y: 171, label: "Fe", color: C.Fe },
+                  { x: 35, y: 130, label: "Si", color: C.Si },
+                  { x: 83, y: 89, label: "Ti", color: C.Ti },
+                ].map((el, i) => (
+                  <g key={i}>
+                    <circle cx={el.x} cy={el.y} r="15" fill={`${el.color}15`} stroke={el.color} strokeWidth="1.5" />
+                    <text x={el.x} y={el.y + 4} textAnchor="middle" fill={el.color} fontSize="9" fontWeight="800" fontFamily="'JetBrains Mono', monospace">{el.label}</text>
+                  </g>
+                ))}
+                {/* Center dot */}
+                <circle cx="200" cy="130" r="2" fill={`${C.border}60`} />
+                <text x="200" y="252" textAnchor="middle" fill={C.textDim} fontSize="9" fontFamily="'JetBrains Mono', monospace" letterSpacing="2">SOCIONICS TORUS · ANTIPODAL COUNTERPARTS</text>
+              </svg>
+            </div>
+            <Prose style={{ marginBottom: 0 }}>
+              On the Socionics Torus (Joynton), the eight IMEs are arranged such that Energetic counterparts occupy <em>antipodal</em> positions: Ne is maximally distant from Se, Ti from Fi, etc. This geometric fact encodes the fundamental opposition: counterparts compete for the same processing mode. If Ne is strongly activated, Se is suppressed (and vice versa), because both demand the same explorative Extraverted-Irrational (Pe) processing channel. This is why the Jungian Axis in Model A (positions 1↔7, Base↔Ignoring; these element placement labels and numbers will be discussed further in the next installment specifically on the Models) always pairs Energetic counterparts. The Base function's dominance necessarily suppresses its counterpart to the Ignoring position.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════ ASPECTS ═══════════ */}
+        {activeSection === "aspects" && <>
+          <Divider label="Four Jungian Aspects: The Cognitive Faculties" color={C.accent2} />
+          <Card>
+            <SectionTitle color={C.accent2}>The Four Domains of Information</SectionTitle>
+            <Prose>
+              Where Energetics capture <em>how</em> an element operates, Aspects capture <em>what ontological domain</em> it targets. The four Jungian Aspects (Intuition, Sensing, Logic, Ethics) represent the four irreducible categories of information about reality. Each Aspect contains exactly two elements (one Extraverted, one Introverted) that process the same domain but with opposite directionality: expanding quantity versus refining quality.
+            </Prose>
+            <Prose>
+              The Aspect dyads are the basis for the four Socionics Clubs: types leading with the same Aspect share a cognitive domain and vocational orientation. The two Aspect dichotomies, N/S (Imagination/Sense) and T/F (Calculation/Suggestion), are the primary axes of Talanov's Strength triad, jointly determining what a type <em>can</em> do.
+            </Prose>
+          </Card>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+            <DyadCard name="Intuition (Conceptualization)" code="N" elements="Ne + Ni" color={C.N}
+              desc="The faculty of the non-present: processing information about what is not directly available to the senses. Ne expands possibility-space (divergent); Ni narrows it to essential trajectory (convergent). Together they span the full range of abstract-temporal cognition."
+              reinin="Spontaneity · Abstracted · Implicit"
+              items={[
+                "Ne: possibilities, alternatives, novelty, what could be",
+                "Ni: foresight, imagery, hidden patterns, what will be",
+                "Talanov: wider perceptual filters, more pattern detection, more noise",
+                "Big Five: loads strongly on Openness to Experience",
+                "Extreme form: schizotypal features (blurred reality/imagination boundary)"
+              ]} />
+            <DyadCard name="Sensing (Embodiment)" code="S" elements="Se + Si" color={C.S}
+              desc="The faculty of the present: processing information about what is directly available to the body. Se expands environmental control (volitional); Si refines environmental harmony (homeostatic). Together they span the full range of concrete-somatic cognition."
+              reinin="Spontaneity · Embedded · Explicit"
+              items={[
+                "Se: force, territory, impact, intensity of the here-and-now",
+                "Si: comfort, balance, vitality, quality of embodied experience",
+                "Talanov: narrower perceptual filters, precise motor control, less error",
+                "Big Five: inversely correlated with Openness; loads on Conscientiousness",
+                "Grounded in direct sensory experience: taste, touch, proprioception"
+              ]} />
+            <DyadCard name="Logic (Systematization)" code="T" elements="Te + Ti" color={C.T}
+              desc="The faculty of impersonal evaluation: processing information about objects, systems, and factual propositions. Te expands factual accumulation (procedural); Ti refines structural consistency (principled). Together they span the full range of epistemological cognition."
+              reinin="Control · Abstracted · Explicit"
+              items={[
+                "Te: efficiency, methods, productivity, factual accuracy",
+                "Ti: structure, axioms, classification, logical correctness",
+                "Talanov: localized cortical excitation; precise, computer-like processing",
+                "Big Five: inversely correlated with Agreeableness; Intellect facet of Openness",
+                "Extreme form: schizoid / detached features (reduced social feedback)"
+              ]} />
+            <DyadCard name="Ethics (Affect)" code="F" elements="Fe + Fi" color={C.F}
+              desc="The faculty of personal evaluation: processing information about subjects, relationships, and emotional states. Fe expands emotional participation (atmospheric); Fi refines relational quality (discriminating). Together they span the full range of sociological cognition."
+              reinin="Control · Embedded · Implicit"
+              items={[
+                "Fe: moods, charisma, expression, emotional belonging",
+                "Fi: attitudes, loyalty, character judgment, moral integrity",
+                "Talanov: generalized cortical excitation; broad, resonant processing",
+                "Big Five: loads on Agreeableness (Compassion); Enthusiasm facet of Extraversion",
+                "Extreme form: histrionic features (emotional amplification and display)"
+              ]} />
+          </div>
+
+          <Card style={{ marginTop: 12 }}>
+            <SectionTitle>Aspects and the Jungian Mandala</SectionTitle>
+            <Prose style={{ marginBottom: 0 }}>
+              The Jungian Mandala is formed by intersecting the function dichotomies of Strong/Weak with Inert/Contact to produce the four Jungian Axes, each pairing a Base function with its Ignoring counterpart (i.e. Ne Base / Ni Ignoring. Placements such as these will be expanded upon in the next installment of this series, which will be covering the full Socionics Models). The Jungian Mandala, when combined with the Quadra Mandala, uniquely identifies a sociotype. This means that specifying <em>which Aspect leads</em> and <em>which Quadra the type belongs to</em> is sufficient to determine all eight function positions. The intersection of the two Mandalas yields exactly one type.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════ AXES ═══════════ */}
+        {activeSection === "axes" && <>
+          <Divider label="Four Quadra Axes: The Complementary Dyads" color={C.rose} />
+          <Card>
+            <SectionTitle color={C.rose}>Complementary Dyads and Quadra Values</SectionTitle>
+            <Prose>
+              The Axes are the most emergent and encompassing pairing framework. Each Axis pairs two elements from <em>different</em> Energetic dyads <em>and</em> different Aspects, creating a dyad whose members are complementary rather than competitive. Where Energetic counterparts (Ne↔Se) fight for the same processing channel, Axis partners (Ne+Si) form a communication feedback loop: one generates referents while the other encodes them into symbols (or vice versa), completing a full information metabolism cycle.
+            </Prose>
+            <Prose>
+              Vincent's Information Axes paper grounds this in semiotics: rational elements are <em>symbols</em> (intensional representations) and irrational elements are <em>referents</em> (extensional phenomena). A symbol without a referent is empty; a referent without a symbol is unknowable. The Axes pair symbols with their natural referents, creating the four information-metabolism feedback loops that define quadra values. Each Quadra values exactly two of these four Axes.
+            </Prose>
+            <Prose style={{ marginBottom: 0 }}>
+              These dyads also facilitate the emergence of higher-order properties: feedback loops (the sender-receiver cycle), fulfillment needs (what a type's weak Axis partner craves from its dual), and growth trajectories (how the Axis develops across the lifespan). They are the building blocks from which Quadra values, and by extension, all intertype relations, are constructed.
+            </Prose>
+          </Card>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, marginTop: 8 }}>
+            <DyadCard name="Decisive" code="Se/Ni" elements="Competition" color={C.decisive}
+              desc="Convergent perception: volitional force backed by focused foresight. Se grasps the present moment with intensity while Ni envisions the single necessary trajectory. Together: narrow but deep resource engagement, commitment to a specific path, confrontation-readiness."
+              reinin="Decisive (Competition)"
+              items={[
+                "Valued by Beta and Gamma quadras",
+                "Se confronts the present → Ni channels it toward inevitable outcomes",
+                "Convergent: focused options, concentrated resources, zero-sum thinking",
+                "Opposite of Judicious: decisive types process refined, high-value resources",
+                "Creates the forward-driving temporal orientation of Beta/Gamma"
+              ]} />
+            <DyadCard name="Judicious" code="Ne/Si" elements="Cooperation" color={C.judicious}
+              desc="Divergent perception: possibility-seeking grounded in bodily comfort. Ne expands the option field while Si ensures the organism's equilibrium is maintained. Together: broad but shallow resource engagement, noncommittal exploration, conflict avoidance."
+              reinin="Judicious (Cooperation)"
+              items={[
+                "Valued by Alpha and Delta quadras",
+                "Ne generates alternatives → Si harmonizes with what feels right",
+                "Divergent: multiplied options, scattered resources, positive-sum thinking",
+                "Opposite of Decisive: judicious types process diffuse, scattered resources",
+                "Creates the present-oriented, cooperative temporal feel of Alpha/Delta"
+              ]} />
+            <DyadCard name="Merry" code="Fe/Ti" elements="Universalization" color={C.merry}
+              desc="Universalizing judgment: open emotional expression integrated with principled logical frameworks. Fe expands participation into common emotional space while Ti structures understanding into universal categories. Together: inclusive discourse, synergistic communication, building complexity."
+              reinin="Merry (Ascending)"
+              items={[
+                "Generative: synthesizes and expands experience by transforming discrete objects into subjective communities and building universal, inclusive frameworks",
+                "Valued by Alpha and Beta quadras",
+                "Fe includes → Ti integrates: expanding the circle while structuring its logic",
+                "Energy moves from lower to higher organization (negentropy)",
+                "Creates the expressive, framework-building character of Alpha/Beta"
+              ]} />
+            <DyadCard name="Serious" code="Te/Fi" elements="Specialization" color={C.serious}
+              desc="Particularizing judgment: practical efficiency filtered through personal moral evaluation. Te accumulates useful knowledge while Fi selects who deserves trust. Together: selective discourse, optimizing communication, distributing complexity."
+              reinin="Serious (Descending)"
+              items={[
+                "Instrumental: specializes and utilizes experience by transforming subjective relationships into practical transactions, narrowing focus strictly to what works and who to trust",
+                "Valued by Gamma and Delta quadras",
+                "Te optimizes → Fi discriminates: narrowing to what works and who to trust",
+                "Energy moves from higher to lower organization (entropy/differentiation)",
+                "Creates the pragmatic, trust-selective character of Gamma/Delta"
+              ]} />
+          </div>
+
+          <Card style={{ marginTop: 12 }}>
+            <SectionTitle>How Axes Construct Quadras</SectionTitle>
+            <Prose>
+              Each Quadra is defined by valuing one perceptual Axis and one evaluative Axis. The intersection uniquely determines the quadra:
+            </Prose>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: C.border, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { q: "Alpha (Α)", a1: "Judicious", a2: "Merry", c1: C.judicious, c2: C.merry, el1: "Ne+Si", el2: "Ti+Fe" },
+                { q: "Beta (Β)", a1: "Decisive", a2: "Merry", c1: C.decisive, c2: C.merry, el1: "Se+Ni", el2: "Ti+Fe" },
+                { q: "Gamma (Γ)", a1: "Decisive", a2: "Serious", c1: C.decisive, c2: C.serious, el1: "Se+Ni", el2: "Fi+Te" },
+                { q: "Delta (Δ)", a1: "Judicious", a2: "Serious", c1: C.judicious, c2: C.serious, el1: "Ne+Si", el2: "Fi+Te" },
+              ].map((qd, i) => (
+                <div key={i} style={{ background: C.card, padding: 14, textAlign: "center" }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>{qd.q}</div>
+                  <div style={{ fontSize: 12, color: qd.c1, fontWeight: 600, marginBottom: 3 }}>{qd.a1}</div>
+                  <div style={{ fontSize: 12, color: qd.c2, fontWeight: 600, marginBottom: 8 }}>{qd.a2}</div>
+                  <div><Mono>{qd.el1}</Mono></div>
+                  <div><Mono>{qd.el2}</Mono></div>
+                </div>
+              ))}
+            </div>
+            <SmallProse>
+              The Quadra Mandala is formed by intersecting Valued/Subdued with Evaluatory/Situational function dichotomies to produce four Quadra Axes. The Jungian Mandala intersects Strong/Weak with Inert/Contact. Crucially, neither mandala alone identifies a single type, but their intersection does. This is the mathematical heart of why Socionics produces exactly 16 types: 4 Jungian groups × 4 Quadra groups = 16 unique configurations.
+            </SmallProse>
+          </Card>
+        </>}
+
+        {/* ═══════════ DICHOTOMIES ═══════════ */}
+        {activeSection === "dichotomies" && <>
+          <Divider label="Elemental Dichotomies" color={C.accent4} />
+          <Card>
+            <SectionTitle color={C.accent4}>Seven Binary Properties of the Eight Elements <span style={{ fontSize: 13, color: C.textDim, fontWeight: 400, fontFamily: "'Inter', -apple-system, sans-serif", fontStyle: "italic" }}>("Elemental Dichotomies")</span></SectionTitle>
+            <Prose>
+              The eight IMEs can be characterized by seven elemental dichotomies, binary properties that partition all eight elements into complementary groups of four. These dichotomies are not arbitrary; they capture the fundamental structural and ontological distinctions that make each element what it is. The first three are <em>universal</em>, they apply to all eight elements regardless of aspect or quadra membership, which helps illustrate why the Energetic/Temperament dichotomies are so fundamental to the theory. The remaining four are derived dichotomies that capture higher-order patterns corresponding to Club and Quadra structure.
+            </Prose>
+          </Card>
+
+          <Card>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: C.textMuted }}>
+                <thead>
+                  <tr>
+                    {["Dichotomy", "Pole 1", "Elements", "Pole 2", "Elements", "Structural Role"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Spontaneity (P) / Control (J)", "Spontaneity", "Ne Ni Se Si", "Control", "Te Ti Fe Fi", "Formerly Irrational/Rational; referents vs. symbols, perceptions vs. judgments"],
+                    ["Extensive (E) / Intensive (I)", "Extensive", "Ne Se Te Fe", "Intensive", "Ni Si Ti Fi", "Reinin equivalent: Extraverted/Introverted; expanding quantity vs. refining quality"],
+                    ["Static (St) / Dynamic (Dy)", "Static", "Ne Se Ti Fi", "Dynamic", "Ni Si Te Fe", "Snapshot cognition vs. process cognition; discrete states vs. continuous flows"],
+                    ["Abstracted (NT) / Embedded (SF)", "Abstracted", "Ne Ni Te Ti", "Embedded", "Se Si Fe Fi", "NT-partition vs. SF-partition, mentally detached vs. viscerally embodied"],
+                    ["Implicit (NF) / Explicit (ST)", "Implicit", "Ne Ni Fe Fi", "Explicit", "Se Si Te Ti", "NF-partition vs. ST-partition, subjectively interpreted vs. objectively ascertained"],
+                    ["Generating (A) / Optimizing (Γ)", "Generating", "Ne Si Ti Fe", "Optimizing", "Ni Se Te Fi", "Α-valued elements vs. Γ-valued elements"],
+                    ["Conserving (Δ) / Mobilizing (Β)", "Conserving", "Ne Si Te Fi", "Mobilizing", "Ni Se Ti Fe", "Δ-valued elements vs. Β-valued elements"],
+                  ].map((row, i) => (
+                    <tr key={i} style={{ background: i < 3 ? `${C.accent4}04` : "transparent" }}>
+                      {row.map((cell, j) => {
+                        const isElementCol = j === 2 || j === 4;
+                        const isDichotomyCol = j === 0;
+                        let displayCell = cell;
+                        if (isElementCol) {
+                          const parts = cell.split(" ");
+                          displayCell = (
+                            <>
+                              <div>{parts.slice(0, 2).join(" ")}</div>
+                              <div>{parts.slice(2, 4).join(" ")}</div>
+                            </>
+                          );
+                        } else if (isDichotomyCol) {
+                          const poles = cell.split(" / ");
+                          displayCell = (
+                            <>
+                              <div>{poles[0]} /</div>
+                              <div>{poles[1]}</div>
+                            </>
+                          );
+                        }
+                        return (
+                          <td key={j} style={{ padding: "8px 8px", borderBottom: `1px solid ${C.border}20`, color: i < 3 ? (j === 0 ? C.text : C.textMuted) : (j === 0 ? C.textMuted : C.textDim), fontWeight: (j === 0 && i < 3) ? 800 : j === 0 ? 500 : 400, fontSize: isElementCol ? 10 : 11, fontFamily: isElementCol ? "'JetBrains Mono', monospace" : "inherit", verticalAlign: "top", lineHeight: (isElementCol || isDichotomyCol) ? 1.5 : "inherit", whiteSpace: isDichotomyCol ? "nowrap" : "normal" }}>{displayCell}</td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <SmallProse style={{ marginTop: 14 }}>
+              The first three dichotomies (bolded) are universal: they apply to all eight elements regardless of aspect or quadra, and correspond directly to the three Temperament-generating dichotomies. The remaining four are derived elemental dichotomies: Abstracted/Embedded and Implicit/Explicit capture the two Club-structure partitions (NT vs. SF and NF vs. ST respectively), while Generating/Optimizing and Conserving/Mobilizing encode the two Quadra-value partitions. The two Quadra-value dichotomies partition the elements into the four sets that define quadra membership when intersected.
+            </SmallProse>
+          </Card>
+
+          <Card>
+            <SectionTitle>Understanding the Derived Elemental Dichotomies</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
+              <LensCard lens="Abstracted (NT) / Embedded (SF)" color={C.accent2}
+                content="Separates the NT elements (Ne, Ni, Te, Ti) from the SF elements (Se, Si, Fe, Fi). Abstracted elements process information at cognitive distance: through models, theories, possibilities, and logical structures. Embedded elements process through visceral engagement: bodily sensation, emotional resonance, volitional force, and relational depth. This is the Club axis that separates Researchers+Humanitarians from Pragmatists+Socials along the &quot;mental vs. somatic&quot; divide." />
+              <LensCard lens="Implicit (NF) / Explicit (ST)" color={C.N}
+                content="Separates the NF elements (Ne, Ni, Fe, Fi) from the ST elements (Se, Si, Te, Ti). Implicit elements deal with information that is subjectively interpreted: possibilities, hidden patterns, emotional atmospheres, and relational attitudes all require inference beyond the literal signal. Explicit elements deal with information that is objectively ascertained: physical properties, measurable data, territorial dynamics, and procedural facts are directly observable. This is the Club axis separating the &quot;internal world&quot; professions from the &quot;external world&quot; professions." />
+              <LensCard lens="Generating (A) / Optimizing (Γ)" color={C.judicious}
+                content="Separates the Alpha-valued elements (Ne, Si, Ti, Fe) from the Gamma-valued elements (Ni, Se, Te, Fi). Generating elements are associated with divergent exploration, cooperative resource-processing, and cyclic temporal perception. Optimizing elements are associated with convergent exploitation, competitive resource-processing, and focused goal-pursuit. Alpha and Gamma are each other's opposing quadras, maximally different in valued elements." />
+              <LensCard lens="Conserving (Δ) / Mobilizing (Β)" color={C.decisive}
+                content="Separates the Delta-valued elements (Ne, Si, Te, Fi) from the Beta-valued elements (Ni, Se, Ti, Fe). Conserving elements are associated with practical individuation, tradition-based stability, and judicious-serious discourse. Mobilizing elements are associated with collective intensity, hierarchical drive, and decisive-merry discourse. Delta and Beta are each other's opposing quadras, maximally different in valued elements." />
+            </div>
+          </Card>
+
+          <Divider label="Reinin Dichotomies for Elements" color={C.accent4} />
+          <Card>
+            <SectionTitle>Seven Key Reinin Dichotomies</SectionTitle>
+            <Prose>
+              Talanov identifies five dichotomies as empirically significant for each element, drawn from a total pool of seven. Five apply to the Spontaneity elements and five to the Control elements, with Perceiving/Judging (the Reinin-level expression of Spontaneity/Control) and Extraverted/Introverted (the Reinin-level expression of Extensive/Intensive) shared by both. These seven Reinin dichotomies provide the type-level manifestation of the elemental properties: they describe how a <em>type</em> behaves when a given element is dominant.
+            </Prose>
+            {(() => {
+              const items = [
+                { name: "Perceiving / Judging", code: "abcx", color: C.teal, applies: "All elements", desc: "Of all seven Reinin dichotomies, Perceiving/Judging carries the most central weight in Talanov's framework, since it determines whether the psyche is governed by a Spontaneity element or by a Control element at its executive core. Judging types plan ahead and exercise rational self-control, directing behavior toward the satisfaction of social needs: belonging, coordinated activity, and commitment to shared structures. Perceiving types operate through spontaneity and lower frontal inhibition, directing behavior toward the satisfaction of vital needs: free time, sensory pleasures, and open-ended experience. The dichotomy maps with striking fidelity onto the Exploration vs. Exploitation distinction in contemporary personality science, particularly DeYoung's Cybernetic Big Five Theory (CB5T): Perceiving corresponds to Exploration (seeking novelty, tolerating uncertainty, revising goals mid-stream), while Judging corresponds to Exploitation (executing on established goals, maintaining commitments, resisting distraction). Talanov treats this dichotomy as deeply tied to prefrontal executive functioning, and its variance contribution places it among the structural pillars of the entire system." },
+                { name: "Extraverted / Introverted", code: "x", color: C.accent4, applies: "All elements", desc: "The energy-throughput dichotomy. Extraversion = predominance of cortical excitation, initiative-taking, broader social contact, hyperthymic baseline. Introversion = predominance of inhibition, wait-for-initiative, narrower engagement, dysthymic baseline. The single highest-variance dichotomy in Talanov's factor analyses (17–20%)." },
+                { name: "Principles (Static) / Needs (Dynamic)", code: "abc", color: C.Se, applies: "All elements", desc: "Static/Dynamic reframed at the behavioral level. Principles (Static): perception of reality as discrete potentials, principled self-sufficiency, digital/categorical processing. Needs (Dynamic): perception as flows and resource streams, adaptive pliability, analog/gradient processing." },
+                { name: "Intuitive / Sensing", code: "b", color: C.N, applies: "Irrational elements", desc: "Determines perceptual filter width. Intuitive: wider filters, more pattern detection, more perceptual noise, abstract-imaginal processing, less attention to physical environment. Sensing: narrower filters, precise motor control, concrete-present processing, greater attention to bodily signals and material quality." },
+                { name: "Logical / Ethical", code: "a", color: C.T, applies: "Rational elements", desc: "Determines evaluative target. Logical: localized cortical excitation, object-oriented, formal reasoning, impersonal evaluation, task-focus. Ethical: generalized cortical excitation, subject-oriented, cognitive empathy, relational evaluation, people-focus." },
+                { name: "Judicious / Decisive", code: "bc", color: C.decisive, applies: "Irrational elements", desc: "Determines the perceptual Axis valued. Judicious (Ne+Si valued): divergent perception, broad resource engagement, conflict-avoidance, cooperative orientation. Decisive (Se+Ni valued): convergent perception, deep resource engagement, confrontation-readiness, competitive orientation." },
+                { name: "Merry / Serious", code: "ac", color: C.merry, applies: "Rational elements", desc: "Determines the evaluative Axis valued. Merry (Fe+Ti valued): universalizing judgment, open expression, inclusive frameworks, subjectification, building complexity. Serious (Te+Fi valued): particularizing judgment, selective trust, practical efficiency, objectification, distributing complexity." },
+              ];
+              const renderItem = (item, i) => (
+                <div key={i} style={{ background: `${item.color}06`, border: `1px solid ${item.color}18`, borderRadius: 10, padding: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: item.color }}>{item.name}</div>
+                    <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, background: `${item.color}12`, color: `${item.color}aa`, fontFamily: "'JetBrains Mono', monospace" }}>{item.code}</span>
+                  </div>
+                  <div style={{ fontSize: 10, color: item.color, fontWeight: 600, letterSpacing: 1, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>{item.applies}</div>
+                  <SmallProse style={{ color: C.textMuted }}>{item.desc}</SmallProse>
+                </div>
+              );
+              return (
+                <>
+                  <div style={{ marginBottom: 12 }}>
+                    {renderItem(items[0], 0)}
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                    {items.slice(1).map((it, idx) => renderItem(it, idx + 1))}
+                  </div>
+                </>
+              );
+            })()}
+          </Card>
+
+          <Card>
+            <SectionTitle>Talanov's Functional Profiles</SectionTitle>
+            <Prose>
+              Using a five-dichotomy approach, each element is characterized by five of the seven Reinin dichotomies. The irrational elements use P/J, E/I, Static/Dynamic, N/S, and Judicious/Decisive. The rational elements use P/J, E/I, Static/Dynamic, T/F, and Merry/Serious. The split occurs because N/S and Judicious/Decisive only differentiate among perceptual elements, while T/F and Merry/Serious only differentiate among evaluative elements. P/J, E/I, and Static/Dynamic cut across both.
+            </Prose>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+                <thead>
+                  <tr>
+                    {["IME", "P / J", "E / I", "St / Dy", "N / S", "T / F", "Jud / Dec", "Mer / Ser"].map((h, i) => (
+                      <th key={i} style={{ padding: "8px 6px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Ne", "P", "E", "St", "N", "—", "Jud", "—", C.Ne],
+                    ["Se", "P", "E", "St", "S", "—", "Dec", "—", C.Se],
+                    ["Ni", "P", "I", "Dy", "N", "—", "Dec", "—", C.Ni],
+                    ["Si", "P", "I", "Dy", "S", "—", "Jud", "—", C.Si],
+                    ["Te", "J", "E", "Dy", "—", "T", "—", "Ser", C.Te],
+                    ["Fe", "J", "E", "Dy", "—", "F", "—", "Mer", C.Fe],
+                    ["Ti", "J", "I", "St", "—", "T", "—", "Mer", C.Ti],
+                    ["Fi", "J", "I", "St", "—", "F", "—", "Ser", C.Fi],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.slice(0, 8).map((cell, j) => (
+                        <td key={j} style={{
+                          padding: "6px", textAlign: "center",
+                          borderBottom: `1px solid ${C.border}20`,
+                          color: cell === "—" ? `${C.border}` : j === 0 ? row[8] : C.textMuted,
+                          fontWeight: j === 0 ? 700 : 400,
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: j === 0 ? 11 : 10,
+                        }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <SmallProse style={{ marginTop: 12 }}>
+              The dashes indicate dichotomies that do not apply to that element class. Every irrational element is fully specified by its five irrational-applicable dichotomies; every rational element by its five rational-applicable dichotomies. The two sets share three dichotomies (P/J, E/I, St/Dy), ensuring structural coherence across the full system.
+            </SmallProse>
+          </Card>
+        </>}
+
+        {/* ═══════════ THE EIGHT IMES ═══════════ */}
+        {activeSection === "elements" && <>
+          <Divider label="The Eight Information Metabolism Elements" color={C.accent3} />
+          <Card>
+            <SectionTitle color={C.accent3}>Each Element as Dichotomy Intersection</SectionTitle>
+            <Prose>
+              Each IME is uniquely specified by its Energetic mode, its Aspect domain, and its Axis membership. The descriptions below anchor each element through these structural components while elaborating its phenomenological, behavioral, and relational character. The sociotype.xyz descriptions (drawing on Talanov's correlation data) provide the empirical texture; Vincent's structural framework provides the algebraic skeleton; and Gulenko's behavioral observations supply the observable phenotype.
+            </Prose>
+          </Card>
+
+          <Divider label="Spontaneity Elements (Perceptions)" color={C.N} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <IMECard {...IME_DATA.Ne} />
+            <IMECard {...IME_DATA.Se} />
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 14 }}>
+            <IMECard {...IME_DATA.Ni} />
+            <IMECard {...IME_DATA.Si} />
+          </div>
+
+          <Divider label="Control Elements (Judgments)" color={C.T} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <IMECard {...IME_DATA.Te} />
+            <IMECard {...IME_DATA.Fe} />
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 14 }}>
+            <IMECard {...IME_DATA.Ti} />
+            <IMECard {...IME_DATA.Fi} />
+          </div>
+
+          <Divider label="Structural Summary" color={C.accent3} />
+          <Card>
+            <SectionTitle>The Complete Component Matrix</SectionTitle>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                <thead>
+                  <tr>
+                    {["IME", "Energetic", "Aspect", "Axis", "Spo/Con", "E/I", "St/Dy", "Abs/Emb", "Imp/Exp", "Gen/Opt", "Con/Mob"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 5px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 0.5, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Ne", "Pe", "N", "Judicious", "Irr", "Ext", "Sta", "Abs (NT)", "Imp (NF)", "Gen (A)", "Con (Δ)", C.Ne],
+                    ["Se", "Pe", "S", "Decisive", "Irr", "Ext", "Sta", "Emb (SF)", "Exp (ST)", "Opt (Γ)", "Mob (B)", C.Se],
+                    ["Ni", "Pi", "N", "Decisive", "Irr", "Int", "Dyn", "Abs (NT)", "Imp (NF)", "Opt (Γ)", "Mob (B)", C.Ni],
+                    ["Si", "Pi", "S", "Judicious", "Irr", "Int", "Dyn", "Emb (SF)", "Exp (ST)", "Gen (A)", "Con (Δ)", C.Si],
+                    ["Te", "Je", "T", "Serious", "Rat", "Ext", "Dyn", "Abs (NT)", "Exp (ST)", "Opt (Γ)", "Con (Δ)", C.Te],
+                    ["Fe", "Je", "F", "Merry", "Rat", "Ext", "Dyn", "Emb (SF)", "Imp (NF)", "Gen (A)", "Mob (B)", C.Fe],
+                    ["Ti", "Ji", "T", "Merry", "Rat", "Int", "Sta", "Abs (NT)", "Imp (NF)", "Gen (A)", "Mob (B)", C.Ti],
+                    ["Fi", "Ji", "F", "Serious", "Rat", "Int", "Sta", "Emb (SF)", "Exp (ST)", "Opt (Γ)", "Con (Δ)", C.Fi],
+                  ].map((row, i) => (
+                    <tr key={i}>
+                      {row.slice(0, 11).map((cell, j) => (
+                        <td key={j} style={{
+                          padding: "7px 5px", textAlign: "center",
+                          borderBottom: `1px solid ${C.border}20`,
+                          color: j === 0 ? row[11] : j === 1 ? C.accent1 : j === 2 ? C.accent2 : j === 3 ? C.rose : C.textDim,
+                          fontWeight: j <= 3 ? 700 : 400,
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: j === 0 ? 12 : 10,
+                        }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card>
+            <SectionTitle>Blocked Pairs and Thermodynamics</SectionTitle>
+            <Prose>
+              The fundamental rule governing how IMEs combine in the psyche is that a functional block must always pair one Perceiving element (Ne, Ni, Se, Si) with one Judging element (Te, Ti, Fe, Fi), regardless of which comes first. This pairing is what allows metabolism to occur at all: perception supplies the raw referents, judgment imposes the symbolic structure that makes them actionable. An element cannot metabolize information by itself. It needs its structural opposite to complete the loop.
+            </Prose>
+            <Prose>
+              This rule yields exactly 16 unique Perceiving-Judging combinations. When the sequence of processing is also taken into account, meaning which element leads and which supports, these 16 pairs expand into 32 distinct processes. The two orientations of each pair have subtly different phenomenological characters: Ne leading into Ti produces <em>ideation</em>, while Ti leading into Ne produces a <em>framework</em> that seeks its examples.
+            </Prose>
+            <Prose>
+              The 16 blocks split into two thermodynamic categories based on the attitudes of the elements involved. <em>Information blocks</em> pair elements of <em>opposite</em> attitude (Pe+Ji or Pi+Je); these are the blocks most formally captured by Model A, which foregrounds the structural topology of information flow through the psyche. <em>Energy blocks</em> pair elements of <em>same</em> attitude (Pe+Je or Pi+Ji); these are the blocks most directly captured by Model G, Gulenko's reformulation that foregrounds how psychic energy is budgeted, expended, and replenished through behavioral output. Both kinds of blocks are present in every type. The difference is which model's formalism makes them most legible.
+            </Prose>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 18 }}>
+              {/* Information Blocks - opposite attitudes */}
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: C.accent2, marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", textAlign: "center", paddingBottom: 6, borderBottom: `1px solid ${C.accent2}30` }}>Information Blocks (Model A)</div>
+                <div style={{ fontSize: 9, color: C.textDim, marginBottom: 10, textAlign: "center", fontFamily: "'JetBrains Mono', monospace" }}>P&gt;J Label / J&gt;P Label</div>
+                {[
+                  ["Ne→Ti", "Ideation", "Framework"],
+                  ["Ne→Fi", "Potential", "Integrity"],
+                  ["Se→Ti", "Enforcement", "Structure"],
+                  ["Se→Fi", "Boundaries", "Loyalty"],
+                  ["Ni→Te", "Forecasting", "Strategy"],
+                  ["Ni→Fe", "Narrative", "Invocation"],
+                  ["Si→Te", "Maintenance", "Procedure"],
+                  ["Si→Fe", "Comfort", "Warmth"],
+                ].map((row, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 4px", borderBottom: `1px solid ${C.border}20`, fontSize: 10 }}>
+                    <span style={{ color: C.accent2, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", minWidth: 60 }}>{row[0]}</span>
+                    <span style={{ color: C.text, fontFamily: "'JetBrains Mono', monospace", textAlign: "right", flex: 1 }}>{row[1]} <span style={{ color: C.textDim }}>/</span> {row[2]}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Energy Blocks - same attitudes */}
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: C.accent1, marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", textAlign: "center", paddingBottom: 6, borderBottom: `1px solid ${C.accent1}30` }}>Energy Blocks (Model G)</div>
+                <div style={{ fontSize: 9, color: C.textDim, marginBottom: 10, textAlign: "center", fontFamily: "'JetBrains Mono', monospace" }}>P&gt;J Label / J&gt;P Label</div>
+                {[
+                  ["Ne→Te", "Opportunity", "Optimization"],
+                  ["Ne→Fe", "Novelty", "Enthusiasm"],
+                  ["Se→Te", "Impact", "Achievement"],
+                  ["Se→Fe", "Presence", "Mobilization"],
+                  ["Ni→Ti", "Insight", "Principles"],
+                  ["Ni→Fi", "Destiny", "Conviction"],
+                  ["Si→Ti", "Stability", "Order"],
+                  ["Si→Fi", "Familiarity", "Attachment"],
+                ].map((row, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 4px", borderBottom: `1px solid ${C.border}20`, fontSize: 10 }}>
+                    <span style={{ color: C.accent1, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", minWidth: 60 }}>{row[0]}</span>
+                    <span style={{ color: C.text, fontFamily: "'JetBrains Mono', monospace", textAlign: "right", flex: 1 }}>{row[1]} <span style={{ color: C.textDim }}>/</span> {row[2]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <SmallProse style={{ marginTop: 16 }}>
+              Note that these 16 pairs are not themselves the Model A functional blocks (Ego, Super-Ego, Id, Super-Id), since they are presented in isolation and thus completely unbound from any functional placement in either Model. Rather, they represent the exhaustive set of metabolically coherent P-J combinations from which the actual Model A and Model G blocks are drawn. The full block structure will be covered in the next installment specifically on the Models.
+            </SmallProse>
+          </Card>
+
+          <Card>
+            <SectionTitle>Talanov's (+sociotype.xyz's) Four Extended Functions</SectionTitle>
+            <Prose>
+              Sociotype.xyz extends the traditional 8-element framework with four additional "Social Stance" functions, Qi (Individualism), Qe (Boundary Reactivity), Di (Collectivism), and De (Social Plasticity), corresponding to the Questimity/Declatimity dichotomy axis. These capture the social-positioning and boundary permeability orientation that Talanov identifies as the third Strength dichotomy (c in Talanov algebra). While not part of the classical eight IMEs, they represent a frontier of empirical extension: the Strength triad's third axis (Q/D) requires processing elements beyond the traditional set to be fully modeled.
+            </Prose>
+
+            <div style={{ overflowX: "auto", marginTop: 16, marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+                <thead>
+                  <tr>
+                    {["Function", "Description", "Lead Types", "PoLR Types"].map((h, i) => (
+                      <th key={i} style={{ padding: "10px 8px", textAlign: "left", borderBottom: `1px solid ${C.border}`, color: C.text, fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      sym: "De",
+                      name: "Acceptance of Collaboration",
+                      color: C.serious,
+                      desc: "Intergroup exchange of equals; willingness to involve and get involved in any endeavor; good mutual understanding of goals; inclusive social plasticity.",
+                      lead: "ESE · LIE",
+                      polr: "IEI · SLI"
+                    },
+                    {
+                      sym: "Qe",
+                      name: "Separation of Exclusivity",
+                      color: C.Se,
+                      desc: "Elitism; intolerance for low-quality resources or company; aversion to the unrefined, alien, or degraded; discriminating standards of what may enter one's boundary.",
+                      lead: "EIE · LSE",
+                      polr: "SEI · ILI"
+                    },
+                    {
+                      sym: "Di",
+                      name: "Acceptance of Subordination",
+                      color: C.Fi,
+                      desc: "Collectivism; deference to majority opinion and recognized authorities; patience, resignation to fate, traditional conservatism.",
+                      lead: "LSI · EII",
+                      polr: "ILE · SEE"
+                    },
+                    {
+                      sym: "Qi",
+                      name: "Separation of Independence",
+                      color: C.Si,
+                      desc: "Moral fastidiousness; social separation and defense of personal autonomy; striving for moral purity; low tolerance for coerced compromise.",
+                      lead: "LII · ESI",
+                      polr: "SLE · IEE"
+                    },
+                  ].map((fn, i) => (
+                    <tr key={i}>
+                      <td style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}20`, verticalAlign: "top", width: "18%" }}>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: fn.color, fontFamily: "'JetBrains Mono', monospace" }}>{fn.sym}</div>
+                        <div style={{ fontSize: 9, color: C.textMuted, marginTop: 2, lineHeight: 1.4 }}>{fn.name}</div>
+                      </td>
+                      <td style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}20`, verticalAlign: "top", color: C.textMuted, fontSize: 10, lineHeight: 1.5 }}>{fn.desc}</td>
+                      <td style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}20`, verticalAlign: "top", color: fn.color, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, whiteSpace: "nowrap" }}>{fn.lead}</td>
+                      <td style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}20`, verticalAlign: "top", color: C.textDim, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" }}>{fn.polr}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Prose style={{ marginBottom: 0 }}>
+              The traditional eight IMEs remain the core structural atoms. The extended functions represent the theory's growth edge, where empirical measurement is beginning to outrun the classical algebraic framework, demanding new formal apparatus to capture what Talanov's questionnaires already measure. This is precisely the kind of theoretical evolution that characterizes a maturing science: the formalism expands to accommodate the data, not the reverse.
+            </Prose>
+          </Card>
+        </>}
+
+        {/* ═══════════ FOOTER ═══════════ */}
+        <div style={{ textAlign: "center", marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.8 }}>
+            SOURCES: Talanov VL (socionavigator.com, questionnaire data) · Romanov I (socionavigator.com) · Vincent V (Model A, Information Axes, Presence Cube, Mandalas, Structure of the Socion, Dichotomy Spaces) · Gulenko VV (SHS, DCNH, Activity Orientations) · Joynton A (Socionics Torus) · sociotype.xyz (functions, dichotomies, intercorrelations) · OpenSocionics (information dichotomies, elements) · Wikisocion (function dichotomies, elemental dichotomies) · Augusta A (Model A, 1978) · Kepinski A (Information Metabolism)
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<FunctionsReport />, document.getElementById('root'));
+</script>
+</body>
+</html>

@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Socionics Models: A & G</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#08090e;color:#e4e4e7;font-family:'Inter',-apple-system,sans-serif;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0c0d14}
+::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.35s ease-out}
+@media (max-width:820px){.portrait-grid{grid-template-columns:1fr !important}.portrait-grid aside > div{position:static !important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,Fragment}=React;
+
+const C={
+  bg:"#08090e",card:"#10111a",border:"#1e1f30",
+  text:"#e4e4e7",textMuted:"#9ca3af",textDim:"#6b7280",textFaint:"#4b5563",
+  accent:"#f59e0b",accentG:"#10b981",accentA:"#3b82f6",rose:"#f43f5e",violet:"#8b5cf6",
+  teal:"#14b8a6",lime:"#84cc16",cyan:"#06b6d4",
+  alpha:"#42a5f5",beta:"#ab47bc",gamma:"#ff7043",delta:"#66bb6a",
+};
+const FC={Ne:"#10b981",Ni:"#d97706",Se:"#7c3aed",Si:"#c084fc",Te:"#0ea5e9",Ti:"#22d3ee",Fe:"#f43f5e",Fi:"#fb923c"};
+const FT={Ne:"#fff",Ni:"#fff",Se:"#fff",Si:"#fff",Te:"#fff",Ti:"#0a1628",Fe:"#fff",Fi:"#fff"};
+const QC={Alpha:C.alpha,Beta:C.beta,Gamma:C.gamma,Delta:C.delta};
+const EC={Maximum:"#22c55e",Optimum:"#3b82f6",Minimum:"#ff6f00",Pessimum:"#a855f7"};
+
+const TYPES={
+  ILE:{b:"Ne",c:"Ti",r:"Se",v:"Fi",s:"Si",m:"Fe",i:"Ni",d:"Te",q:"Alpha",l:"Seeker"},
+  SEI:{b:"Si",c:"Fe",r:"Ni",v:"Te",s:"Ne",m:"Ti",i:"Se",d:"Fi",q:"Alpha",l:"Mediator"},
+  ESE:{b:"Fe",c:"Si",r:"Te",v:"Ni",s:"Ti",m:"Ne",i:"Fi",d:"Se",q:"Alpha",l:"Enthusiast"},
+  LII:{b:"Ti",c:"Ne",r:"Fi",v:"Se",s:"Fe",m:"Si",i:"Te",d:"Ni",q:"Alpha",l:"Analyst"},
+  EIE:{b:"Fe",c:"Ni",r:"Te",v:"Si",s:"Ti",m:"Se",i:"Fi",d:"Ne",q:"Beta",l:"Mentor"},
+  LSI:{b:"Ti",c:"Se",r:"Fi",v:"Ne",s:"Fe",m:"Ni",i:"Te",d:"Si",q:"Beta",l:"Inspector"},
+  SLE:{b:"Se",c:"Ti",r:"Ne",v:"Fi",s:"Ni",m:"Fe",i:"Si",d:"Te",q:"Beta",l:"Marshal"},
+  IEI:{b:"Ni",c:"Fe",r:"Si",v:"Te",s:"Se",m:"Ti",i:"Ne",d:"Fi",q:"Beta",l:"Lyricist"},
+  SEE:{b:"Se",c:"Fi",r:"Ne",v:"Ti",s:"Ni",m:"Te",i:"Si",d:"Fe",q:"Gamma",l:"Politician"},
+  ILI:{b:"Ni",c:"Te",r:"Si",v:"Fe",s:"Se",m:"Fi",i:"Ne",d:"Ti",q:"Gamma",l:"Critic"},
+  LIE:{b:"Te",c:"Ni",r:"Fe",v:"Si",s:"Fi",m:"Se",i:"Ti",d:"Ne",q:"Gamma",l:"Entrepreneur"},
+  ESI:{b:"Fi",c:"Se",r:"Ti",v:"Ne",s:"Te",m:"Ni",i:"Fe",d:"Si",q:"Gamma",l:"Guardian"},
+  LSE:{b:"Te",c:"Si",r:"Fe",v:"Ni",s:"Fi",m:"Ne",i:"Ti",d:"Se",q:"Delta",l:"Administrator"},
+  EII:{b:"Fi",c:"Ne",r:"Ti",v:"Se",s:"Te",m:"Si",i:"Fe",d:"Ni",q:"Delta",l:"Humanist"},
+  IEE:{b:"Ne",c:"Fi",r:"Se",v:"Ti",s:"Si",m:"Te",i:"Ni",d:"Fe",q:"Delta",l:"Adviser"},
+  SLI:{b:"Si",c:"Te",r:"Ni",v:"Fe",s:"Ne",m:"Fi",i:"Se",d:"Ti",q:"Delta",l:"Craftsman"},
+};
+const QUADRA_ORDER=["Alpha","Beta","Gamma","Delta"];
+const QT={Alpha:["ILE","LII","ESE","SEI"],Beta:["EIE","IEI","SLE","LSI"],Gamma:["SEE","ESI","LIE","ILI"],Delta:["LSE","SLI","IEE","EII"]};
+function getFns(t){const x=TYPES[t];return[x.b,x.c,x.r,x.v,x.s,x.m,x.i,x.d];}
+
+const MA=[
+  {n:"Lead",num:1,aka:"Base / Program",d7:{strength:"Strong",value:"Valued",boldness:"Bold",inertia:"Inert",ring:"Mental",accept:"Accepting",eval:"Evaluatory"},dim:"4D",pri:"4P",lvl:"4L",
+   desc:"The dominant perspective through which the individual interprets reality. Actively and competently processes its information domain. Conclusions reached here are confident and serve as the primary motivation for behavior."},
+  {n:"Creative",num:2,aka:"Tool / Auxiliary",d7:{strength:"Strong",value:"Valued",boldness:"Cautious",inertia:"Contact",ring:"Mental",accept:"Producing",eval:"Situational"},dim:"3D",pri:"3P",lvl:"3L",
+   desc:"Flexibly adapts and adjusts to the needs of the Lead function. Activated situationally when the current task requires it. Skilled but employed selectively rather than constantly."},
+  {n:"Role",num:3,aka:"Normative",d7:{strength:"Weak",value:"Subdued",boldness:"Bold",inertia:"Contact",ring:"Mental",accept:"Accepting",eval:"Situational"},dim:"2D",pri:"2P",lvl:"2L",
+   desc:"Moderately and strenuously processes information. Can fulfill external demands to some degree, but fails under unfamiliar pressure. The attitude is obligation, not desire."},
+  {n:"Vulnerable",num:4,aka:"PoLR / Point of Least Resistance",d7:{strength:"Weak",value:"Subdued",boldness:"Cautious",inertia:"Inert",ring:"Mental",accept:"Producing",eval:"Evaluatory"},dim:"1D",pri:"1P",lvl:"1L",
+   desc:"Consistently rejects or fails to understand the information it receives. A source of frustration, either from being forced to use it or from ignoring it and suffering consequences. The psyche's blind spot."},
+  {n:"Suggestive",num:5,aka:"Dual-Seeking",d7:{strength:"Weak",value:"Valued",boldness:"Cautious",inertia:"Contact",ring:"Vital",accept:"Accepting",eval:"Evaluatory"},dim:"1D",pri:"3P",lvl:"2L",
+   desc:"Knows what information it needs but cannot produce it independently. A potential source of neurosis when unfulfilled, but happily accepts outside support, producing bliss and completion when provided."},
+  {n:"Mobilizing",num:6,aka:"Hidden Agenda / Activating",d7:{strength:"Weak",value:"Valued",boldness:"Bold",inertia:"Inert",ring:"Vital",accept:"Producing",eval:"Situational"},dim:"2D",pri:"4P",lvl:"3L",
+   desc:"An area of high priority but initial inconsistency. Overconfidence here leads to shame; avoidance leads to stagnation. Growth requires a balanced approach, and success feels deeply rewarding."},
+  {n:"Ignoring",num:7,aka:"Observing / Limiting",d7:{strength:"Strong",value:"Subdued",boldness:"Cautious",inertia:"Inert",ring:"Vital",accept:"Accepting",eval:"Situational"},dim:"3D",pri:"1P",lvl:"2L",
+   desc:"Restricts the information it receives, expanding in scope only when there is apparent need. Subordinated to the Lead function's agenda since they share the same information aspect."},
+  {n:"Demonstrative",num:8,aka:"Background / Instrumental",d7:{strength:"Strong",value:"Subdued",boldness:"Bold",inertia:"Contact",ring:"Vital",accept:"Producing",eval:"Evaluatory"},dim:"4D",pri:"2P",lvl:"3L",
+   desc:"Passively and competently processes information in the background. Provides support for the Creative function when requested. Success is easy but not deeply rewarding."},
+];
+
+const G2A=[0,7,2,5,1,4,3,6];
+const MG=[
+  {n:"Program",num:1,aka:"Management / Leading",aPos:1,energy:"Maximum",block:"Social Mission",half:"Energetic",
+   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",accel:"Accelerate",lead:"Leader",valtools:"Values",aware:"Automatic"},
+   desc:"Decision-making and resource allocation: the psyche's captain. Sets the strategic direction of the type's social contribution. Maximum energy, highest activation."},
+  {n:"Creative",num:2,aka:"Flexible Tool",aPos:8,energy:"Optimum",block:"Social Mission",half:"Energetic",
+   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",accel:"Decelerate",lead:"Leader",valtools:"Tools",aware:"Automatic"},
+   desc:"Implements the social mission flexibly. The main instrument for solving complex problems at societal distance. Optimal energy expenditure, efficient and adaptive."},
+  {n:"Role",num:3,aka:"Normative / Trained",aPos:3,energy:"Minimum",block:"Social Adaptation",half:"Passive",
+   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",accel:"Decelerate",lead:"Follower",valtools:"Tools",aware:"Conscious"},
+   desc:"Trained according to social norms. Maintains adequate performance through conscious effort, but decays without external reinforcement. The survival function."},
+  {n:"Launcher",num:4,aka:"Trigger / Accelerator",aPos:6,energy:"Pessimum",block:"Social Adaptation",half:"Passive",
+   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",accel:"Accelerate",lead:"Follower",valtools:"Values",aware:"Conscious"},
+   desc:"Initiates new rounds of mental activity: the psyche's ignition key. Dormant until triggered, then fires abruptly. Energetically expensive and unstable."},
+  {n:"Demonstrative",num:5,aka:"Provocative / Close-range",aPos:2,energy:"Maximum",block:"Self-Realization",half:"Energetic",
+   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",accel:"Accelerate",lead:"Leader",valtools:"Tools",aware:"Conscious"},
+   desc:"Spontaneous self-expression at close distance. Provocative and uninhibited with intimates. Maximum energy directed inward toward personal territory and creative assertion."},
+  {n:"Manipulative",num:6,aka:"Habitual / Smooth Control",aPos:5,energy:"Optimum",block:"Self-Realization",half:"Energetic",
+   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",accel:"Accelerate",lead:"Follower",valtools:"Tools",aware:"Automatic"},
+   desc:"Long-term habit formation and energy reserves. Smooth, automatic control in the intimate sphere. The function that enables sustained self-development over time."},
+  {n:"Brake",num:7,aka:"Inhibitor / Drain",aPos:4,energy:"Minimum",block:"Inflation",half:"Passive",
+   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",accel:"Decelerate",lead:"Follower",valtools:"Values",aware:"Automatic"},
+   desc:"Perception here leads to inhibition: the point of greatest energy loss. Saps psychic resources. The function that brakes momentum and creates internal friction."},
+  {n:"Control",num:8,aka:"Verbal Dominance",aPos:7,energy:"Pessimum",block:"Inflation",half:"Passive",
+   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",accel:"Decelerate",lead:"Leader",valtools:"Values",aware:"Conscious"},
+   desc:"Dominates verbally but cannot act. \u201CI know, but I can\u2019t.\u201D The psyche\u2019s emergency verbal override: strong opinion with weak execution in the intimate sphere."},
+];
+
+/* ═══════ TYPE PROFILES (portrait source data) ═══════ */
+const PROFILES={
+  ILE:{
+    nickname:`The Searcher`,
+    aka:`Seeker and Inventor`,
+    behavior:`The Searcher lives by expansion into the unknown. In Talanov's ecological terms, this is an innovation strategy: survival is sought not by defending a settled niche, but by discovering a new one before others do. The type is pulled toward unrealized possibilities, unusual combinations, and lines of development that have not yet hardened into convention. In practice this produces curiosity, inventiveness, and a readiness to treat stale systems as provisional. The same pattern also creates familiar liabilities. Focus breaks when novelty disappears, follow-through is uneven, and judgment about personal distance or loyalty is often weaker than judgment about concepts.`,
+    temperament:`Their energy comes in surges rather than a steady burn. They are stirred by novelty, pressure, and the chance to test themselves against a shifting situation. When engaged, they move quickly, improvise freely, and push outward on personal initiative rather than waiting for permission. Affect is externally sparked and wide in range. Enthusiasm, irritation, delight, and boredom can all arrive fast, but none are meant to be stored for long. The type tends to liven a room by acceleration, not by caretaking.`,
+    cognition:`Cognitively this is a research-oriented mind that explores through associative leaps. Perception moves by linking one possibility to another, often skipping the obvious sequence in favor of remote but revealing connections. In argument they are at their best when an old framework is stuck, because they can restructure the problem and borrow a solution from an unexpected angle. Even so, they are not merely diffuse. Once a promising pattern is glimpsed, they try to give it a causal spine, a workable explanation of how the pieces fit and why the mechanism should hold.`,
+    valuation:`What motivates them most is uniqueness. They want work that is open, intellectually alive, and capable of producing something not already present in the world. They are drawn to social climates where curiosity is rewarded, discussion stays informal, and people are not boxed in by rigid rank or ceremonial distance. Alpha values add a preference for lightness, play, conceptual freedom, and shared discovery. What deadens them is prestige chasing for its own sake, routine maintenance as a life principle, and interpersonal environments where hidden grievance matters more than open exchange.`,
+    communication:`In communication the Searcher is open, exploratory, and more businesslike than intimate in a first approach. They make contact easily, move conversation by questions and possibilities, and often assume that mutual interest matters more than strict boundaries. Their sense of identity is strongly personal rather than role-bound. In groups they often function as the originator who introduces a new line of development and energizes others around it. Under stress they can be surprisingly sticky: they react hard at first, then lose traction and withdraw into private worry, especially when freedom of movement disappears.`,
+    portraitA:`Ego pairs Ne with Ti: conceptual reach disciplined by structural logic, so the lead expression is invention that wants to also be coherent. The Super-Ego (Fi, Se) is the awkward zone, where managing personal closeness and asserting physical will both feel like duty rather than instinct. The Super-Id (Si, Fe) is the unmet ache: bodily comfort and a warm shared mood, both craved but unreliably self-generated. The Id (Ni, Te) runs in the background as quiet long-range hunch and competent factual handling, used without fanfare. Information flows from Ne's open horizon down through Ti's structural sieve, with the rest of the psyche tilted toward keeping that motion uninterrupted.`,
+    portraitG:`Same eight functions, rotated into energetic geography. Social Mission (Ne + Te) projects invention at societal distance: theories, demonstrations, public arguments that the world contains unused possibilities. Social Adaptation (Fi + Fe) is where energy flickers, with relationships launched in bursts of warmth rather than steady cultivation. Self-Realization (Ti + Si) holds the intimate sphere: structural play and modest sensory routines maintained quietly with chosen company. Inflation (Se + Ni) is the energy sink, where raw will and gloomy premonition both drain rather than fuel. Where Model A asks what this psyche knows, Model G asks where its energy actually flows. Same object, two cross-sections.`,
+  },
+  SEI:{
+    nickname:`The Mediator`,
+    aka:`Idyllist and Nurturer`,
+    behavior:`The Mediator survives by preserving a livable human atmosphere. Talanov's symbiotic strategy fits well: this type tends to stabilize an ecosystem by easing strain, satisfying concrete needs, and keeping people from grinding each other down. Their behavior is usually accommodating, peace-seeking, and quietly practical. They improve the quality of immediate life rather than chasing distant conquest. At their best they make spaces feel habitable and people feel less defended. At their worst they become too inert, too comfort-bound, or too easily overloaded by harsh demands for abstraction, speed, or impersonal efficiency.`,
+    temperament:`Their energy is adaptive and low-key. They do not rush toward stimulation for its own sake and usually prefer a manageable rhythm, soft surroundings, and recoverable effort. Mood shifts are real, but they rise from inner state and atmosphere more than from dramatic display. Will is cautious and self-questioning rather than forceful. This type is better at softening intensity than generating it, which is why others often experience them as grounding, calming, and physically reassuring.`,
+    cognition:`This is a socially attuned, sensory-first cognition. Attention goes to comfort, friction, timing, tone, appearance, and the practical texture of everyday life. Perception is immediate and situational, but not dull. They notice how one change in atmosphere alters the whole field. In reasoning they tend to be diplomatic rather than doctrinal, preferring to reframe, exemplify, and gently redirect instead of forcing one explicit conclusion. Even when they think in comparisons and alternatives, the test is always concrete: does this make life easier, warmer, and more livable here and now?`,
+    valuation:`Their motivation is tied to welfare, ordinary pleasures, and the maintenance of a human scale. Alpha values add openness, informality, and a preference for shared ease over rank or pressure. They are drawn to settings where enjoyment is legitimate, conflict is not constantly glorified, and curiosity can coexist with repose. They withdraw from climates built on severity, relentless competition, emotional intimidation, or chronic disruption of routine. If life stops feeling pleasant, secure, or humane, their engagement drops quickly.`,
+    communication:`The Mediator communicates sincerely and without much strategic armor. They usually prefer small circles, short psychological distance, and a natural style that treats people as persons rather than functions. In groups they often become the quiet stabilizer: the one who notices rising discomfort, softens edges, and restores continuity before a situation tears. Their identity tends to feel rooted in lived continuity rather than public role. Under stress they may hold on outwardly, then slowly thicken into withdrawal, fatigue, and unspoken worry instead of open confrontation.`,
+    portraitA:`Ego pairs Si with Fe: embodied sensing colored by atmospheric warmth, so the leading expression is comfort-tending wrapped in shared mood. The Super-Ego (Ni, Te) is the strained zone, where long-range forecasting and impersonal efficiency feel like obligations rather than home territory. The Super-Id (Ne, Ti) is the receptive ache: SEI welcomes interesting ideas and clean structural insight from others, blooming when they are offered. The Id (Se, Fi) runs as background practical sturdiness and quiet personal loyalty, deployed when needed without display. The information flow centers on Si's read of immediate state, mediated by Fe's atmospheric attunement.`,
+    portraitG:`Social Mission (Si + Fi) projects steady welfare and personal loyalty into the public field, the keeper of livable conditions and decent treatment. Social Adaptation (Ni + Ti) is where output stutters: predicting trajectories and producing crisp logic require effort that feels unnatural. Self-Realization (Fe + Ne) is the intimate sphere of animated emotion and playful possibility, shared with close company. Inflation (Te + Se) is the drain, where impersonal efficiency and brute force both bleed energy. Same vertices as Model A, projected along the axis of energetic distance: the comfort that A describes as known information becomes, in G, the energetic posture of the whole life.`,
+  },
+  ESE:{
+    nickname:`The Enthusiast`,
+    aka:``,
+    behavior:`The Enthusiast behaves like a social amplifier. Talanov's swarm strategy captures the core pattern: this type increases survival by synchronizing a flock, raising morale, and turning scattered individuals into a coordinated human environment. They are outwardly warm, active, and quick to intervene where life has become flat, neglected, or emotionally cold. Their strongest behavioral asset is not mere friendliness but collective ignition. They can make participation feel attractive. Their liabilities appear when this energy outruns reflection. They overload themselves with duties, dramatize urgency, and may keep everyone moving without asking whether the movement still serves a meaningful direction.`,
+    temperament:`Their energy is linear, active, and difficult to switch off. They prefer to stay engaged, keep up pace, and answer trouble before it spreads. Affect ignites quickly and is expressed openly through face, voice, and bodily presence. Personal initiative is strong and often blends with a wish to draw others into motion. Social energy tends to run high and public, which is why they can organize, host, encourage, and emotionally provision a group with unusual force. Solitude, emotional coldness, and prolonged passivity deplete them fast.`,
+    cognition:`Cognitively they are practical sensates with a strong eye for what keeps life functioning. Attention goes to visible disorder, immediate needs, hospitality, social tone, and the practical state of bodies and spaces. Their thinking is more processual than schematic: they track living currents, emotional feedback, and the way one action shifts the energy of the whole setting. In argument they do not usually win by detached proof. They win by normative interpretation, vivid example, and socially legible common sense. The question underneath their reasoning is often whether a situation is healthy, workable, and humanly sustainable.`,
+    valuation:`They are strongly motivated by visible relevance, status through contribution, and the chance to matter in the life of a group. Alpha values soften this with playfulness, sociability, and a taste for open exchange rather than cold hierarchy. What they want is an environment where people are connected, spirits stay high, and practical care is socially honored. They recoil from sterile individualism, withdrawn fatalism, and climates where suffering is treated as someone else's problem. Their motivation drops when human response is absent and everything becomes abstract procedure.`,
+    communication:`The Enthusiast communicates passionately. They search for feeling in the open, prefer direct emotional exchange, and often reduce distance faster than more private types expect. Identity is usually experienced through natural belonging, daily relatedness, and continuity with one's people rather than through detached self-definition. In social systems they tend to play the mobilizer or animator: they spread charge, hold attention, and make collective action emotionally possible. Stress often hardens them rather than stopping them. Repeated strain can produce a brittle perseverance in which they keep caring and doing long past the point of recovery.`,
+    portraitA:`Ego pairs Fe with Si: extraverted emotion supported by sensory care, so the lead expression is animating others while attending to physical wellbeing. The Super-Ego (Te, Ni) is the awkward zone, where cool efficiency and long-range forecasting feel like external obligations rather than instinct. The Super-Id (Ti, Ne) is the unmet ache: ESE is drawn to clean intellectual structure and surprising new ideas it cannot reliably generate alone. The Id (Fi, Se) runs as background loyalty and capable physical mobilization, used when needed without display. Information flows outward from Fe's atmospheric reading, sweetened and grounded by Si's domestic sensitivity.`,
+    portraitG:`Social Mission (Fe + Se) projects emotional ignition and physical presence into the public field, the entertainer, the convener, the warm executive. Social Adaptation (Te + Ne) is where output stutters: business logic and abstract speculation both require deliberate effort. Self-Realization (Si + Ti) is the intimate sphere of quiet bodily care and private structural reflection. Inflation (Ni + Fi) is the drain, where foreboding intuition and brooding personal judgment both leak energy. Same eight functions, viewed not by what is known but by where the body's energy actually goes.`,
+  },
+  LII:{
+    nickname:`The Analyst`,
+    aka:`Analyst, Logician, and sometimes Architect`,
+    behavior:`The Analyst survives by withdrawing from noisy competition and building a cleaner map of reality. Talanov's intellectualization strategy is exact here: the type refuses many ordinary dominance games because they distort judgment, and instead bets on the long arc of clearer understanding. Behaviorally this produces autonomy, reserve, and a strong preference for principle over expedience. They are at their best when turning complexity into lucid structure. They are weakest where direct force, self-promotion, or fast social adaptation are required. If pressed into crude competition, they often retreat, harden, or vanish rather than play the game on its own terms.`,
+    temperament:`Their energy is steady, measured, and difficult to hurry without cost. They do best with depth, continuity, and one line of work at a time. Affect is controlled and usually understated in public, even when the inner standard is severe and emotionally charged. Personal will often shows up as restraint rather than assertion: they doubt, calibrate, and tighten themselves before acting. In groups they rarely provide emotional ignition, but they do provide calm, continuity, and a stable center of judgment when everyone else has become scattered.`,
+    cognition:`This is a research cognition that prefers abstraction, compression, and clean conceptual architecture. Perception tends to be dissociative: they reduce a complex phenomenon to primary elements and relationships, then rebuild the whole from those essentials. Their reasoning style is constructive in the strict sense. They want coherence, not just cleverness. At the same time, their broader cognitive form is panoramic rather than narrow. They can reframe a system from several vantage points and see patterns that are invisible inside a single frame. Argument is therefore ordered, rigorous, and often quietly devastating to muddled thinking.`,
+    valuation:`What motivates them most is self-worth through intellectual integrity. They want room to pursue what is genuinely worth understanding, at their own pace, without being dragged into prestige theater. Alpha values add a preference for open discussion, conceptual clarity, and emotionally unforced sociability. They are drawn to environments where ideas can be explored without coercion and where correctness matters more than influence. They disengage from status contests, manipulative emotional climates, and settings where practical hustle is treated as a substitute for truth.`,
+    communication:`The Analyst communicates coolly, carefully, and with a notable economy of disclosure. They do not usually push themselves forward, but they will hold a line with unusual firmness once a principle is engaged. Identity is experienced as something deeply personal and not reducible to social role, which can make them seem privately sovereign even when outwardly modest. In larger systems they often function as the corrector: the one who detects conceptual error, formalizes what is vague, and returns a group to cleaner standards. Stress can train them for a surprisingly long time, but it does so by building a crystalline inner hardness that is useful in work and costly in feeling.`,
+    portraitA:`Ego pairs Ti with Ne: global structural logic catalyzed by intuitive possibility, so the lead expression is system-building open to fresh material. The Super-Ego (Fi, Se) is the awkward zone, where managing personal closeness and physical assertion feel like duties LII discharges stiffly. The Super-Id (Fe, Si) is the unmet ache: warm group atmosphere and bodily ease are quietly craved and gratefully received from others. The Id (Te, Ni) runs as background factual competence and quiet long-range hunches, used selectively rather than displayed. Information flows from Ne's open associative reach down into Ti's stable, lawful frame.`,
+    portraitG:`Social Mission (Ti + Ni) projects principled structure and long-range vision into the public field, the patient theorist, the lawmaker of ideas. Social Adaptation (Fi + Si) is where output stutters: warm interpersonal calibration and immediate physical care both require effort. Self-Realization (Ne + Fe) is the intimate sphere of quirky associative play and emotional warmth, shared in a small trusted circle. Inflation (Se + Te) is the drain, where forceful assertion and pushy efficiency both bleed energy. Where Model A reveals what the psyche understands, Model G reveals what the psyche can sustain energetically. Same architecture, two faces.`,
+  },
+  EIE:{
+    nickname:`The Mentor`,
+    aka:`Dramatist`,
+    behavior:`The Mentor behaves like a pressure amplifier for collective meaning. Talanov's provocateur strategy captures the type well: they alter the social field by intensifying attention, sharpening opposition, and turning diffuse unease into a directed drama. They are rarely content with a merely comfortable life. They want significance, historical direction, and a cause that can magnetize feeling. At their best they articulate the emotional truth of an era and mobilize people around it. At their worst they escalate atmosphere for its own sake, overidentify with a mission, and sacrifice bodily limits until conviction becomes exhaustion or theatrical self-immolation.`,
+    temperament:`Their energy is driving, sustained, and outwardly charged. They do not like leaving major tensions unresolved and often feel responsible for giving emotional and directional form to events. Affect ignites quickly and can become intense, stylized, and contagious. Their will is strongly collectivizing: they prefer to direct, rally, and frame rather than remain a private witness. Social energy tends to be visibly catalytic. Even when quiet, they radiate pressure, expectancy, and emotional consequence.`,
+    cognition:`Cognitively this is a humanitarian style with strong sensitivity to contradiction, trajectory, and the meeting point of opposites. Perception does not rest on present fact alone. It reads atmospheres as unfinished processes, then tracks the line along which they will likely tip. In argument they are interpretive and normative rather than detached. They often persuade by revealing the latent pattern, the hidden implication, the next phase that others are sleepwalking toward. Their broader thinking is dialectical and algorithmic: they are unusually good at following branching futures, paradoxes, and conditional sequences, but less comfortable with flat, purely local practicality.`,
+    valuation:`They are motivated by uniqueness, symbolic centrality, and the chance to matter in a drama larger than the private self. Beta values add mission, hierarchy, intensity, and a sense that history is moved by conviction and force rather than comfort. What they want is an environment where significance is palpable, allegiances are legible, and collective energy can be organized around a compelling image or cause. They recoil from placid relativism, private hedonism, and milieus that reduce everything to convenience or individual preference.`,
+    communication:`The Mentor communicates passionately and with open emotional search. They establish contact through charge, cadence, and image more than through neutral explanation. Identity is often experienced through idealization: belonging to a world, cause, or elevated standard that gives life contour. In social systems they tend to function as the quadra's originator, the one who names the conflict, sharpens the stakes, and sets an ideological program into motion. Stress is one of their weak points. They can endure much if the narrative holds, but sudden destabilization can produce a sharp loss of footing, suggestibility, or collapse into doubt.`,
+    portraitA:`Ego pairs Fe with Ni: dramatic emotional projection guided by long-range vision, so the lead expression is mobilizing others around a foreseen future. The Super-Ego (Te, Si) is the awkward zone, where cold efficiency and routine bodily care feel like duties poorly performed. The Super-Id (Ti, Se) is the unmet ache: clean structural logic and steady force are admired and welcomed from a strong partner. The Id (Fi, Ne) runs as background personal loyalty and associative range, used without display. Information flows from Ni's prophetic image outward through Fe's expressive amplification.`,
+    portraitG:`Social Mission (Fe + Ne) projects ideological emotion and visionary alternative into the public field, the prophet, the orator, the dramatist of meaning. Social Adaptation (Te + Se) is where output stutters: business technique and direct force both require deliberate effort. Self-Realization (Ni + Ti) is the intimate sphere of private prophecy and structural reflection, nurtured in solitude. Inflation (Si + Fi) is the drain, where domestic upkeep and unreciprocated personal feeling both bleed energy. Same architecture, projected along its energetic axis: the prophecy that Model A locates in cognition becomes, in Model G, the very weather of the life.`,
+  },
+  LSI:{
+    nickname:`The Inspector`,
+    aka:`Inspector and often rendered as Enforcer or System Keeper`,
+    behavior:`The Inspector survives by preserving a stable order under pressure. Talanov's stabilizing-selection strategy fits the type's instinctive logic: reduce deviation, harden the frame, and keep the ecotope from dissolving into chaos. Behaviorally this appears as discipline, exactness, and an intolerance for blurred boundaries. They respect clear systems, expect roles to be carried properly, and often become the person who quietly decides what is acceptable and what is not. Their strength is reliability under rules. Their danger is overclosure. When threatened, they may identify correctness with control so completely that complexity, novelty, and human ambiguity all start to look like contamination.`,
+    temperament:`Their energy is regulated, compressed, and difficult to dislodge. They work best at a measured pace with firm sequence and low interruption. Affect is tightly contained and often converted into discipline, severity, or moral pressure rather than open display. Will usually shows up as conformity to a chosen order and insistence that others do not erode it. They are not socially warm by default, but they are durable, stable, and capable of holding a line long after more excitable types have spent themselves.`,
+    cognition:`This is a pragmatic cognition organized around structure, sequence, and enforceable clarity. Perception is distributive and detail-conscious, with strong attention to what is concretely present and how parts must be arranged to function correctly. In reasoning they are classic constructors: they build coherent chains, hold a framework steadily, and dislike being knocked off axis by rhetorical smoke. At the same time, their broader cognitive form remains causal and deterministic. They look for mechanisms, rules, and dependable consequences. Even when discussing people, the underlying question is often what system of obligation or conduct is actually operating.`,
+    valuation:`Their motivation is grounded in welfare, durable footing, and the preservation of a structured world one can trust. Beta values redirect this away from mere comfort and toward discipline, loyalty, hierarchy, and seriousness of purpose. They are drawn to environments where roles are clear, standards are enforced, and courage is expressed through competence rather than talk. They withdraw from climates that celebrate endless alternatives, soft boundaries, or emotional informality without responsibility. What they most resent is being asked to treat disorder as freedom.`,
+    communication:`The Inspector communicates coolly, often sparingly, and with more weight than volume. Identity tends to be interpreted through role, rank, and social definition, which is why they often judge others by whether they carry their place properly. In larger systems they often become maintainers of quality and order, especially in settings that would otherwise drift. Their social role is frequently corrective and territorial, with a natural readiness to guard borders and enforce consequences. Stress is costly for them. They can appear stoic for a long time, but under prolonged or sudden destabilization the system they rely on can crack from underneath, leaving them abruptly uncertain and brittle.`,
+    portraitA:`Ego pairs Ti with Se: structural logic enforced by physical will, so the lead expression is order maintained against entropy. The Super-Ego (Fi, Ne) is the awkward zone, where warm personal calibration and open speculation both feel like soft territories. The Super-Id (Fe, Ni) is the unmet ache: emotional atmosphere and inspiring vision are welcomed gratefully from trusted others. The Id (Te, Si) runs as background factual competence and steady bodily routine, used reliably without display. Information flows from Ti's frame, sharpened and applied through Se's force.`,
+    portraitG:`Social Mission (Ti + Si) projects rigorous order and stable upkeep into the public field, the inspector, the keeper of working systems. Social Adaptation (Fi + Ni) is where output stutters: ethical nuance and long-range vision both require effort that feels unsafe. Self-Realization (Se + Fe) is the intimate sphere of physical presence and shared emotional charge, reserved for a trusted few. Inflation (Ne + Te) is the drain, where unbounded possibility and impersonal efficiency push past what energetics can sustain. Same eight elements as Model A, rotated to show the axis of will rather than the axis of knowledge.`,
+  },
+  SLE:{
+    nickname:`The Marshal`,
+    aka:`Marshal and sometimes Challenger or Commander`,
+    behavior:`The Marshal lives by dominance in an exposed field. Talanov's strategy of enhancing natural selection describes the core stance: rise toward the top of the local hierarchy, seize initiative, and ensure that weaker or slower actors do not set the terms. Behaviorally this produces decisiveness, appetite for leverage, and a readiness to act before conditions are ideal. The type scans for force relations the way others scan for mood. They are usually more interested in what can be done than in what should be contemplated. Their strength is bold tactical realism. Their weakness is insensitivity to inner fragility, both their own and other people's, plus a tendency to treat equality as a fiction when pressure rises.`,
+    temperament:`Their energy is impulsive, fast-switching, and highly mobilizable. Obstacles stimulate rather than discourage. They do not wait for conditions to become neat, because disorder is often where they feel most alive. Affect is direct, physical, and quickly discharged. Their will is commanding: they prefer to set the vector, test resistance, and see who yields. Socially they carry energy not as comfort but as pressure and activation. Even at rest there is often a sense of readiness, as if action is only being briefly suspended.`,
+    cognition:`Cognitively this is a pragmatic style centered on immediate traction. Perception is commutative and kinetic: the world is read through positions, openings, strengths, weaknesses, and practical consequences in motion. They argue like restructurers, not patient constructors. If a system fails, they change the angle, reroute the attack, or improvise a new path through. Their broader cognitive style is panoramic rather than schematic. They often grasp a field at once, then work through it by pressure-testing. Abstraction matters only if it sharpens effectiveness.`,
+    valuation:`What motivates them most is status grounded in actual advantage. They want reality they can act in, not merely admire. Beta values add mission, force, hierarchy, and emotional voltage, so they are most alive in environments where decisive action has meaning and where power is linked to a larger campaign rather than private vanity alone. They disengage from comfort cults, endless hedging, and social climates where nobody will say who leads or what must be done.`,
+    communication:`The Marshal communicates in a businesslike, force-bearing style. They often establish contact through activity, challenge, and practical involvement rather than emotional disclosure. Identity is readily understood through role and position, which is why they often read other people through competence, rank, and usefulness under pressure. In larger systems they tend to become implementers and field commanders, translating collective charge into immediate action. Stress often mobilizes rather than collapses them. Sudden pressure can make them sharper, faster, and more inventive, provided they still have room to maneuver and something solid to defend or seize.`,
+    portraitA:`Ego pairs Se with Ti: physical force sharpened by structural logic, so the lead expression is decisive action that knows the rules of its terrain. The Super-Ego (Ne, Fi) is the awkward zone, where speculative range and personal sentiment feel like soft duties poorly performed. The Super-Id (Ni, Fe) is the unmet ache: long-range foreshadowing and inspirational warmth are welcomed from a trusted partner. The Id (Si, Te) runs as background bodily competence and capable factual handling, used without ceremony. Information flows from Se's read of the field, organized and deployed by Ti's structure.`,
+    portraitG:`Social Mission (Se + Te) projects raw force and operational efficiency into the public field, the commander, the field organizer, the will that converts terrain into result. Social Adaptation (Ne + Fe) is where output stutters: open speculation and warm emotional display both require effort. Self-Realization (Ti + Ni) is the intimate sphere of private structural reflection and quiet foreshadowing, reserved for solitude. Inflation (Fi + Si) is the drain, where unspoken personal sentiment and routine bodily upkeep both bleed energy. Same vertices as Model A, viewed as a field of force rather than a field of information.`,
+  },
+  IEI:{
+    nickname:`The Lyric Poet`,
+    aka:`Mystic and Lyricist`,
+    behavior:`The Lyric Poet survives through attraction, timing, and psychological positioning rather than through direct conquest. Talanov's attractiveness-parasitic strategy is provocative in wording, but it points to something real: this type often endures by eliciting protection, interest, or devotion through emotional and symbolic presence. They sense where force, danger, or historical momentum is already gathering and then position themselves in relation to it. At their best they become interpreters of time, meaning, and hidden motive. At their worst they drift into dependency, passivity, or a habit of influencing from behind the curtain rather than taking difficult practical responsibility themselves.`,
+    temperament:`Their energy is adaptive, inward, and highly sensitive to changing atmosphere. They do not sustain hard output well, but they can mobilize sharply when circumstances become dramatic or uncertain. Affect is deep, nuanced, and often difficult for others to pin down because it is expressed through tone, image, and suggestion rather than blunt declaration. Their will is conforming on the surface, yet psychologically alert underneath. They often move with the current while quietly sensing where it will break.`,
+    cognition:`Cognitively this is a humanitarian and associative style. Perception proceeds through images, moods, implications, and the web of subtle correspondences that tie one moment to another. They are usually stronger at reading the direction of a process than at proving it in a hard formal way. In argument they work diplomatically, circling rather than cornering, letting implication do part of the labor. Their wider cognitive form is vortical and processive: thought moves by image clusters, reversals, and emotional or temporal resonance. Because of that, they often see turning points before they can explain them in linear terms.`,
+    valuation:`Their main motivation is self-worth through meaningful inward life. They need work, roles, or relationships that feel personally significant and symbolically alive, not merely efficient. Beta values add attraction to intensity, myth, loyalty, sacrifice, and a world where power and meaning are visibly intertwined. They are drawn to environments where emotional subtext matters and where commitment carries weight. They withdraw from flat pragmatism, harsh utilitarianism, and social fields that leave no room for inner image, mood, or destiny.`,
+    communication:`The Lyric Poet communicates sincerely but indirectly. They often signal more than they state, inviting others to infer, protect, interpret, or pursue. Identity tends to be shaped through idealization and belonging to a meaningful atmosphere rather than through a purely private self-assertion. In larger systems they often become the corrector of mood and meaning, or the quiet symbolic center around which stronger actors orient themselves. Stress can make them surprisingly resilient in acute situations. Sudden danger sharpens them, but prolonged practical strain without emotional support leads to withdrawal, passivity, and evasive living.`,
+    portraitA:`Ego pairs Ni with Fe: long-range vision colored by emotional resonance, so the lead expression is foreshadowing infused with mood. The Super-Ego (Si, Te) is the awkward zone, where practical bodily care and impersonal efficiency feel like obligations. The Super-Id (Se, Ti) is the unmet ache: physical assertiveness and clean structural backbone are welcomed gratefully from a strong other. The Id (Ne, Fi) runs as background associative reach and quiet personal loyalty, used selectively. Information flows from Ni's symbolic image into Fe's affective register.`,
+    portraitG:`Social Mission (Ni + Fi) projects prophetic image and personal sentiment into the public field, the lyric poet, the mystic with a moral compass. Social Adaptation (Si + Ti) is where output stutters: domestic regulation and structural argument both require effort that fatigues. Self-Realization (Fe + Se) is the intimate sphere of emotional charge and direct sensory contact, shared in close proximity. Inflation (Te + Ne) is the drain, where cold technique and unbounded speculative scatter both bleed energy. Same psyche, projected along the axis of energetic posture rather than information.`,
+  },
+  SEE:{
+    nickname:`The Politician`,
+    aka:`Politician`,
+    behavior:`The Politician survives by turning visibility, leverage, and attraction into real advantage. Talanov's strategy of enhancing sexual selection is pointed but useful: this type often advances through display, social influence, and acute management of interpersonal competition. They read power, desire, and opportunity as living facts. In behavior this appears as directness, charisma, and a refusal to let life remain abstract for long. They test the field, claim space, and act on openings quickly. Their gift is embodied persuasion. Their weakness is impatience with systems that do not answer to immediate reality, plus a tendency to treat short-term tactical success as sufficient proof of correctness.`,
+    temperament:`Their energy is impulsive, adventurous, and quickly responsive to resistance. Novelty, rivalry, and the chance to win people over all raise activation. Affect is open, sensuous, and often charged with appetite, irritation, pleasure, or triumph rather than reflective nuance. Personal initiative is high and usually bypasses permission structures. Social energy is strongly contacting: they engage by drawing others in, leaning on atmosphere, eye contact, and personal force. Fatigue tends to show not as quiet withdrawal at first, but as sharper impatience and more abrupt demands.`,
+    cognition:`Cognitively this is a social and commutative style that stays close to what can be acted on now. Perception tracks the immediate field of bodies, signals, alliances, tensions, and usable facts. In argument they are diplomats in method but not in softness. They redirect, outflank, and shift frame to keep initiative. Their underlying thinking is more causal than it first appears. They quickly infer what led to what, who moved whom, and where pressure will yield the greatest return. They are less interested in universal theory than in the mechanism of this concrete situation.`,
+    valuation:`They are motivated by reality that can be entered, shaped, possessed, and enjoyed. Status matters, but mostly when it represents actual freedom of movement and access to resources, attention, or desirable people. Gamma values add selectivity, personal stakes, measurable consequence, and distrust of empty collectivist rhetoric. They are drawn to climates where competence, courage, and realistic appraisal of motives are valued. They lose respect for environments governed by naive trust, abstract moralism, or procedural niceness that conceals real weakness.`,
+    communication:`The Politician communicates passionately and in real time. They establish contact through presence, tactility, and strong awareness of where distance should narrow or widen. Identity is experienced as distinctly personal and hard to reduce to a role alone, which is why they often prize strong individuality in themselves and others. In larger systems they tend to play the originator of action or influence campaign, especially where personal networks matter more than formal structure. Under stress they often react hot, then thicken into private viscosity. Repeated pressure can make them alternately combative and withdrawn, especially when direct action stops working.`,
+    portraitA:`Ego pairs Se with Fi: physical assertion guided by personal judgment, so the lead expression is direct action backed by an intimate read of who matters. The Super-Ego (Ne, Ti) is the awkward zone, where open speculation and abstract structure both feel like soft duties. The Super-Id (Ni, Te) is the unmet ache: long-range strategy and competent business logic are welcomed gratefully from a trusted partner. The Id (Si, Fe) runs as background bodily comfort and atmospheric warmth, deployed without display. Information flows from Se's field-read into Fi's selective valuation.`,
+    portraitG:`Social Mission (Se + Fe) projects forceful presence and emotional charisma into the public field, the politician, the mover, the persuader. Social Adaptation (Ne + Te) is where output stutters: speculative reach and crisp business technique both require effort. Self-Realization (Fi + Ni) is the intimate sphere of selective loyalty and quiet long-range hunches, reserved for trusted company. Inflation (Ti + Si) is the drain, where rigid structural argument and routine bodily upkeep both bleed energy when sustained. Same eight functions as Model A, rotated to show how energy distributes through public versus private distance.`,
+  },
+  ILI:{
+    nickname:`The Critic`,
+    aka:`Critic and Skeptic`,
+    behavior:`The Critic survives by reading decline before others do and positioning for what follows. Talanov's lone-scavenger strategy names the harsh version of this pattern: in times of disunity, this type tracks weakness, waste, and inevitable loss, then moves toward the opening created by collapse. In ordinary life the same structure appears as foresight, prudence, and a dislike of needless exposure. They are usually more interested in what a situation will become than in how it presently looks. Their strength is strategic anticipation. Their danger is over-withdrawal, chronic pessimism, or becoming so identified with caution that life is reduced to watching rather than shaping.`,
+    temperament:`Their energy is inward, low-baseline, and rhythm-governed. They do not spend themselves cheaply and often appear detached even when internally active. Affect tends toward muted depth rather than visible discharge. Doubt and reserve are not signs of weakness here but of constant recalibration. Social energy is usually private and selective. The type can sit with little outward movement for long periods, yet sudden shifts in the environment may activate sharp bursts of strategic attention.`,
+    cognition:`Cognitively this is a research style that combines associative perception with dialectical forecasting. They connect present facts to hidden trajectories, branch points, and likely outcomes, especially negative ones that others prefer not to see. In argument they are restructurers: good at exposing contradictions, puncturing inflated claims, and finding the flaw that undoes an entire line of thought. Their broader cognitive form is algorithmic and paradox-sensitive. They think well in conditional sequences, probabilities, and reversals, which is why they often understand failure modes before success scenarios have even become visible.`,
+    valuation:`What motivates them most is self-worth through accurate anticipation and inwardly meaningful work. Gamma values add realism, particularity, personal independence, and respect for consequences over slogans. They are drawn to environments where one can think clearly, conserve energy, and act only when timing makes action worthwhile. They withdraw from sentimental collectivism, forced positivity, and any climate that treats doubt as betrayal. Quiet depth matters more to them than prominence.`,
+    communication:`The Critic communicates coolly, sparingly, and often from a slight distance. They prefer informative precision to social lubrication and can seem like a gray cardinal when the setting rewards indirect influence. Identity is usually felt as continuous and inwardly coherent, not dependent on public affirmation. In larger systems they tend to stabilize by warning, debugging, and holding back premature enthusiasm. Under stress they may first try to absorb and outlast it, then retreat into increasingly solitary vigilance. When pressure becomes chronic, their foresight can sour into paralysis, cynicism, or lifeless detachment.`,
+    portraitA:`Ego pairs Ni with Te: long-range foresight tested against business reality, so the lead expression is skeptical prediction grounded in fact. The Super-Ego (Si, Fe) is the awkward zone, where routine bodily care and effusive social warmth feel like obligations poorly met. The Super-Id (Se, Fi) is the unmet ache: physical mobilization and warm personal contact are welcomed gratefully when offered. The Id (Ne, Ti) runs as background associative range and structural awareness, used selectively. Information flows from Ni's foreshadowing into Te's verification.`,
+    portraitG:`Social Mission (Ni + Ti) projects forecasting and structural critique into the public field, the analyst-prophet, the cold-eyed warner. Social Adaptation (Si + Fi) is where output stutters: bodily upkeep and warm calibration both require effort that drains. Self-Realization (Te + Se) is the intimate sphere of efficient personal projects and direct physical engagement, reserved for close company. Inflation (Fe + Ne) is the drain, where forced cheer and unbounded speculation both leak energy. Where Model A traces what the mind knows, Model G traces what the body sustains: same vertices, viewed on different axes.`,
+  },
+  LIE:{
+    nickname:`The Entrepreneur`,
+    aka:`Entrepreneur`,
+    behavior:`The Entrepreneur survives by escalating throughput and turning competition into production. Talanov's strategy of intensifying interpersonal competition points to the core logic: when resources are dispersed, this type seeks advantage through faster coordination, stronger initiative, and more effective use of what others neglect. Behaviorally they are restless, goal-aware, and future-directed. They want momentum, yield, and visible movement. Their strength is in spotting where action will pay off at scale. Their weakness is chronic overextension. They can live as if the body were a temporary inconvenience and as if rest were a moral compromise.`,
+    temperament:`Their energy is linear, high-output, and hard to slow voluntarily. They prefer to move ahead of circumstance rather than wait for it to define the field. Affect tends to ignite around progress, blockage, gain, and loss, but is more likely to be channeled into action than into lingering emotional display. Personal initiative is strong and often self-justifying. Social energy works best through small active units, partnerships, and ventures rather than through static belonging. They often appear more alive when something important is at stake.`,
+    cognition:`Cognitively this is a research-oriented but distinctly operative mind. They scan for trends, causal leverage, and the main vector along which a system is actually moving. Perception is dissociative enough to isolate the decisive variable, but their wider thinking style is vortical and opportunistic: they test possibilities quickly, discard dead lines, and keep what works. In argument they are constructors when building a business case and restructurers when forced to improvise under broken conditions. The overall style is pragmatic futurism. They think in returns, trajectories, and implementation sequences.`,
+    valuation:`They are motivated by uniqueness when it can be converted into real gain, not by novelty as a toy. Gamma values add selectivity, consequence, rivalry, and respect for measurable competence. They thrive where initiative is rewarded, where ambition does not need apology, and where personal achievement changes one's actual range of action. They lose motivation in climates dominated by maintenance, emotional overprocessing, or systems that punish velocity and reward caution alone.`,
+    communication:`The Entrepreneur communicates in a businesslike style, often assuming that activity itself is the strongest introduction. They prefer contact through projects, opportunities, and practical movement rather than through private self-disclosure. Identity is usually experienced as a natural continuity of aims and effort, not as a theatrical role. In larger systems they often act as implementers who turn broad plans into engines of growth. Stress tends to harden them through repeated exposure. Small shocks are often converted into renewed effort, but prolonged strain can strip away humor, widen impatience, and reduce human beings to variables in the plan.`,
+    portraitA:`Ego pairs Te with Ni: efficient action steered by long-range hunch, so the lead expression is enterprise that bets on tomorrow. The Super-Ego (Fe, Si) is the awkward zone, where orchestrated emotion and routine bodily care both feel like uncomfortable duties. The Super-Id (Fi, Se) is the unmet ache: warm personal loyalty and physical groundedness are welcomed gratefully from a trusted partner. The Id (Ti, Ne) runs as background structural awareness and associative range, used selectively. Information flows from Te's read of utility into Ni's longer arc.`,
+    portraitG:`Social Mission (Te + Ne) projects entrepreneurial action and visionary alternative into the public field, the founder, the bold strategist, the launcher of new ventures. Social Adaptation (Fe + Se) is where output stutters: deliberate emotional rallying and direct force both require effort. Self-Realization (Ni + Fi) is the intimate sphere of quiet long-range pondering and personal loyalty, kept close. Inflation (Si + Ti) is the drain, where domestic routine and rigid structural argument both bleed energy. Same psyche, viewed from the axis of where the energy actually goes rather than what it knows.`,
+  },
+  ESI:{
+    nickname:`The Guardian`,
+    aka:`Guardian`,
+    behavior:`The Guardian survives by strict selectivity. Talanov's highly selective sexual strategy names the biological edge of a broader pattern: this type protects quality by filtering, drawing lines, and refusing what feels corrupting, disloyal, or dangerous. Behaviorally this appears as principled closeness to their own people and marked distance from those judged false or harmful. They are often better at sustaining a bond than at widening one. Their strength is moral persistence and protective force. Their danger is excessive hardness, exclusion, and a readiness to treat one serious violation as final proof against a person.`,
+    temperament:`Their energy is steady, contained, and not easily deflected once a moral or practical boundary is engaged. Affect is deep but rarely loose. They can care intensely while showing little softness in outward form. Doubt and self-restraint are built into the will, but they are not weak-willed. Rather, they prefer limited, deliberate action over noisy display. Social energy is private and sheltered. They protect what matters instead of broadcasting it.`,
+    cognition:`Cognitively this is a social and distributive style that notices concrete signs of reliability, violation, decay, and practical consequence. They think less in grand theory than in stable standards applied to real people and situations. In reasoning they belong to the guardians of normative interpretation: they compare what is happening to what should be permitted, sustained, or rejected. Their broader cognitive style is holographic and reframing. They can change perspective quickly enough to read the hidden moral shape of a scene, but the final judgment usually returns to a concrete question of trustworthiness and fit.`,
+    valuation:`Their motivation is grounded in welfare, moral security, and the protection of a livable world for those who belong within it. Gamma values add realism, personal accountability, selectivity in attachment, and respect for tangible consequence. They are drawn to settings where loyalty is not trivialized, work has substance, and relationships are proved in action rather than declared cheaply. They recoil from sentimental universalism, unstable permissiveness, and environments where nobody takes responsibility for the harm they cause.`,
+    communication:`The Guardian communicates sincerely but with guarded thresholds. They do not usually reveal themselves quickly, and they often test rather than assume closeness. Identity is felt as highly personal and complex, which is why they resist being absorbed into generic role language. In social systems they often serve as the closer of cycles: the one who notices accumulated error, enforces consequence, and restores seriousness. Stress can harden them further. Repeated strain often trains them into greater endurance, but it also increases moral rigidity and makes forgiveness more difficult than it already is.`,
+    portraitA:`Ego pairs Fi with Se: moral judgment enforced by physical will, so the lead expression is unwavering personal loyalty backed by readiness to act. The Super-Ego (Ti, Ne) is the awkward zone, where abstract structural logic and open speculation both feel like soft duties. The Super-Id (Te, Ni) is the unmet ache: business efficiency and long-range foresight are welcomed gratefully from a trusted partner. The Id (Fe, Si) runs as background atmospheric warmth and bodily care, deployed without display. Information flows from Fi's selective valuation into Se's direct enforcement.`,
+    portraitG:`Social Mission (Fi + Si) projects ethical conviction and steady upkeep into the public field, the guardian, the keeper of standards and home conditions. Social Adaptation (Ti + Ni) is where output stutters: structural argument and long-range strategy both require effort. Self-Realization (Se + Te) is the intimate sphere of direct action and impersonal effectiveness, reserved for close company. Inflation (Ne + Fe) is the drain, where unbounded possibility and orchestrated cheer both bleed energy. Same eight functions, viewed along the energetic axis instead of the informational one.`,
+  },
+  LSE:{
+    nickname:`The Administrator`,
+    aka:`Administrator`,
+    behavior:`The Administrator survives by increasing the productive capacity of the habitat itself. Talanov's productive strategy describes the core stance exactly: rather than hunt for a lucky niche, this type organizes work so that the environment yields more, breaks less, and supports life more reliably. Behaviorally they are direct, industrious, and intolerant of slack disorder. They are often the person who sees what must be done, assigns sequence, and keeps the machine running. Their strength is operational clarity. Their weakness is overidentification with duty, chronic tension, and impatience toward anything that looks ornamental, evasive, or theoretically interesting but practically inert.`,
+    temperament:`Their energy is linear, active, and oriented toward sustained external output. They prefer to get ahead of problems rather than improvise after the fact. Affect is usually secondary to effort, but not absent. Frustration, urgency, and relief are expressed through work rhythm, intensity, and pressure on the field. Their will is commanding in a civic rather than theatrical sense. They want things set in order and moving properly. Social energy becomes strongest when there is a concrete task, a standard to uphold, and a system that must be brought under control.`,
+    cognition:`Cognitively this is a pragmatic, concrete, and sequence-sensitive mind. Perception is distributive, attentive to what is physically present, materially relevant, and immediately actionable. In reasoning they are constructors who prefer coherent procedures, tested methods, and clear lines of causation. Their wider cognitive form is dialectical enough to handle complexity, branches, and tradeoffs, but always in the service of implementation. They do not theorize for recreation. They think to optimize, schedule, allocate, and bring a process to dependable yield.`,
+    valuation:`Their motivation is grounded in status through useful achievement and in the Delta wish for durable, livable order. They value competence, practical reciprocity, predictable growth, and improvements that hold up in everyday life. They are drawn to environments where hard work changes real conditions and where quality is more important than display. They recoil from drift, emotional excess without follow-through, and abstract grandstanding that leaves practical burdens for others to carry.`,
+    communication:`The Administrator communicates in a businesslike manner and often enters relationships through shared tasks and obligations. Identity is usually tied to a larger frame of standards and environment rather than pure private self-definition, which is why they can sound as though they speak for the order itself. In larger systems they often act as the originator of a work program or the force that compels reality to reorganize around a plan. Stress is one of their weakest zones. They can carry immense loads when the structure is intact, but sudden destabilization can crack confidence quickly and produce rigid, brittle overcontrol.`,
+    portraitA:`Ego pairs Te with Si: efficient action grounded in concrete care, so the lead expression is tireless administration of working systems. The Super-Ego (Fe, Ni) is the awkward zone, where orchestrated emotional display and long-range prophecy both feel like obligations. The Super-Id (Fi, Ne) is the unmet ache: warm personal loyalty and fresh inspiration are welcomed from trusted others. The Id (Ti, Se) runs as background structural awareness and capable assertion, used selectively. Information flows from Te's reading of utility down through Si's grounding in immediate condition.`,
+    portraitG:`Social Mission (Te + Se) projects competent management and steady force into the public field, the administrator, the project lead, the hands-on executive. Social Adaptation (Fe + Ne) is where output stutters: lively rallying and speculative pivots both require effort. Self-Realization (Si + Fi) is the intimate sphere of quiet domestic care and personal loyalty, kept close. Inflation (Ni + Ti) is the drain, where foreboding prediction and abstract structural argument both leak energy. Same architecture as Model A, viewed on the axis of where the lifelong energy actually flows.`,
+  },
+  EII:{
+    nickname:`The Humanist`,
+    aka:`Humanist and sometimes Conciliator`,
+    behavior:`The Humanist survives by sustaining cooperation where harsher logics would fragment it. Talanov's eusociality strategy captures the core pattern: this type protects the group by reinforcing conscience, mutual aid, and tolerable psychological conditions, even when doing so costs personal advantage. Behaviorally they are restrained, ethically scrupulous, and unusually sensitive to the inner state of others. They are often most impressive not in conquest but in quiet moral endurance. Their strength is humane steadiness. Their weakness is exposure. They can overestimate others' goodness, hesitate too long before drawing a hard boundary, and suffer deeply when forced into openly aggressive environments.`,
+    temperament:`Their energy is steady, controlled, and more conserving than expansive. They do best with rhythm, predictability, and work that does not demand theatrical self-assertion. Affect is private but real, with strong capacity for guilt, conscience, tenderness, and quiet disapproval. Will is usually conforming on the surface, but it is not empty compliance. They accept structure when it protects what they find decent and necessary. Social energy is low-pressure and protective rather than catalytic.`,
+    cognition:`Cognitively this is a humanitarian style with a sharp ethical line and a surprisingly rigorous inner logic. Perception is dissociative enough to distinguish motive, role, and moral texture, yet their reasoning tends toward principled interpretation rather than detached system building. In argument they function as guardians of humane norm. They do not usually try to overpower, but to clarify what should and should not be permitted between people. Their broader cognitive form is causal in its own way: once they see the moral mechanism of a situation, they follow its consequences with quiet exactness.`,
+    valuation:`Their motivation is rooted in self-worth, meaningful inward work, and Delta conditions of trust, practical decency, and noncoercive cooperation. They want a world that is fair enough to inhabit without cynicism. They are drawn to settings where personal growth, loyalty, and psychological dignity are treated as real goods rather than rhetorical decoration. They withdraw from competitive spectacle, strategic cruelty, and environments that make hardness a badge of honor.`,
+    communication:`The Humanist communicates sincerely and with low-force tact. They usually make contact by receptivity, careful phrasing, and attunement to the other person's state rather than by speed or impact. Identity is often interpreted through role and social definition more than some of the more individualizing types, but they still resist any role that violates conscience. In larger systems they often become the stabilizer of moral climate, the person who keeps cooperation from degrading into cold procedure. Stress is difficult for them. When foundations shake, they may cling to duty and principle while inwardly losing firmness, becoming overburdened by doubt and quietly desperate for trustworthy support.`,
+    portraitA:`Ego pairs Fi with Ne: humane judgment open to fresh possibility, so the lead expression is principled care that imagines what people could become. The Super-Ego (Ti, Se) is the awkward zone, where rigid structural argument and direct force both feel like soft duties. The Super-Id (Te, Si) is the unmet ache: practical efficiency and steady physical care are welcomed gratefully from a trusted partner. The Id (Fe, Ni) runs as background atmospheric warmth and quiet long-range vision, used selectively. Information flows from Fi's compassionate valuation into Ne's range of human potential.`,
+    portraitG:`Social Mission (Fi + Ni) projects humane conviction and quiet vision into the public field, the humanist, the patient counselor, the moral imagination. Social Adaptation (Ti + Si) is where output stutters: rigorous structural argument and immediate physical care both require effort. Self-Realization (Ne + Te) is the intimate sphere of speculative play and modest practical projects, shared with chosen company. Inflation (Se + Fe) is the drain, where forceful assertion and orchestrated cheer both bleed energy. Same eight elements, projected onto the axis of energetic posture rather than information.`,
+  },
+  IEE:{
+    nickname:`The Advisor`,
+    aka:`Adviser and Troubadour`,
+    behavior:`The Advisor survives by widening the social gene pool of ideas, contacts, and possibilities. Talanov's promiscuous friendliness strategy is blunt in phrasing but useful in meaning: this type expands horizons by building bridges across boundaries that more selective types leave intact. Behaviorally they are curious about people, quick to sense potential, and drawn to what is emerging rather than what is settled. They often spot a latent talent, new alliance, or unexpected opening before anyone else takes it seriously. Their strength is human possibility-reading. Their weakness is diffusion. They can become scattered, overcommitted, or so enamored with what might develop that they underweight structure, limits, and contradiction.`,
+    temperament:`Their energy is exploratory, rapidly shifting, and socially activating. They move by initiative and often by command, not because they crave rigid control, but because they naturally start processes and pull others toward them. Affect is lively, externally responsive, and often buoyant even when underlying uncertainty exists. Social energy is outward and contacting. They do not conserve themselves by retreat at first. They renew themselves through interesting people, new atmospheres, and the sense that life is opening rather than narrowing.`,
+    cognition:`Cognitively this is a humanitarian and associative style organized around human potential. Perception notices subtle openings in character, relationship, and situation, then spins outward into alternatives. In argument they are diplomats. They prefer to widen context, introduce another angle, or identify a better fit rather than close discussion through proof alone. Their broader cognitive form is holographic and multi-perspectival. They can reframe a person or problem quickly by shifting viewpoint, which makes them excellent at unlocking stuck situations and weak at enduring overly narrow, linear tasks.`,
+    valuation:`They are motivated by uniqueness and by the sense that life should remain open to development. Delta values add goodwill, practical self-development, and preference for humane local worlds over grand coercive systems. They are drawn to environments where people can grow, where friendliness is not naive, and where novelty can be folded into daily life without turning existence into war. They lose motivation in rigid hierarchies, administrative monotony, and climates where suspicion or emotional heaviness makes spontaneous contact feel dangerous.`,
+    communication:`The Advisor communicates passionately but with a supportive rather than dominating cast. They establish contact easily, show interest quickly, and often make others feel more visible to themselves. Identity tends to be interpreted through role and social recognizability more than pure inward complexity, which can make them surprisingly sensitive to what a person is becoming in the eyes of others. In larger systems they often serve as implementers of human connection, translating abstract possibility into networks, encouragement, and movement. Stress can mobilize them sharply. In acute uncertainty they often become more resourceful, but long periods of structureless overextension produce scatter, avoidance, and loss of precision.`,
+    portraitA:`Ego pairs Ne with Fi: open intuition guided by warm personal judgment, so the lead expression is reading hidden potential in people and inviting them to grow. The Super-Ego (Se, Ti) is the awkward zone, where direct force and rigid structure both feel like uncomfortable duties. The Super-Id (Si, Te) is the unmet ache: steady bodily care and competent practical handling are welcomed gratefully from a trusted partner. The Id (Ni, Fe) runs as background long-range hunch and atmospheric warmth, used without display. Information flows from Ne's perception of latent possibility into Fi's selective sympathy.`,
+    portraitG:`Social Mission (Ne + Fe) projects creative possibility and emotional connection into the public field, the advisor, the matchmaker, the discoverer of human talent. Social Adaptation (Se + Te) is where output stutters: forceful action and impersonal efficiency both require effort. Self-Realization (Fi + Si) is the intimate sphere of personal devotion and quiet sensory comfort, reserved for close company. Inflation (Ti + Ni) is the drain, where rigid structural argument and gloomy long-range premonition both bleed energy. Same architecture, viewed by where the energy moves rather than what it knows.`,
+  },
+  SLI:{
+    nickname:`The Craftsman`,
+    aka:`Craftsman and Artisan`,
+    behavior:`The Craftsman survives by moving toward a sustainable, low-friction niche and inhabiting it well. Talanov's peaceful-avoidance strategy fits this type closely: instead of escalating competition, they seek a workable perimeter where life can be maintained through competence, sufficiency, and independence. Behaviorally they are pragmatic, understated, and highly responsive to concrete disharmony. They do not usually advertise ambition, yet they steadily improve whatever is under their hands. Their strength is durable self-sufficiency. Their weakness is withdrawal. When uninspired or socially overtaxed, they can shrink life down to comfort maintenance and lose access to any larger horizon of meaning or initiative.`,
+    temperament:`Their energy is adaptive, low-baseline, and anchored in bodily rhythm. They do not spend effort unless there is good reason, but they can become sharply effective when circumstances demand practical action. Affect is muted, confidential, and often visible more in tone reduction or quiet goodwill than in open display. Will tends toward conformity in the sense of accepting workable limits, not in the sense of ideological obedience. They are often most solid when the pace is humane, the environment is familiar, and the task has tangible payoff.`,
+    cognition:`Cognitively this is a pragmatic perception anchored in concrete qualities, useful adjustments, and the hidden cost of unnecessary complication. Perception is commutative and immediate, staying close to what can be sensed, handled, repaired, or optimized. In reasoning they are restructurers: when a system is clumsy, they look for the shortcut, the workaround, or the cleaner local arrangement. Their broader cognitive style is vortical and processive, which gives them an understated talent for sensing how one practical change will cascade through a whole living setup. They are less impressed by theory than by elegant functioning.`,
+    valuation:`Their motivation centers on welfare, ordinary sufficiency, and the Delta wish for a world that is practical, decent, and not needlessly invasive. They are drawn to environments where quality matters, promises are modest and kept, and comfort is earned through competence rather than display. They recoil from loud hierarchies, chronic emotional intensity, and systems that convert every relationship into performance or struggle. Security for them is not mere possession. It is the ability to live without constant disruption.`,
+    communication:`The Craftsman communicates coolly and often sparingly. They prefer contact that grows from shared reality rather than from confessional intensity or social theater. Identity is often felt through an idealized relation to one's environment, standards, or chosen world, which can make them more attached to place and setting than outsiders notice. In larger systems they often serve as the final corrector: the one who removes friction, stabilizes the practical base, and quietly makes outcomes more livable. Stress can mobilize them surprisingly well in the short term, but sustained exposure to noise, pressure, and emotional intrusion leads to retreat, dryness, and deep refusal.`,
+    portraitA:`Ego pairs Si with Te: embodied sensing applied to practical efficiency, so the lead expression is calm craftsmanship that improves what is actually here. The Super-Ego (Ni, Fe) is the awkward zone, where long-range prophecy and orchestrated emotional display both feel like uncomfortable duties. The Super-Id (Ne, Fi) is the unmet ache: fresh inspiration and warm personal loyalty are welcomed gratefully from trusted others. The Id (Se, Ti) runs as background physical capability and structural awareness, used selectively. Information flows from Si's reading of immediate state into Te's quiet improvement.`,
+    portraitG:`Social Mission (Si + Ti) projects practical comfort and quiet structural sense into the public field, the craftsman, the artisan, the keeper of working method. Social Adaptation (Ni + Fi) is where output stutters: long-range vision and emotive personal display both require effort. Self-Realization (Te + Ne) is the intimate sphere of modest practical experiments and speculative play, reserved for close company. Inflation (Fe + Se) is the drain, where orchestrated emotion and aggressive force both bleed energy. Same eight functions, viewed not by what they know but by where their lifelong energy moves.`,
+  },
+};
+
+/* ═══════ MODEL A & MODEL G SUB-PORTRAITS (function-block operationalizations) ═══════ */
+// These two narratives are NOT independent or contradictory. They are orthogonal
+// cross-sections of the same psyche: Model A reads the informational geometry
+// (what the type processes, prioritizes, and avoids), Model G reads the energetic
+// geometry (where the type generates, conserves, and loses psychic energy). The
+// same eight functions occupy both, only the blocking and the question differ.
+
+/* ═══════ SMALL GROUP LOOKUPS (Compendium label / sociotype.xyz label) ═══════ */
+// Each entry: {group, groupXyz, sub, subXyz, detail}
+// Type → membership lookups built from the Tetrachotomy Compendium and sociotype.xyz/g
+
+const SG_TABLES={
+  // 1. Quadra
+  quadra:{
+    label:"Quadra", labelXyz:"Quadra",
+    members:{
+      Alpha:{xyz:"Alpha", types:["ILE","LII","ESE","SEI"], detail:"Curious, light, democratic; values open inquiry and easy comfort"},
+      Beta:{xyz:"Beta",   types:["EIE","IEI","SLE","LSI"], detail:"Passionate, hierarchical, mobilized; values willpower and ideological cause"},
+      Gamma:{xyz:"Gamma", types:["SEE","ESI","LIE","ILI"], detail:"Reformist, pragmatic, individualist; values results and frank judgement"},
+      Delta:{xyz:"Delta", types:["LSE","SLI","IEE","EII"], detail:"Stable, humane, conservationist; values craft and quiet care"},
+    }
+  },
+  // 8. Club / Activity Disposition
+  club:{
+    label:"Club", labelXyz:"Activity Disposition",
+    members:{
+      "Researchers (NT)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
+      "Pragmatists (ST)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
+      "Socialites (SF)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
+      "Humanitarians (NF)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
+    }
+  },
+  // 3. Temperament
+  temperament:{
+    label:"Temperament", labelXyz:"Temperament",
+    members:{
+      "Flexible-Maneuvering (EP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
+      "Linear-Assertive (EJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
+      "Receptive-Adaptive (IP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
+      "Rigid-Stable (IJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
+    }
+  },
+  // 1. Stimulus / Immersed in
+  stimulus:{
+    label:"Stimulus Group", labelXyz:"Immersed in",
+    members:{
+      "Uniqueness Seeking (ENxx)":{xyz:"Ideas",     types:["ILE","LIE","IEE","EIE"], detail:"Drawn to novelty, originality, frontier ideas"},
+      "Status Seeking (ESxx)":    {xyz:"Reality",   types:["SLE","LSE","SEE","ESE"], detail:"Drawn to influence, prestige, social position"},
+      "Self-Worth Seeking (INxx)":{xyz:"Themselves",types:["ILI","LII","IEI","EII"], detail:"Drawn to inner worth, principled work at own pace"},
+      "Well-Being Seeking (ISxx)":{xyz:"Ordinary",  types:["SLI","LSI","SEI","ESI"], detail:"Drawn to comfort, security, steady provision"},
+    }
+  },
+  // 2. Communication Style
+  communication:{
+    label:"Communication Style", labelXyz:"Communication Style",
+    members:{
+      "Business-like (ExTx)":  {xyz:"Business-Driven",     types:["ILE","LIE","SLE","LSE"], detail:"Task-first, practical, outcome-oriented exchange"},
+      "Passionate (ExFx)":     {xyz:"Passionate-Expressive",types:["IEE","EIE","SEE","ESE"], detail:"Emotionally charged, dramatic, expressive exchange"},
+      "Cold-Blooded (IxTx)":   {xyz:"Cool-Headed",         types:["ILI","LII","SLI","LSI"], detail:"Reserved, analytical, low-affect exchange"},
+      "Sincere (IxFx)":        {xyz:"Tender-Hearted",      types:["IEI","EII","SEI","ESI"], detail:"Warm, personal, feeling-weighted exchange"},
+    }
+  },
+  // 9. Perceptual Group
+  perceptual:{
+    label:"Perceptual Group", labelXyz:"Perceptual Orientation",
+    members:{
+      "Associative (NP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
+      "Dissociative (NJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
+      "Commutative (SP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
+      "Distributive (SJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
+    }
+  },
+  // 14. Argumentation Group
+  argumentation:{
+    label:"Argumentation Group", labelXyz:"Argumentation Style",
+    members:{
+      "Restructors (TP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
+      "Constructors (TJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
+      "Diplomats (FP)":   {xyz:"Diplomat",    types:["IEE","SEE","IEI","SEI"], detail:"Descriptive, conciliatory, fills the gap with breadth"},
+      "Guardians (FJ)":   {xyz:"Guardian",    types:["EIE","ESE","EII","ESI"], detail:"Interprets through authority and moral consensus"},
+    }
+  },
+  // 11. Romance Style / Primal Social Role
+  romance:{
+    label:"Romance Style", labelXyz:"Primal Social Role",
+    members:{
+      "Childlike":{xyz:"Infantile",types:["ILE","IEE","LII","EII"], detail:"Playful, intellectual, asexual until safe; needs care"},
+      "Victim":   {xyz:"Victim",   types:["LIE","EIE","ILI","IEI"], detail:"Doubting, dramatic, drawn to power that grounds them"},
+      "Aggressor":{xyz:"Aggressor",types:["SLE","SEE","LSI","ESI"], detail:"Direct, possessive, openly pursues the desired partner"},
+      "Caring":   {xyz:"Curator",  types:["LSE","ESE","SLI","SEI"], detail:"Suave, attentive, protective of partner's well-being"},
+    }
+  },
+  // 7. Benefit Ring / Energy Group / Quadra Role
+  benefit:{
+    label:"Benefit Ring (Energy Group)", labelXyz:"Quadra Role",
+    members:{
+      "Energy Generators":   {xyz:"Agitator",  types:["ILE","EIE","LSE","SEE"], detail:"Translate information into energy; ignite mass-scale chain reactions"},
+      "Energy Carriers":     {xyz:"Mobilizer", types:["LIE","IEE","SLE","ESE"], detail:"Most energy-saturated; coordinate and direct small groups"},
+      "Information Accumulators":{xyz:"Stabilizer",types:["ILI","EII","LSI","SEI"], detail:"Hoard and refine information; the socion's stable foundation"},
+      "Information Generators":{xyz:"Dissenter",types:["LII","IEI","SLI","ESI"], detail:"Translate energy into information; bind small affinity-groups"},
+    }
+  },
+  // 31. Cognitive Styles / Supervision Ring / Cognitive Form
+  cognitive:{
+    label:"Supervision Ring (Cognitive Style)", labelXyz:"Cognitive Form",
+    members:{
+      "Causal-Determinist":   {xyz:"Architectonic",types:["ILE","LSI","SEE","EII"], detail:"Linear cause-and-effect chains; classical deductive logic"},
+      "Holographic-Panoramic":{xyz:"Diagnostic",   types:["SLE","LII","IEE","ESI"], detail:"Multi-perspective superposition; structural x-ray vision"},
+      "Vortical-Synergetic":  {xyz:"Synergetic",   types:["LIE","IEI","ESE","SLI"], detail:"Trial-and-error vortex; order emerges from chaotic search"},
+      "Dialectical-Algorithmic":{xyz:"Hermeneutic",types:["EIE","ILI","LSE","SEI"], detail:"Synthesis of opposites; conditional branching prediction"},
+    }
+  },
+  // 4. Forms of Will / Mode of Will
+  will:{
+    label:"Form of Will", labelXyz:"Mode of Will",
+    members:{
+      "Initiative":  {xyz:"Initiating",types:["ILE","LIE","SEE","ESE"], detail:"Acts on individual impulse, often outside social constraint"},
+      "Commanders":  {xyz:"Commanding",types:["IEE","EIE","SLE","LSE"], detail:"Directs others, speaks for the group, restricts deviance"},
+      "Self-Critical":{xyz:"Doubting", types:["ILI","LII","SEI","ESI"], detail:"Doubts and restrains the self by inward conviction"},
+      "Executive":   {xyz:"Conforming",types:["IEI","EII","SLI","LSI"], detail:"Submits willingly to social structure and assigned role"},
+    }
+  },
+  // 30. Quest-Diminutive / Identity Locus
+  identity:{
+    label:"Quest-Diminutive", labelXyz:"Identity Locus",
+    members:{
+      "Chaotic":   {xyz:"Individual Will",   types:["ILE","SEE","LII","ESI"], detail:"Sees self as separate, irreducibly individual; defends personal freedoms"},
+      "Reducing":  {xyz:"Collective Will",   types:["SLE","IEE","EII","LSI"], detail:"Reduces self and others to clean social roles and standards"},
+      "Natural":   {xyz:"Familial-Worldly",  types:["LIE","ESE","ILI","SEI"], detail:"Identifies with the simple integrity of inner aspirations"},
+      "Idealizing":{xyz:"Elitist-Fastidious",types:["LSE","EIE","IEI","SLI"], detail:"Identifies through elite affiliation and devotional ideals"},
+    }
+  },
+  // 21. Stress Resistance / Social Attachment Style
+  stress:{
+    label:"Stress Group", labelXyz:"Social Attachment Style",
+    members:{
+      "Frozen by Stress":   {xyz:"Personally Loyal", types:["ILE","SEE","ILI","SEI"], detail:"Viscous; resists initially then withdraws to known anchors"},
+      "Resistant to Stress":{xyz:"Free Agent",       types:["IEE","SLE","IEI","SLI"], detail:"Elastic; mobilized by sudden change, evades or waits out the storm"},
+      "Trained by Stress":  {xyz:"Personally Free",  types:["LIE","ESE","LII","ESI"], detail:"Crystalline; hardened by repeated exposure, can rebuild from zero"},
+      "Vulnerable to Stress":{xyz:"Group-Devoted",   types:["EIE","LSE","EII","LSI"], detail:"Monolithic but brittle; needs solid foundation and stable group"},
+    }
+  },
+};
+
+const SG_ORDER=["quadra","club","temperament","stimulus","communication","perceptual","argumentation","romance","benefit","cognitive","will","identity","stress"];
+
+function getSmallGroups(t){
+  const out=[];
+  for(const key of SG_ORDER){
+    const tbl=SG_TABLES[key];
+    let found=null;
+    for(const subName in tbl.members){
+      const m=tbl.members[subName];
+      if(m.types.includes(t)){found={subName, m}; break;}
+    }
+    if(found){
+      out.push({
+        group:tbl.label,
+        groupXyz:tbl.labelXyz,
+        sub:found.subName,
+        subXyz:found.m.xyz,
+        detail:found.m.detail,
+      });
+    }
+  }
+  return out;
+}
+
+/* ═══════ SHARED COMPONENTS ═══════ */
+const Chip=({fn,size=28,glow,bg})=>{
+  const bgColor=bg||FC[fn]||"#555";
+  return(<div style={{width:size,height:size,borderRadius:5,background:bgColor,color:"#fff",
+    display:"inline-flex",alignItems:"center",justifyContent:"center",
+    fontSize:size<26?8:size>34?13:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",
+    boxShadow:glow?`0 0 12px ${bgColor}55`:`0 1px 3px rgba(0,0,0,0.4)`,
+    border:`1px solid ${glow?bgColor+"88":"rgba(255,255,255,0.15)"}`,letterSpacing:-0.3,flexShrink:0,
+    transition:"all 0.2s",textShadow:"0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.5)",
+  }}>{fn}</div>);
+};
+const Badge=({label,color,filled})=>(
+  <span style={{display:"inline-block",padding:"1px 6px",borderRadius:3,fontSize:9,fontWeight:600,
+    background:filled?color+"22":"transparent",color:color||C.textDim,
+    border:`1px solid ${color||C.border}33`,letterSpacing:0.3,lineHeight:"16px",fontFamily:"'JetBrains Mono',monospace",
+  }}>{label}</span>
+);
+const SectionDivider=({label,color=C.accent})=>(
+  <div style={{display:"flex",alignItems:"center",gap:14,margin:"36px 0 20px"}}>
+    <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,${color}30)`}}/>
+    <span style={{fontFamily:"'Inter',sans-serif",fontSize:14,letterSpacing:3,textTransform:"uppercase",color,fontWeight:800}}>{label}</span>
+    <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,${color}30)`}}/>
+  </div>
+);
+const Card=({children,style={}})=>(<div className="fade-in" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:18,marginBottom:14,...style}}>{children}</div>);
+const DichRow=({label,pole,colorA,colorB})=>{
+  const isA=pole===label.split("/")[0];
+  return(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"3px 0",borderBottom:`1px solid ${C.border}44`}}>
+    <span style={{fontSize:9,color:C.textDim,width:110}}>{label}</span>
+    <div style={{display:"flex",gap:4}}>
+      <span style={{fontSize:9,fontWeight:isA?700:400,color:isA?(colorA||C.accent):C.textFaint,background:isA?(colorA||C.accent)+"15":"transparent",padding:"1px 6px",borderRadius:3}}>{label.split("/")[0]}</span>
+      <span style={{fontSize:9,fontWeight:!isA?700:400,color:!isA?(colorB||C.rose):C.textFaint,background:!isA?(colorB||C.rose)+"15":"transparent",padding:"1px 6px",borderRadius:3}}>{label.split("/")[1]}</span>
+    </div>
+  </div>);
+};
+
+/* ═══════ MODEL A VISUALIZER ═══════ */
+const VBLOCKS=[
+  {l:"Disconnect",p:"1↕4",c:"#ef4444",pos:[0,3],
+   desc:"The point of greatest internal disconnect. These two functions stubbornly insist on their own approach and are almost never used together. A severed tie: structurally connected but functionally isolated."},
+  {l:"Adaptive",p:"2↕3",c:"#22c55e",pos:[1,2],
+   desc:"How we openly adapt to challenges the world places on us. These functions connect and adjust temporarily based on the situation, bridging the Ego's skill with the Super-Ego's obligation."},
+  {l:"Compliant",p:"5↕8",c:"#8b5cf6",pos:[4,7],
+   desc:"Low resistance to outside influence. These functions allow other people to provide support and feedback, connecting the Super-Id's needs with the Id's background competence."},
+  {l:"Reactive",p:"6↕7",c:"#f59e0b",pos:[5,6],
+   desc:"Highly resistant to outside influence. The individual takes care of this area themselves, connecting the Mobilizing function's aspirations with the Ignoring function's selective restriction."},
+];
+
+function ModelAVisualizer({type}){
+  const fns=getFns(type);
+  const [sel,setSel]=useState(null);
+  const [vSel,setVSel]=useState(null);
+  const rows=[[0,1],[3,2],[5,4],[6,7]];
+  const blockNames=["Ego","Super-Ego","Super-Id","Id"];
+  const blockTextColors=["#22c55e","#ef4444","#eab308","#a855f7"];
+  const blockBgColors=["#22c55e","#ef4444","#eab308","#a855f7"];
+  const chipColors=["#22c55e","#22c55e","#ef4444","#ef4444","#eab308","#eab308","#a855f7","#a855f7"];
+  const arrows=["→","←","←","→"];
+
+  const activeVB=vSel!==null?VBLOCKS[vSel]:null;
+  const isInVB=(idx)=>activeVB?activeVB.pos.includes(idx):false;
+  const shouldDim=(idx)=>activeVB?!activeVB.pos.includes(idx):false;
+
+  const renderRow=(ri)=>{
+    const row=rows[ri];
+    const tc=blockTextColors[ri]; const bgc=blockBgColors[ri]; const arrow=arrows[ri];
+    return(<div key={ri} style={{display:"flex",gap:3,background:bgc+"0d",borderRadius:8,padding:6,
+      border:`1px solid ${bgc}18`,position:"relative",transition:"opacity 0.25s",
+      opacity:(activeVB&&!row.some(i=>isInVB(i)))?0.3:1}}>
+      <div style={{position:"absolute",top:3,right:8,fontSize:7,fontWeight:800,color:tc,letterSpacing:1.5,textTransform:"uppercase",opacity:0.5}}>{blockNames[ri]}</div>
+      {row.map((idx,ci)=>{
+        const pos=MA[idx];const fn=fns[idx];const isSel=sel===idx;
+        const vHit=isInVB(idx);const dim=shouldDim(idx);
+        const vbc=activeVB?activeVB.c:null;
+        return(<Fragment key={idx}>
+          <div onClick={()=>{if(!activeVB)setSel(isSel?null:idx);}} style={{flex:1,padding:"8px 6px",borderRadius:6,cursor:activeVB?"default":"pointer",transition:"all 0.25s",
+            background:vHit?vbc+"18":(isSel?tc+"1a":"rgba(255,255,255,0.02)"),
+            border:vHit?`2px solid ${vbc}88`:(isSel?`1px solid ${tc}44`:"1px solid transparent"),
+            opacity:dim?0.2:1,
+            boxShadow:vHit?`0 0 12px ${vbc}33, inset 0 0 8px ${vbc}11`:"none",
+          }}>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+              <Chip fn={fn} size={30} glow={isSel||vHit} bg={chipColors[idx]}/>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.5)"}}>{pos.n}</div>
+                <div style={{fontSize:8,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>Position {pos.num} · {pos.dim} · {pos.pri} · {pos.lvl}</div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:2}}>
+              <Badge label={pos.d7.strength} color={pos.d7.strength==="Strong"?C.accentA:C.textDim} filled/>
+              <Badge label={pos.d7.value} color={pos.d7.value==="Valued"?C.accentG:C.textDim} filled/>
+              <Badge label={pos.d7.inertia} color={pos.d7.inertia==="Inert"?C.accent:C.textDim} filled/>
+            </div>
+          </div>
+          {ci===0&&<div style={{display:"flex",alignItems:"center",color:tc,fontSize:14,opacity:activeVB?0.15:0.5,transition:"opacity 0.25s"}}>{arrow}</div>}
+        </Fragment>);
+      })}
+    </div>);
+  };
+
+  const RingHalf=({label,color,rowIndices})=>(
+    <div style={{display:"flex",gap:0,marginBottom:3}}>
+      <div style={{width:22,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",borderRight:`3px solid ${color}55`,position:"relative"}}>
+        <span style={{fontSize:7,fontWeight:700,color:color,letterSpacing:1.5,writingMode:"vertical-rl",textOrientation:"mixed",transform:"rotate(180deg)",opacity:0.7}}>{label}</span>
+      </div>
+      <div style={{flex:1,display:"flex",flexDirection:"column",gap:3,paddingLeft:4}}>
+        {rowIndices.map(ri=>renderRow(ri))}
+      </div>
+    </div>
+  );
+
+  return(<div>
+    <div>
+      <RingHalf label="MENTAL" color={C.accentA} rowIndices={[0,1]}/>
+      <RingHalf label="VITAL" color="#ff6f00" rowIndices={[2,3]}/>
+    </div>
+    {/* Vertical block selector */}
+    <div style={{marginTop:8}}>
+      <div style={{fontSize:8,color:C.textDim,textAlign:"center",marginBottom:4,letterSpacing:1,textTransform:"uppercase"}}>Vertical Blocks <span style={{color:C.textFaint}}>(tap to highlight)</span></div>
+      <div style={{display:"flex",flexDirection:"column",gap:4,alignItems:"center"}}>
+        <div style={{display:"flex",gap:4,justifyContent:"center"}}>
+          {[VBLOCKS[0],VBLOCKS[1]].map((vb)=>{const vi=VBLOCKS.indexOf(vb);const isActive=vSel===vi;
+          return(<div key={vb.l} onClick={()=>{setVSel(isActive?null:vi);if(!isActive)setSel(null);}}
+            style={{fontSize:9,color:isActive?"#fff":vb.c,padding:"4px 10px",borderRadius:5,cursor:"pointer",transition:"all 0.2s",
+              border:`1px solid ${isActive?vb.c:vb.c+"44"}`,background:isActive?vb.c+"cc":vb.c+"0a",
+              boxShadow:isActive?`0 0 10px ${vb.c}44`:"none",fontWeight:isActive?700:600,minWidth:120,textAlign:"center",
+            }}><span>{vb.l}</span> <span style={{fontFamily:"'JetBrains Mono',monospace",opacity:0.7}}>[{vb.p}]</span></div>);})}
+        </div>
+        <div style={{display:"flex",gap:4,justifyContent:"center"}}>
+          {[VBLOCKS[3],VBLOCKS[2]].map((vb)=>{const vi=VBLOCKS.indexOf(vb);const isActive=vSel===vi;
+          return(<div key={vb.l} onClick={()=>{setVSel(isActive?null:vi);if(!isActive)setSel(null);}}
+            style={{fontSize:9,color:isActive?"#fff":vb.c,padding:"4px 10px",borderRadius:5,cursor:"pointer",transition:"all 0.2s",
+              border:`1px solid ${isActive?vb.c:vb.c+"44"}`,background:isActive?vb.c+"cc":vb.c+"0a",
+              boxShadow:isActive?`0 0 10px ${vb.c}44`:"none",fontWeight:isActive?700:600,minWidth:120,textAlign:"center",
+            }}><span>{vb.l}</span> <span style={{fontFamily:"'JetBrains Mono',monospace",opacity:0.7}}>[{vb.p}]</span></div>);})}
+        </div>
+      </div>
+      {activeVB&&(<div className="fade-in" style={{marginTop:8,padding:"8px 12px",borderRadius:6,
+        background:activeVB.c+"0d",border:`1px solid ${activeVB.c}22`,
+      }}>
+        <div style={{fontSize:10,fontWeight:700,color:activeVB.c,marginBottom:3}}>{activeVB.l} Block: Positions {activeVB.pos.map(p=>p+1).join(" & ")}</div>
+        <div style={{fontSize:10,color:C.textMuted,lineHeight:1.55}}>{activeVB.desc}</div>
+        <div style={{marginTop:6,display:"flex",gap:6,alignItems:"center"}}>
+          {activeVB.pos.map(p=>(<div key={p} style={{display:"flex",alignItems:"center",gap:4}}>
+            <Chip fn={fns[p]} size={22} bg={chipColors[p]}/>
+            <span style={{fontSize:9,color:C.textDim}}>{MA[p].n}</span>
+          </div>))}
+        </div>
+      </div>)}
+    </div>
+    {sel!==null&&!activeVB&&(<div className="fade-in" style={{marginTop:12,padding:14,borderRadius:8,background:C.card,border:`1px solid ${C.border}`}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+        <Chip fn={fns[sel]} size={34} glow bg={chipColors[sel]}/><div>
+          <div style={{fontSize:14,fontWeight:700,color:C.text}}>{MA[sel].n} Function: {fns[sel]}</div>
+          <div style={{fontSize:9,color:C.textDim}}>{MA[sel].aka} · Position {MA[sel].num} · {MA[sel].dim} · {MA[sel].pri} · {MA[sel].lvl}</div>
+        </div>
+        <button onClick={()=>setSel(null)} style={{marginLeft:"auto",background:"none",border:"none",color:C.textDim,fontSize:16}}>✕</button>
+      </div>
+      <p style={{fontSize:11,color:C.textMuted,lineHeight:1.6,marginBottom:10}}>{MA[sel].desc}</p>
+      <div style={{fontSize:9,fontWeight:700,color:C.accentA,letterSpacing:1.5,marginBottom:6}}>7 FUNCTIONAL DICHOTOMIES</div>
+      <DichRow label="Strong/Weak" pole={MA[sel].d7.strength} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Valued/Subdued" pole={MA[sel].d7.value} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Inert/Contact" pole={MA[sel].d7.inertia} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Bold/Cautious" pole={MA[sel].d7.boldness} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Mental/Vital" pole={MA[sel].d7.ring} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Accepting/Producing" pole={MA[sel].d7.accept} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Evaluatory/Situational" pole={MA[sel].d7.eval} colorA="#3b82f6" colorB="#ff6f00"/>
+    </div>)}
+  </div>);
+}
+
+/* ═══════ MODEL G VISUALIZER ═══════ */
+const HALF_COLORS={Energetic:"#3b82f6",Passive:"#ff6f00"};
+const GBC={"Social Mission":"#22c55e","Social Adaptation":"#ffc107","Self-Realization":"#3b82f6",Inflation:"#ff6f00"};
+const COL=["#22c55e","#3b82f6","#ef4444","#a855f7"];
+
+function ModelGVisualizer({type}){
+  const fns=getFns(type);
+  const [sel,setSel]=useState(null);
+  const topRow=[0,1,2,3];const botRow=[4,5,6,7];
+
+  const renderCell=(gi)=>{
+    const gp=MG[gi];const aIdx=G2A[gi];const fn=fns[aIdx];const isSel=sel===gi;
+    const ec=EC[gp.energy];const cc=COL[gi%4];const bc=GBC[gp.block];
+    return(<div key={gi} onClick={()=>setSel(isSel?null:gi)} style={{
+      flex:1,minWidth:0,padding:"8px 5px",borderRadius:6,cursor:"pointer",transition:"all 0.2s",
+      background:isSel?bc+"22":"rgba(255,255,255,0.02)",border:isSel?`1px solid ${bc}55`:`1px solid ${bc}15`,
+    }}>
+      <div style={{textAlign:"center",marginBottom:4}}><Chip fn={fn} size={30} glow={isSel} bg={cc}/></div>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:10,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.6)"}}>{gp.n}</div>
+        <div style={{fontSize:7,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>G{gp.num} · A{gp.aPos}</div>
+        <div style={{fontSize:8,fontWeight:700,color:ec,marginTop:2}}>{gp.energy}</div>
+      </div>
+      <div style={{display:"flex",justifyContent:"center",gap:2,marginTop:3}}><Badge label={gp.half} color={HALF_COLORS[gp.half]} filled/></div>
+    </div>);
+  };
+
+  return(<div>
+    <div style={{display:"flex",gap:4,marginBottom:4}}>
+      <div style={{flex:1,textAlign:"center",fontSize:8,fontWeight:700,color:HALF_COLORS.Energetic,letterSpacing:1.5}}>◆ ENERGETIC HALF</div>
+      <div style={{flex:1,textAlign:"center",fontSize:8,fontWeight:700,color:HALF_COLORS.Passive,letterSpacing:1.5}}>◇ PASSIVE HALF</div>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",gap:3}}>
+      <div style={{display:"flex",gap:3}}>
+        <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Mission"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Mission"]}18`,position:"relative"}}>
+          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Social Mission"],letterSpacing:1,opacity:0.6}}>SOCIAL MISSION</div>
+          {topRow.slice(0,2).map(renderCell)}
+        </div>
+        <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Adaptation"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Adaptation"]}18`,position:"relative"}}>
+          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Social Adaptation"],letterSpacing:1,opacity:0.6}}>SOCIAL ADAPTATION</div>
+          {topRow.slice(2,4).map(renderCell)}
+        </div>
+      </div>
+      <div style={{flex:1,textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▲ PUBLIC: Far Distance (Society)</div>
+      <div style={{display:"flex",gap:3}}>
+        <div style={{flex:1,display:"flex",gap:3,background:GBC["Self-Realization"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Self-Realization"]}18`,position:"relative"}}>
+          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Self-Realization"],letterSpacing:1,opacity:0.6}}>SELF-REALIZATION</div>
+          {botRow.slice(0,2).map(renderCell)}
+        </div>
+        <div style={{flex:1,display:"flex",gap:3,background:GBC.Inflation+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC.Inflation}18`,position:"relative"}}>
+          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC.Inflation,letterSpacing:1,opacity:0.6}}>INFLATION</div>
+          {botRow.slice(2,4).map(renderCell)}
+        </div>
+      </div>
+      <div style={{textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▼ PRIVATE: Close Distance (Territory)</div>
+    </div>
+    <div style={{display:"flex",gap:3,marginTop:8,justifyContent:"center",flexWrap:"wrap"}}>
+      {[{l:"E-Maximum",p:"G1+G5",c:EC.Maximum},{l:"E-Optimum",p:"G2+G6",c:EC.Optimum},{l:"E-Minimum",p:"G3+G7",c:EC.Minimum},{l:"E-Pessimum",p:"G4+G8",c:EC.Pessimum}].map(e=>(
+        <div key={e.l} style={{fontSize:8,color:e.c,padding:"2px 8px",borderRadius:4,border:`1px solid ${e.c}33`,background:e.c+"0a"}}>
+          <span style={{fontWeight:700}}>{e.l}</span> <span style={{color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>[{e.p}]</span>
+        </div>
+      ))}
+    </div>
+    {sel!==null&&(<div className="fade-in" style={{marginTop:12,padding:14,borderRadius:8,background:C.card,border:`1px solid ${C.border}`}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+        <Chip fn={fns[G2A[sel]]} size={34} glow bg={COL[sel%4]}/><div>
+          <div style={{fontSize:14,fontWeight:700,color:C.text}}>{MG[sel].n}: {fns[G2A[sel]]}</div>
+          <div style={{fontSize:9,color:C.textDim}}>{MG[sel].aka} · G{MG[sel].num} (= A{MG[sel].aPos}) · {MG[sel].energy} Energy · {MG[sel].block}</div>
+        </div>
+        <button onClick={()=>setSel(null)} style={{marginLeft:"auto",background:"none",border:"none",color:C.textDim,fontSize:16}}>✕</button>
+      </div>
+      <p style={{fontSize:11,color:C.textMuted,lineHeight:1.6,marginBottom:10}}>{MG[sel].desc}</p>
+      <div style={{fontSize:9,fontWeight:700,color:C.accentG,letterSpacing:1.5,marginBottom:6}}>7 POSITIONAL DICHOTOMIES (GULENKO-NEWMAN)</div>
+      <DichRow label="Kinetic/Potential" pole={MG[sel].d7.kinetic} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Stable/Unstable" pole={MG[sel].d7.stable} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Public/Private" pole={MG[sel].d7.scope} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Accelerate/Decelerate" pole={MG[sel].d7.accel} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Leader/Follower" pole={MG[sel].d7.lead} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Values/Tools" pole={MG[sel].d7.valtools} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Automatic/Conscious" pole={MG[sel].d7.aware} colorA="#3b82f6" colorB="#ff6f00"/>
+    </div>)}
+  </div>);
+}
+
+/* ═══════ OVERVIEW ═══════ */
+function OverviewSection(){
+  return(<div>
+    <Card>
+      <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:C.text,marginBottom:12}}>Two Complementary Lenses on the Same Psyche</div>
+      <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:14}}>
+        Socionics models the psyche through two interdependent structural models. <strong style={{color:C.accentA}}>Model A</strong> (1978, Aušra Augustinavičiūtė) captures <em>information metabolism</em>, how a type processes, prioritizes, and values different kinds of information. <strong style={{color:C.accentG}}>Model G</strong> (1995, Viktor Gulenko) captures <em>energy metabolism</em>, how a type generates, distributes, and expends psychic energy in social interaction.
+      </p>
+      <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:12}}>
+        Neither model alone provides a complete picture. Together, they offer complementary 2D projections of a unified 3D psychic architecture, much as biology studies both the informational (DNA) and energetic (ATP) aspects of cellular life. The same eight information elements occupy positions in both models, but the <em>ordering and grouping</em> differ, revealing distinct structural properties.
+      </p>
+    </Card>
+    <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+      <Card style={{flex:"1 1 300px"}}>
+        <div style={{fontSize:15,fontWeight:700,color:C.accentA,marginBottom:8}}>Model A: Information Metabolism</div>
+        <p style={{fontSize:13,color:C.textMuted,lineHeight:1.65,marginBottom:10}}>Organized into a vertical 2×4 grid. The top half (Mental Ring) handles conscious, socially-directed processing; the bottom half (Vital Ring) handles private, automatic processing.</p>
+        <div style={{fontSize:12,color:C.textDim,lineHeight:1.75}}>
+          <strong style={{color:C.accentA}}>Horizontal Blocks:</strong> Ego, Super-Ego, Super-Id, and Id blocks.<br/>Model A blocks are defined primarily by Strong/Weak × Valued/Subdued.<br/>
+          <strong style={{color:C.accentA}}>Vertical Blocks:</strong> Disconnect, Adaptive, Compliant, Reactive<br/>
+          <strong style={{color:C.accentA}}>7 Functional Dichotomies:</strong> Strong/Weak, Valued/Subdued, Inert/Contact, Bold/Cautious, Mental/Vital, Accepting/Producing, Evaluatory/Situational<br/>
+          <strong style={{color:C.accentA}}>3 Empirical Dichotomies:</strong> As per empirical data collected by Talanov, the 3 Model A function dichotomies that are most statistically measurable are Strong/Weak, Valued/Subdued, and Inert/Contact.<br/>
+          <strong style={{color:C.accentA}}>Derived Properties:</strong> Dimensionality (Strong × Bold), Priority (Valued × Bold). An additional "meta-property" can be derived called "Presence Level," which will be discussed in the last section.
+        </div>
+      </Card>
+      <Card style={{flex:"1 1 300px"}}>
+        <div style={{fontSize:15,fontWeight:700,color:C.accentG,marginBottom:8}}>Model G: Energy Metabolism</div>
+        <p style={{fontSize:13,color:C.textMuted,lineHeight:1.65,marginBottom:10}}>Organized into a horizontal 2×4 grid. The left half (Energetic) contains the strongest energy producers; the right half (Passive) contains energy-conserving or energy-draining functions.</p>
+        <div style={{fontSize:12,color:C.textDim,lineHeight:1.75}}>
+          <strong style={{color:C.accentG}}>Horizontal Blocks:</strong> Social Mission, Social Adaptation, Self-Realization, Inflation<br/>
+          <strong style={{color:C.accentG}}>Vertical Blocks:</strong> Energo-Maximum, Energo-Optimum, Energo-Minimum, Energo-Pessimum<br/>
+          <strong style={{color:C.accentG}}>7 Functional Dichotomies:</strong> Kinetic/Potential, Stable/Unstable, Public/Private, Accelerate/Decelerate, Leader/Follower, Values/Tools, Automatic/Conscious<br/>
+          <strong style={{color:C.accentG}}>Scope Halves:</strong> Public (Far Distance, Society) vs. Private (Close Distance, Territory)
+        </div>
+      </Card>
+    </div>
+    <Card>
+      <div style={{fontSize:15,fontWeight:700,color:C.accent,marginBottom:10}}>The Positional Mapping: Same Elements, Different Architecture</div>
+      <p style={{fontSize:13,color:C.textMuted,lineHeight:1.65,marginBottom:12}}>The key insight is that Model G rearranges Model A's functions into a different structural logic. Critically, certain functions that are paired in Model A become separated in Model G, and vice versa:</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(175px,1fr))",gap:8}}>
+        {MG.map((gp,gi)=>(
+          <div key={gi} style={{padding:"8px 10px",borderRadius:6,background:EC[gp.energy]+"0d",border:`1px solid ${EC[gp.energy]}22`}}>
+            <div style={{fontSize:12,fontWeight:700,color:EC[gp.energy]}}>G{gp.num}: {gp.n}</div>
+            <div style={{fontSize:11,color:C.textDim}}>= Model A Position {gp.aPos} ({MA[G2A[gi]].n})</div>
+            <div style={{fontSize:10,color:C.textFaint}}>{gp.energy} · {gp.block}</div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>);
+}
+
+/* ═══════ PRESENCE CUBE ═══════ */
+const CUBE_NODES=[
+  {num:1,name:"Lead",aka:"Base / Program",x:230,y:62, L:4,D:4,P:4,traits:["Strong","Valued","Bold"],    aBlock:"Ego",       aBlockColor:"#3b82f6",gPos:"G1 Leading",      gBlock:"Social Mission",    gBlockColor:"#f59e0b",bridge:"The dominant axis of both models — the only function at 4L. Unique vertex, anchors both architectures."},
+  {num:6,name:"Mobilizing",aka:"Hidden Agenda",x:82, y:182,L:3,D:2,P:4,traits:["Weak","Valued","Bold"],     aBlock:"Super-Id",  aBlockColor:"#22c55e",gPos:"G4 Launcher",     gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Model A's hidden aspiration becomes Model G's social activity trigger — reveals priority ≠ dimensionality."},
+  {num:2,name:"Creative",aka:"Tool / Auxiliary",x:230,y:252,L:3,D:3,P:3,traits:["Strong","Valued","Cautious"],aBlock:"Ego",     aBlockColor:"#3b82f6",gPos:"G5 Demonstrative",gBlock:"Self-Realization", gBlockColor:"#14b8a6",bridge:"Ego's auxiliary in Model A becomes close-distance self-expression in Model G — situationally reliable."},
+  {num:8,name:"Demonstrative",aka:"Background",x:378,y:182,L:3,D:4,P:2,traits:["Strong","Subdued","Bold"],  aBlock:"Id",        aBlockColor:"#a855f7",gPos:"G2 Creative",     gBlock:"Social Mission",   gBlockColor:"#f59e0b",bridge:"Background competence in A; mission-executing tool in G. Same 4D strength as Lead, but subdued, not valued."},
+  {num:3,name:"Role",aka:"Normative",x:230,y:302,L:2,D:2,P:2,traits:["Weak","Subdued","Bold"],              aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G3 Role",         gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Identical position in both models — conscious social-norm adaptation. The only shared slot besides Lead."},
+  {num:5,name:"Suggestive",aka:"Dual-Seeking",x:82, y:388,L:2,D:1,P:3,traits:["Weak","Valued","Cautious"],  aBlock:"Super-Id",  aBlockColor:"#22c55e",gPos:"G6 Manipulative", gBlock:"Self-Realization", gBlockColor:"#14b8a6",bridge:"Desired input in Model A; long-term habit formation in Model G. 1D but highly valued."},
+  {num:7,name:"Ignoring",aka:"Observing",x:378,y:388,L:2,D:3,P:1,traits:["Strong","Subdued","Cautious"],    aBlock:"Id",        aBlockColor:"#a855f7",gPos:"G8 Control",      gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"Selective restriction. Strong competence paired with lowest priority — the classic 'I know but I can't be bothered.'"},
+  {num:4,name:"Vulnerable",aka:"PoLR",x:230,y:492,L:1,D:1,P:1,traits:["Weak","Subdued","Cautious"],         aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G7 Brake",        gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"The psyche's blind spot. Uniquely 1L, 1D, 1P — the mathematical antipode of Lead in all three projections."},
+];
+// edges: [from, to, dashed] — dashed = back-of-cube (Node 2 connections, behind 3)
+const CUBE_EDGES=[
+  [1,6,false],[1,2,true],[1,8,false],
+  [6,5,false],[6,3,false],
+  [2,5,true],[2,7,true],
+  [8,7,false],[8,3,false],
+  [4,5,false],[4,3,false],[4,7,false],
+];
+const LEVEL_COLOR={4:"#8b5cf6",3:"#a78bfa",2:"#7c3aed",1:"#4c1d95"};
+
+function PresenceCubeSection(){
+  const [sel,setSel]=useState(1);
+  const [hover,setHover]=useState(null);
+  const active=hover||sel;
+  const nodeMap=Object.fromEntries(CUBE_NODES.map(n=>[n.num,n]));
+  const activeNode=nodeMap[active];
+
+  return(<div>
+    {/* ═══ THEORETICAL INTRO ═══ */}
+    <Card>
+      <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:22,fontWeight:700,color:C.text,marginBottom:12}}>One Manifold, Two Projections</div>
+      <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:12}}>
+        Model A and Model G are traditionally drawn as flat 2×4 grids, but this flattening is a convenience of the page, not a fact of the psyche. Both models are <strong style={{color:C.violet}}>2D projections of a single 3D manifold</strong> — the <em>Presence Cube</em>, formalized by Andrew Joynton. The same eight functions occupy the same eight vertices of this cube; Model A and Model G simply view it from different angles.
+      </p>
+      <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75}}>
+        The cube is built from the three Model A function dichotomies with the strongest external visibility — what Joynton calls the <strong style={{color:C.text}}>presence traits</strong>. The remaining four dichotomies (Inert/Contact, Mental/Vital, Accepting/Producing, Evaluatory/Situational) are orthogonal to the cube's geometry and do not add visual dimensions.
+      </p>
+    </Card>
+
+    {/* ═══ THE 3 AXES ═══ */}
+    <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:14}}>
+      <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.rose}`}}>
+        <div style={{fontSize:11,fontWeight:700,color:C.rose,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 1 · Strong / Weak</div>
+        <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Capacity. Strong functions have an advanced, well-developed understanding of their information domain; weak functions have only a simplistic grasp.</p>
+      </Card>
+      <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.accentA}`}}>
+        <div style={{fontSize:11,fontWeight:700,color:C.accentA,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 2 · Valued / Subdued</div>
+        <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Attraction. The individual is drawn toward valued information and repelled from subdued information, regardless of how competently either is processed.</p>
+      </Card>
+      <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.lime}`}}>
+        <div style={{fontSize:11,fontWeight:700,color:C.lime,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 3 · Bold / Cautious</div>
+        <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Confidence. Bold functions are deployed with assertive certainty; cautious functions are used carefully, selectively, and often only when the situation demands.</p>
+      </Card>
+    </div>
+
+    {/* ═══ THE 3 PROJECTIONS ═══ */}
+    <Card>
+      <div style={{fontSize:14,fontWeight:700,color:C.violet,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>The Three Projections</div>
+      <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7,marginBottom:14}}>
+        Because the cube is built from three binary axes, pairs of axes can be projected orthogonally to produce three distinct 1D spectra. Each spectrum ranks the eight functions from 1 (lowest) to 4 (highest) along a different psychological quality:
+      </p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:10}}>
+        <div style={{padding:"12px 14px",background:"rgba(251,146,60,0.06)",border:"1px solid rgba(251,146,60,0.2)",borderRadius:8}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#fb923c",marginBottom:5}}>Dimensionality (D)</div>
+          <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Strong/Weak × Bold/Cautious</div>
+          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How <em>capable and accessible</em> a function is. Bukalov &amp; Ermak's original metric. Base (4D) is maximally dimensional; Vulnerable (1D) is minimally so.</p>
+        </div>
+        <div style={{padding:"12px 14px",background:"rgba(96,165,250,0.06)",border:"1px solid rgba(96,165,250,0.2)",borderRadius:8}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#60a5fa",marginBottom:5}}>Priority (P)</div>
+          <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Valued/Subdued × Bold/Cautious</div>
+          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How much the psyche <em>directly prefers</em> the function. Joynton's complement to Dimensionality. Base and Mobilizing share the 4P peak.</p>
+        </div>
+        <div style={{padding:"12px 14px",background:"rgba(139,92,246,0.08)",border:"1px solid rgba(139,92,246,0.25)",borderRadius:8}}>
+          <div style={{fontSize:13,fontWeight:700,color:C.violet,marginBottom:5}}>Level (L) <span style={{fontSize:10,fontWeight:500,color:C.textFaint}}>= (D + P) / 2</span></div>
+          <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Vertical axis of the cube</div>
+          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How <em>present</em> a function is in the psyche overall. Base uniquely occupies 4L; Vulnerable uniquely occupies 1L. The other six split 3L/2L.</p>
+        </div>
+      </div>
+    </Card>
+
+    {/* ═══ RECONCILING A AND G ═══ */}
+    <Card style={{background:"linear-gradient(135deg,rgba(59,130,246,0.05),rgba(16,185,129,0.05))",borderColor:"rgba(139,92,246,0.25)"}}>
+      <div style={{fontSize:13,fontWeight:700,color:C.violet,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Reconciling Model A & Model G</div>
+      <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7}}>
+        Rotating the cube exposes different blocking structures. Viewed along one axis, Strong×Valued pairs functions into Model A's <strong style={{color:C.accentA}}>Horizontal Information Blocks</strong> (Ego, Super-Ego, Super-Id, Id). Rotated ninety degrees, the skew along Priority and Dimensionality produces the <strong style={{color:C.accentG}}>Skew Blocks</strong> that map onto Model G's energetic rings and vertical blocking. Both models are faithful — they simply project orthogonal faces of the same solid.
+      </p>
+    </Card>
+
+    <SectionDivider label="Interactive Cube" color={C.violet}/>
+    <p style={{fontSize:12.5,color:C.textDim,textAlign:"center",marginBottom:14,fontStyle:"italic"}}>Hover or click any vertex to inspect its presence coordinates and its dual role across both models.</p>
+
+    {/* ═══ SVG CUBE + DETAILS PANEL ═══ */}
+    <div style={{display:"flex",gap:16,flexWrap:"wrap",alignItems:"flex-start"}}>
+      {/* SVG CUBE */}
+      <div style={{flex:"1 1 360px",background:"radial-gradient(ellipse at center,rgba(139,92,246,0.06),transparent 70%)",border:`1px solid ${C.border}`,borderRadius:12,padding:"18px 10px",display:"flex",justifyContent:"center"}}>
+        <svg viewBox="0 0 460 560" style={{width:"100%",maxWidth:420,height:"auto"}}>
+          {/* Axis labels */}
+          <text x="230" y="16" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">4L · PRESENCE PEAK</text>
+          <text x="230" y="550" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">1L · PRESENCE FLOOR</text>
+
+          {/* Level guide ticks (left side) */}
+          {[{y:62,l:"4L"},{y:182,l:"3L"},{y:345,l:"2L"},{y:492,l:"1L"}].map(t=>(
+            <Fragment key={t.l}>
+              <line x1="18" y1={t.y} x2="28" y2={t.y} stroke={C.border} strokeWidth="1"/>
+              <text x="14" y={t.y+3} textAnchor="end" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace">{t.l}</text>
+            </Fragment>
+          ))}
+          <line x1="23" y1="62" x2="23" y2="492" stroke={C.border} strokeWidth="1" strokeDasharray="2,3"/>
+
+          {/* Edges */}
+          {CUBE_EDGES.map(([from,to,dashed],i)=>{
+            const a=nodeMap[from],b=nodeMap[to];
+            const isActive=active===from||active===to;
+            return(<line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+              stroke={isActive?C.violet:C.border}
+              strokeWidth={isActive?2:1.3}
+              strokeDasharray={dashed?"4,4":"none"}
+              opacity={dashed?(isActive?0.85:0.45):(isActive?1:0.75)}
+              style={{transition:"all 0.2s"}}/>);
+          })}
+
+          {/* Nodes */}
+          {CUBE_NODES.map(n=>{
+            const isActive=active===n.num;
+            const color=LEVEL_COLOR[n.L];
+            return(<g key={n.num} style={{cursor:"pointer"}}
+              onMouseEnter={()=>setHover(n.num)}
+              onMouseLeave={()=>setHover(null)}
+              onClick={()=>setSel(n.num)}>
+              {isActive&&<circle cx={n.x} cy={n.y} r="28" fill={color} opacity="0.15"/>}
+              <circle cx={n.x} cy={n.y} r={isActive?19:16}
+                fill={C.card}
+                stroke={color}
+                strokeWidth={isActive?2.5:1.8}
+                style={{transition:"all 0.2s",filter:isActive?`drop-shadow(0 0 8px ${color})`:"none"}}/>
+              <text x={n.x} y={n.y+4} textAnchor="middle" fill={isActive?"#fff":C.text} fontSize={isActive?14:12} fontWeight="700" fontFamily="'JetBrains Mono',monospace" style={{pointerEvents:"none"}}>{n.num}</text>
+              {/* Label */}
+              <text x={n.x} y={n.y-26} textAnchor="middle" fill={isActive?color:C.textDim} fontSize="10" fontWeight={isActive?700:500} fontFamily="'Inter',sans-serif" style={{pointerEvents:"none",transition:"all 0.2s"}}>{n.name}</text>
+            </g>);
+          })}
+
+          {/* Legend */}
+          <g transform="translate(330, 20)">
+            <text x="0" y="0" fill={C.textFaint} fontSize="8" fontFamily="'JetBrains Mono',monospace" letterSpacing="1">LEVEL</text>
+            {[4,3,2,1].map((l,i)=>(
+              <g key={l} transform={`translate(0,${12+i*13})`}>
+                <circle cx="4" cy="0" r="4" fill={C.card} stroke={LEVEL_COLOR[l]} strokeWidth="1.5"/>
+                <text x="14" y="3" fill={C.textDim} fontSize="9" fontFamily="'JetBrains Mono',monospace">{l}L</text>
+              </g>
+            ))}
+            <g transform="translate(0, 78)">
+              <line x1="0" y1="0" x2="14" y2="0" stroke={C.textFaint} strokeWidth="1.2" strokeDasharray="3,3"/>
+              <text x="18" y="3" fill={C.textFaint} fontSize="8" fontFamily="'JetBrains Mono',monospace">back</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      {/* DETAILS PANEL */}
+      <div style={{flex:"1 1 280px",minWidth:280}}>
+        <div style={{background:C.card,border:`1px solid ${LEVEL_COLOR[activeNode.L]}44`,borderRadius:12,padding:18,boxShadow:`0 0 24px ${LEVEL_COLOR[activeNode.L]}18`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
+            <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:22,fontWeight:700,color:C.text}}>{activeNode.name}</div>
+            <div style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>#{activeNode.num}</div>
+          </div>
+          <div style={{fontSize:11,color:C.textDim,fontStyle:"italic",marginBottom:14}}>{activeNode.aka}</div>
+
+          {/* Presence coordinates */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:14}}>
+            {[
+              {l:"Level",v:activeNode.L+"L",c:C.violet},
+              {l:"Dimension",v:activeNode.D+"D",c:"#fb923c"},
+              {l:"Priority",v:activeNode.P+"P",c:"#60a5fa"},
+            ].map(s=>(
+              <div key={s.l} style={{padding:"8px 6px",background:s.c+"0f",border:`1px solid ${s.c}33`,borderRadius:6,textAlign:"center"}}>
+                <div style={{fontSize:9,color:s.c,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:3}}>{s.l}</div>
+                <div style={{fontSize:18,fontWeight:800,color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>{s.v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Presence traits */}
+          <div style={{fontSize:9,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Presence Traits</div>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:14}}>
+            {activeNode.traits.map((t,i)=>(
+              <span key={i} style={{fontSize:11,fontWeight:600,padding:"4px 9px",borderRadius:4,background:[C.rose,C.accentA,C.lime][i]+"1a",color:[C.rose,C.accentA,C.lime][i],border:`1px solid ${[C.rose,C.accentA,C.lime][i]}44`,fontFamily:"'JetBrains Mono',monospace"}}>{t}</span>
+            ))}
+          </div>
+
+          {/* Dual role */}
+          <div style={{fontSize:9,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Dual Role Across Models</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:12}}>
+            <div style={{padding:"8px 10px",background:activeNode.aBlockColor+"12",border:`1px solid ${activeNode.aBlockColor}33`,borderRadius:6}}>
+              <div style={{fontSize:9,color:activeNode.aBlockColor,fontWeight:700,letterSpacing:0.5,marginBottom:2}}>MODEL A</div>
+              <div style={{fontSize:12,color:C.text,fontWeight:600}}>{activeNode.aBlock}</div>
+            </div>
+            <div style={{padding:"8px 10px",background:activeNode.gBlockColor+"12",border:`1px solid ${activeNode.gBlockColor}33`,borderRadius:6}}>
+              <div style={{fontSize:9,color:activeNode.gBlockColor,fontWeight:700,letterSpacing:0.5,marginBottom:2}}>MODEL G</div>
+              <div style={{fontSize:12,color:C.text,fontWeight:600}}>{activeNode.gPos}</div>
+              <div style={{fontSize:10,color:C.textDim,marginTop:1}}>{activeNode.gBlock}</div>
+            </div>
+          </div>
+
+          {/* Bridge note */}
+          <div style={{fontSize:12,color:C.textMuted,lineHeight:1.6,padding:"10px 12px",background:"rgba(139,92,246,0.06)",border:"1px solid rgba(139,92,246,0.18)",borderRadius:6,fontStyle:"italic"}}>
+            {activeNode.bridge}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* ═══ BOTTOM TABLE: ALL 8 FUNCTIONS AT A GLANCE ═══ */}
+    <Card style={{marginTop:16}}>
+      <div style={{fontSize:11,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>All Eight Vertices · Presence Coordinates</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:6}}>
+        {CUBE_NODES.slice().sort((a,b)=>a.num-b.num).map(n=>{
+          const isActive=active===n.num;
+          const color=LEVEL_COLOR[n.L];
+          return(<div key={n.num}
+            onMouseEnter={()=>setHover(n.num)}
+            onMouseLeave={()=>setHover(null)}
+            onClick={()=>setSel(n.num)}
+            style={{padding:"8px 10px",background:isActive?color+"18":"rgba(255,255,255,0.02)",border:`1px solid ${isActive?color+"66":C.border}`,borderRadius:6,cursor:"pointer",transition:"all 0.15s"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+              <span style={{fontSize:12,fontWeight:700,color:C.text}}>{n.num}. {n.name}</span>
+            </div>
+            <div style={{fontSize:10,color:color,fontFamily:"'JetBrains Mono',monospace",marginTop:2,fontWeight:700}}>{n.L}L · {n.D}D · {n.P}P</div>
+          </div>);
+        })}
+      </div>
+    </Card>
+  </div>);
+}
+
+/* ═══════ PORTRAIT SECTION ═══════ */
+const PORTRAIT_SECTIONS=[
+  {key:"behavior",      label:"Behavioral Expression & Survival Strategy", eyebrow:"01 · Strategy"},
+  {key:"temperament",   label:"Temperament & Affect",                       eyebrow:"02 · Temperament"},
+  {key:"cognition",     label:"Cognitive, Perceptual & Orientational Style",eyebrow:"03 · Cognition"},
+  {key:"valuation",     label:"Valuation & Motivation",                     eyebrow:"04 · Drive"},
+  {key:"communication", label:"Communication & Social Positioning",         eyebrow:"05 · Social"},
+];
+
+function PortraitSection({type}){
+  const t=TYPES[type];
+  const p=PROFILES[type];
+  const qc=QC[t.q];
+  const sgroups=getSmallGroups(type);
+  if(!p)return(<div style={{padding:20,color:C.textDim}}>No profile data available.</div>);
+
+  const paraStyle={fontSize:13.5,color:C.textMuted,lineHeight:1.78,fontFamily:"'Crimson Text',Georgia,serif",whiteSpace:"pre-wrap"};
+
+  return(<div className="fade-in">
+    {/* Hero header */}
+    <Card style={{background:`linear-gradient(135deg,${qc}0e 0%,${C.card} 65%)`,borderColor:qc+"44",padding:"24px 22px",marginBottom:18}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:qc,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>{t.q} Quadra · {type}</div>
+          <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:30,fontWeight:700,color:C.text,margin:"0 0 4px",letterSpacing:0.2}}>{p.nickname}</h2>
+          {p.aka&&<div style={{fontFamily:"'Crimson Text',Georgia,serif",fontSize:13,fontStyle:"italic",color:C.textDim}}>Also known as {p.aka}.</div>}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"auto auto auto auto",alignItems:"center",columnGap:8,rowGap:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9.5,fontWeight:700,color:C.accentA,letterSpacing:1.2,textTransform:"uppercase",textAlign:"right"}}>Model A · Ego:</span>
+          <Chip fn={t.b} size={30} glow/>
+          <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
+          <Chip fn={t.c} size={30} glow/>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9.5,fontWeight:700,color:C.accentG,letterSpacing:1.2,textTransform:"uppercase",textAlign:"right"}}>Model G · Soc. Mission:</span>
+          <Chip fn={t.b} size={30} glow/>
+          <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
+          <Chip fn={t.d} size={30} glow/>
+        </div>
+      </div>
+    </Card>
+
+    {/* Two-column grid: main description + sidebar */}
+    <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) minmax(220px,260px)",gap:16}} className="portrait-grid">
+      <div style={{minWidth:0}}>
+        {PORTRAIT_SECTIONS.map((s,i)=>(
+          <Card key={s.key} style={{padding:"18px 20px"}}>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,color:qc,letterSpacing:2,textTransform:"uppercase",marginBottom:4}}>{s.eyebrow}</div>
+            <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:17,fontWeight:700,color:C.text,marginBottom:10,letterSpacing:0.15}}>{s.label}</div>
+            <p style={paraStyle}>{p[s.key]}</p>
+          </Card>
+        ))}
+        <Card style={{padding:"14px 18px",background:C.card+"aa",borderStyle:"dashed",borderColor:C.border}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,color:C.textFaint,letterSpacing:1.8,textTransform:"uppercase",marginBottom:6}}>Sources</div>
+          <div style={{fontSize:11,color:C.textDim,lineHeight:1.65}}>Composite profile synthesized from Talanov's empirical dichotomy data, Gulenko's Model G descriptions, sociotype.xyz type pages, the Small Group Compendium, and related primary Socionics literature.</div>
+        </Card>
+      </div>
+
+      {/* Sidebar: Small Group Memberships */}
+      <aside style={{minWidth:0}}>
+        <Card style={{padding:"16px 16px",position:"sticky",top:12}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,color:qc,letterSpacing:2,textTransform:"uppercase",marginBottom:4}}>Small Groups</div>
+          <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:19,fontWeight:700,color:C.text,marginBottom:12,letterSpacing:0.15}}>Key Memberships</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {sgroups.map((g,i)=>(
+              <div key={i} style={{paddingBottom:10,borderBottom:i<sgroups.length-1?`1px solid ${C.border}55`:"none"}}>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:8.5,fontWeight:700,color:C.textFaint,letterSpacing:1.3,textTransform:"uppercase",marginBottom:3,lineHeight:1.35}}>
+                  {g.group}{g.groupXyz&&g.groupXyz!==g.group?<span style={{color:C.textFaint,opacity:0.7}}> ({g.groupXyz})</span>:null}
+                </div>
+                <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:3,lineHeight:1.35}}>
+                  {g.sub}{g.subXyz&&g.subXyz!==g.sub?<span style={{color:C.textMuted,fontWeight:500}}> ({g.subXyz})</span>:null}
+                </div>
+                <div style={{fontSize:10.5,color:C.textDim,lineHeight:1.5,fontFamily:"'Crimson Text',Georgia,serif",fontStyle:"italic"}}>{g.detail}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:10,paddingTop:8,borderTop:`1px solid ${C.border}55`,fontSize:9.5,color:C.textFaint,lineHeight:1.5}}>Each entry shows the conventional Tetrachotomy Compendium label followed by the sociotype.xyz/g label in parentheses where they differ.</div>
+        </Card>
+      </aside>
+    </div>
+  </div>);
+}
+
+/* ═══════ MAIN APP ═══════ */
+const TABS=[
+  {id:"overview",label:"Overview",color:C.accent},
+  {id:"modelA",label:"Model A",color:C.accentA},
+  {id:"modelG",label:"Model G",color:C.accentG},
+  {id:"portrait",label:"Type Portrait",color:C.rose},
+  {id:"cube",label:"Presence Cube",color:C.violet},
+];
+
+function App(){
+  const [tab,setTab]=useState("overview");
+  const [sel,setSel]=useState("ILE");
+  const t=TYPES[sel];
+  const ac=TABS.find(x=>x.id===tab)?.color||C.accent;
+
+  return(<div style={{minHeight:"100vh",background:C.bg,paddingBottom:60}}>
+    <div style={{background:`linear-gradient(180deg,${ac}08 0%,transparent 100%)`,borderBottom:`1px solid ${C.border}`,padding:"38px 24px 24px",textAlign:"center"}}>
+      <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:34,fontWeight:700,margin:0,color:"#ffffff",letterSpacing:0.3}}>Socionics Model Architecture</h1>
+      <div style={{fontFamily:"'Crimson Text','Playfair Display',Georgia,serif",fontSize:15,fontStyle:"italic",color:C.textMuted,marginTop:8,letterSpacing:0.2}}>Information Metabolism (Model A) & Energy Metabolism (Model G)</div>
+    </div>
+    <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}55`,display:"flex",flexDirection:"column",gap:7,alignItems:"center"}}>
+      {QUADRA_ORDER.map(q=>(<div key={q} style={{display:"flex",alignItems:"center",gap:8}}>
+        <span style={{fontSize:11,fontWeight:800,color:QC[q],width:56,textAlign:"right",letterSpacing:0.5}}>{q}</span>
+        <div style={{display:"flex",gap:4}}>
+          {QT[q].map(tk=>(<button key={tk} onClick={()=>setSel(tk)} style={{
+            padding:"5px 11px",borderRadius:5,border:"none",fontSize:12,fontWeight:700,
+            fontFamily:"'JetBrains Mono',monospace",transition:"all 0.15s",
+            background:sel===tk?ac:"rgba(255,255,255,0.05)",color:sel===tk?"#fff":C.textDim,
+          }}>{tk}</button>))}
+        </div>
+      </div>))}
+    </div>
+    <div style={{padding:"9px 20px",background:"rgba(255,255,255,0.015)",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+      <span style={{fontSize:13,fontWeight:700,color:C.text}}>{sel}: {t.l}</span>
+      <span style={{fontSize:13,color:C.textFaint}}>|</span>
+      <span style={{fontSize:13,color:C.accentA}}>Ego: {t.b}+{t.c}</span>
+      <span style={{fontSize:13,color:C.accentG}}>Mission: {t.b}+{t.d}</span>
+      <span style={{fontSize:13,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace"}}>({t.b}-{t.c[0]}x)</span>
+    </div>
+    <div style={{display:"flex",gap:2,padding:"0 20px",borderBottom:`1px solid ${C.border}55`,overflowX:"auto",justifyContent:"center"}}>
+      {TABS.map(tb=>(<button key={tb.id} onClick={()=>setTab(tb.id)} style={{
+        padding:"13px 22px",border:"none",fontSize:13,fontWeight:700,background:"transparent",
+        color:tab===tb.id?tb.color:C.textFaint,borderBottom:tab===tb.id?`2px solid ${tb.color}`:"2px solid transparent",
+        transition:"all 0.2s",whiteSpace:"nowrap",letterSpacing:0.5,cursor:"pointer",
+      }}>{tb.label}</button>))}
+    </div>
+    <div style={{padding:"28px 24px",maxWidth:900,margin:"0 auto"}}>
+      {tab==="overview"&&<OverviewSection/>}
+      {tab==="modelA"&&<div>
+        <SectionDivider label="Model A: Information Metabolism" color={C.accentA}/>
+        <p style={{fontSize:13,color:C.textDim,marginBottom:14,textAlign:"center"}}>Click any function position to expand its full dichotomy profile and description.</p>
+        <ModelAVisualizer type={sel}/>
+        {PROFILES[sel]&&PROFILES[sel].portraitA&&<Card style={{marginTop:18,borderColor:C.accentA+"55"}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,color:C.accentA,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Model A Sub-Portrait</div>
+          <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:18,fontWeight:700,color:C.text,marginBottom:4}}>Informational Anatomy: {sel}</div>
+          <div style={{fontFamily:"'Crimson Text',Georgia,serif",fontSize:12,fontStyle:"italic",color:C.textDim,marginBottom:12,lineHeight:1.55}}>An information-metabolism cross-section organized by Model A's four horizontal blocks. Read alongside the Model G sub-portrait: both describe the same psyche from orthogonal angles, not as competing accounts.</div>
+          <p style={{fontSize:13.5,color:C.textMuted,lineHeight:1.78,fontFamily:"'Crimson Text',Georgia,serif",whiteSpace:"pre-wrap"}}>{PROFILES[sel].portraitA}</p>
+        </Card>}
+      </div>}
+      {tab==="modelG"&&<div>
+        <SectionDivider label="Model G: Energy Metabolism" color={C.accentG}/>
+        <p style={{fontSize:13,color:C.textDim,marginBottom:14,textAlign:"center"}}>Click any function position to expand its full dichotomy profile and description.</p>
+        <ModelGVisualizer type={sel}/>
+        {PROFILES[sel]&&PROFILES[sel].portraitG&&<Card style={{marginTop:18,borderColor:C.accentG+"55"}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,color:C.accentG,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Model G Sub-Portrait</div>
+          <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:18,fontWeight:700,color:C.text,marginBottom:4}}>Energetic Anatomy: {sel}</div>
+          <div style={{fontFamily:"'Crimson Text',Georgia,serif",fontSize:12,fontStyle:"italic",color:C.textDim,marginBottom:12,lineHeight:1.55}}>An energy-metabolism cross-section organized by Model G's four horizontal blocks. The same eight functions occupy both models; only the blocking and the question being asked differ. This is the second projection of the same psyche, not an alternative one.</div>
+          <p style={{fontSize:13.5,color:C.textMuted,lineHeight:1.78,fontFamily:"'Crimson Text',Georgia,serif",whiteSpace:"pre-wrap"}}>{PROFILES[sel].portraitG}</p>
+        </Card>}
+      </div>}
+      {tab==="portrait"&&<div>
+        <SectionDivider label="Type Portrait" color={C.rose}/>
+        <PortraitSection type={sel}/>
+      </div>}
+      {tab==="cube"&&<div>
+        <SectionDivider label="The Presence Cube" color={C.violet}/>
+        <PresenceCubeSection/>
+      </div>}
+    </div>
+    <div style={{textAlign:"center",padding:"36px 20px 14px",color:C.textFaint,fontSize:11,letterSpacing:0.5}}>
+      <div>The Complete Socionics Ontology · Models, Architecture & Type Portraits</div>
+      <div style={{marginTop:4}}>Sources: sociotype.xyz · wikisocion · opensocionics · bestsocionics · varlawend</div>
+    </div>
+  </div>);
+}
+
+ReactDOM.render(<App/>,document.getElementById("root"));
+</script>
+</body>
+</html>

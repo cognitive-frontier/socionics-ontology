@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCNH Subtypes & Fisher Temperament Index: Cross-System Rotation Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #181c26;
+  --border: #242838;
+  --border-light: #2e3348;
+  --text: #e4e2df;
+  --text-m: #9093a8;
+  --text-d: #5c6074;
+  --D: #c46060;
+  --C: #5aaa6e;
+  --N: #c4aa50;
+  --H: #6088c0;
+  --D-bg: rgba(196,96,96,0.10);
+  --C-bg: rgba(90,170,110,0.10);
+  --N-bg: rgba(196,170,80,0.10);
+  --H-bg: rgba(96,136,192,0.10);
+  --proactive: #5cbfa0;
+  --reactive: #c97a4a;
+  --mixed: #9878c0;
+  --accent: #c9a84c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+h1, h2, h3 { font-family: 'Crimson Text', Georgia, serif; }
+
+/* Layout */
+.container { max-width: 920px; margin: 0 auto; padding: 40px 28px 80px; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.01em; }
+.header .sub { font-size: 16px; color: var(--text-m); font-style: italic; margin-top: 6px; font-family: 'Crimson Text', serif; }
+
+/* Wheel Section */
+.wheel-section { display: flex; gap: 28px; align-items: flex-start; margin-bottom: 40px; flex-wrap: wrap; }
+.wheel-col { flex: 0 0 380px; }
+.info-col { flex: 1; min-width: 280px; }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.ctrl-btn {
+  padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-m); font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.ctrl-btn:hover { border-color: var(--border-light); color: var(--text); }
+.ctrl-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* SVG */
+svg text { font-family: 'DM Sans', sans-serif; }
+
+/* Info Panel */
+.info-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; min-height: 320px; }
+.info-panel h3 { font-size: 20px; margin-bottom: 6px; }
+.info-panel .meta { font-size: 12px; color: var(--text-m); margin-bottom: 14px; }
+.info-panel p { font-size: 14px; color: var(--text-m); line-height: 1.75; margin-bottom: 10px; }
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+/* Scheme description */
+.scheme-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 22px; margin-bottom: 28px;
+}
+.scheme-box h3 { font-size: 17px; margin-bottom: 8px; }
+.scheme-box p { font-size: 13px; color: var(--text-m); line-height: 1.7; }
+
+/* Divider */
+.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 36px 0; }
+
+/* Comparison Section */
+.section-heading { margin-bottom: 20px; }
+.section-heading h2 { font-size: 24px; font-weight: 700; }
+.section-heading .line { height: 2px; width: 48px; background: var(--accent); margin-top: 8px; border-radius: 1px; }
+
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.comp-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; border-left: 3px solid var(--border);
+}
+.comp-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; font-family: 'Crimson Text', serif; }
+.comp-card .row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; color: var(--text-m); border-bottom: 1px solid rgba(36,40,56,0.5); }
+.comp-card .row:last-child { border-bottom: none; }
+.comp-card .row .label { color: var(--text-d); text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; font-weight: 600; }
+.comp-card .row .val { font-weight: 600; color: var(--text); }
+
+/* Common Denom & Neuroticism */
+.denom-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px 22px; margin-bottom: 14px;
+}
+.denom-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; font-family: 'Crimson Text', serif; }
+.denom-card p { font-size: 13px; color: var(--text-m); line-height: 1.75; }
+
+.neuro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.neuro-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px;
+}
+.neuro-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; font-family: 'Crimson Text', serif; }
+.neuro-card .hi, .neuro-card .lo { font-size: 12px; line-height: 1.65; margin-bottom: 8px; }
+.neuro-card .hi strong { color: #c94a5c; }
+.neuro-card .lo strong { color: #5cbfa0; }
+
+@media (max-width: 700px) {
+  .wheel-section { flex-direction: column; }
+  .wheel-col { flex: unset; width: 100%; }
+  .comp-grid, .neuro-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-d);margin-bottom:8px;font-family:'DM Sans',sans-serif;font-weight:600;">Socionics · Gulenko / Fisher / Nardi Paradigms</div>
+  <h1>DCNH Subtypes & Fisher Temperament Index</h1>
+  <div class="sub">Cross-System Rotation Explorer: Linear (Temperament Cycle) &amp; Figure-Eight (Functional Role Cascade)</div>
+</div>
+
+
+<!-- Overview Toggle -->
+<div class="scheme-box" style="cursor:pointer;border-left:3px solid var(--accent);" id="overview-toggle" onclick="var b=document.getElementById('overview-body');var a=document.getElementById('overview-arrow');var h=document.getElementById('overview-hint');if(b.style.display==='none'){b.style.display='block';a.textContent='▾';h.style.display='none';}else{b.style.display='none';a.textContent='▸';h.style.display='inline';}">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="color:var(--accent);">Overview: Two Lenses on the Same Four Archetypes</h3>
+    <span style="display:flex;align-items:center;gap:8px;">
+      <span id="overview-hint" style="font-size:11px;font-weight:600;color:#ffd166;background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.35);border-radius:4px;padding:2px 8px;letter-spacing:0.02em;">Click to Show</span>
+      <span id="overview-arrow" style="color:var(--text-d);font-size:16px;">▸</span>
+    </span>
+  </div>
+  <div id="overview-body" style="margin-top:12px;display:none;">
+    <p>The four-archetype structure, partitioned by two orthogonal behavioral axes, is one of the most robustly recurring patterns in personality science. From Hippocrates' four humors to Eysenck's two-dimensional temperament model to modern neurochemical profiling, independent research traditions keep converging on the same 2x2 space: <strong style="color:var(--text);">Energy Direction</strong> (Outgoing/Reserved) crossed with <strong style="color:var(--text);">Processing Orientation</strong> (Task-focus/People-focus). The two frameworks examined here sit at <em>different layers</em> of the cognitive stack relative to Socionics proper: Fisher's FTI indexes the biological substrate <strong style="color:var(--text);">upstream</strong> of information metabolism, while Gulenko's DCNH describes the behavioral accentuations that express <strong style="color:var(--text);">downstream</strong> of it. They meet in the same 2×2 space because that space is the invariant through which the biology becomes behavior.</p>
+    <p>This document explores two complementary frameworks that occupy this space from different angles:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;">
+      <div style="background:rgba(152,120,192,0.06);border:1px solid rgba(152,120,192,0.15);border-radius:8px;padding:14px;position:relative;">
+        <div style="position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;letter-spacing:0.08em;color:#9878c0;background:rgba(152,120,192,0.14);border:1px solid rgba(152,120,192,0.35);border-radius:3px;padding:2px 6px;">↓ DOWNSTREAM</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#9878c0;font-weight:700;margin-bottom:8px;padding-right:90px;">Gulenko's DCNH (Adaptation)</div>
+        <p style="font-size:12px;line-height:1.7;margin:0;">Developed through 30+ years of group-dynamic observation within the School of Humanitarian Socionics (SHS). DCNH subtypes describe <em>functional roles in small groups</em>: how each person's information metabolism is accentuated along one of four energy-deployment patterns. The subtype operates independently of base type, modulating it rather than replacing it. Gulenko's rotation follows a figure-eight (Z-pattern) through the functional role cascade: Leader, Generator, Finisher, Corrector.</p>
+      </div>
+      <div style="background:rgba(92,191,160,0.06);border:1px solid rgba(92,191,160,0.15);border-radius:8px;padding:14px;position:relative;">
+        <div style="position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;letter-spacing:0.08em;color:#5cbfa0;background:rgba(92,191,160,0.14);border:1px solid rgba(92,191,160,0.35);border-radius:3px;padding:2px 6px;">↑ UPSTREAM</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#5cbfa0;font-weight:700;margin-bottom:8px;padding-right:80px;">Fisher's FTI (Neurochemistry)</div>
+        <p style="font-size:12px;line-height:1.7;margin:0;">Developed by biological anthropologist Helen Fisher through fMRI neuroimaging and large-scale questionnaire studies (28,000+ subjects). The Fisher Temperament Inventory identifies four biologically grounded temperament dimensions, each associated with a primary neurochemical system: Dopamine, Serotonin, Testosterone, and Estrogen/Oxytocin. Fisher's rotation follows a smooth perimeter (linear cycle) tracing the neurochemical gradient, with each adjacent pair sharing exactly one axis.</p>
+      </div>
+    </div>
+    <p style="margin-bottom:10px;">The <strong style="color:var(--text);">corner labels</strong> in the interactive wheel switch between two naming conventions: Fisher's meta-trait labels (Agency, Plasticity, Stability, Communion, drawn from DeYoung's neuroscience of personality) and Gulenko/Nardi's cognitive-processing labels (Analytical, Divergent, Convergent, Holistic, informed by Nardi's EEG research). Both label sets describe the same four positions on the same grid, viewed through different theoretical optics.</p>
+    <p style="margin-bottom:10px;">The <strong style="color:var(--text);">12 complex subtypes</strong> section maps all pairwise DCNH combinations, described through both the FTI/empirical lens (neurochemistry, EEG, DiSC, PAEI) and the Socionics/functional-role lens (Gulenko, Varlawend, SHS). Each subtype is classified by its Gulenko group relation (Order, Dual, Revision) and its Fisher metabolism (Proactive, Reactive, Mixed).</p>
+    <p style="font-size:12px;color:var(--text-d);line-height:1.6;margin:0;"><strong style="color:var(--text-m);">A word of caution:</strong> These four-type systems are powerful precisely because they are simple, but simplicity invites overapplication. DCNH subtypes are best understood as <em>accentuations</em> of an existing socionic type, not replacements for it. Fisher's temperaments are dimensional, not categorical: most people are blends. The value of this cross-system mapping lies in triangulation, using convergence from independent methods to identify what is real, rather than treating any single system as the final word.</p>
+  </div>
+</div>
+
+<!-- Rotation Controls -->
+<div class="controls" id="controls">
+  <button class="ctrl-btn" data-mode="cw-fig8">Gulenko: Proactive Spin</button>
+  <button class="ctrl-btn" data-mode="ccw-fig8">Gulenko: Reactive Spin</button>
+  <button class="ctrl-btn" data-mode="ccw-linear">Fisher: Top-Down Spin</button>
+  <button class="ctrl-btn active" data-mode="cw-linear">Fisher: Bottom-Up Spin</button>
+</div>
+
+<!-- Scheme Description -->
+<div class="scheme-box" id="scheme-box">
+  <h3 id="scheme-title">Bottom-Up Spin: Inductive Neurochemical Cycle</h3>
+  <p id="scheme-desc">Traces the perimeter clockwise: D → C → H → N → D. The Explorer (C) gathers broad-spectrum novel data, the Negotiator (H) synthesizes it into holistic emergent patterns, the Builder (N) grounds those patterns into concrete norms and structure, and the Director (D) distills the structure into a single focused principle that shatters back out to seed the next cycle. Inductive, data-driven flow moving from plasticity toward constraint: the organism is shaped by the world and integrates upward toward a unified logic. The smooth single-axis neurochemical gradient runs Testosterone → Dopamine → Estrogen → Serotonin; each adjacent pair shares one axis (D↔C share Outgoing; C↔H share People-Focus; H↔N share Reserved; N↔D share Task-Focus). Corresponds to the Proactive temperament cycle in Fisher's framework.</p>
+</div>
+
+<!-- Wheel + Info Panel -->
+<div class="wheel-section">
+  <div class="wheel-col">
+    <svg id="wheel" viewBox="0 0 380 380" width="380" height="380"><defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5cbfa0" opacity="0.8"></polygon></marker></defs>
+      <!-- Axis labels (edges): universal across all modes -->
+      <text x="190" y="22" text-anchor="middle" fill="#5c6074" font-size="10" font-weight="600" letter-spacing="0.1em">OUTGOING</text>
+      <text x="190" y="374" text-anchor="middle" fill="#5c6074" font-size="10" font-weight="600" letter-spacing="0.1em">RESERVED</text>
+      <text x="14" y="192" text-anchor="middle" fill="#5c6074" font-size="10" font-weight="600" letter-spacing="0.08em" transform="rotate(-90 14 192)">TASK-FOCUS</text>
+      <text x="366" y="192" text-anchor="middle" fill="#5c6074" font-size="10" font-weight="600" letter-spacing="0.08em" transform="rotate(90 366 192)">PEOPLE-FOCUS</text>
+
+      <!-- Neurochemical labels (corners, near types: always visible) -->
+      <text x="56" y="30" text-anchor="start" fill="#c46060" font-size="9" font-weight="600" letter-spacing="0.06em" opacity="0.7">Testosterone</text>
+      <text x="282" y="30" text-anchor="start" fill="#5aaa6e" font-size="9" font-weight="600" letter-spacing="0.06em" opacity="0.7">Dopamine</text>
+      <text x="56" y="338" text-anchor="start" fill="#c4aa50" font-size="9" font-weight="600" letter-spacing="0.06em" opacity="0.7">Serotonin</text>
+      <text x="270" y="338" text-anchor="start" fill="#6088c0" font-size="9" font-weight="600" letter-spacing="0.06em" opacity="0.7">Estrogen / Oxytocin</text>
+
+      <!-- System-specific corner trait labels (switched by JS) -->
+      <text id="trait-D" x="56" y="42" text-anchor="start" fill="#5c6074" font-size="8.5" font-weight="600" letter-spacing="0.06em" font-style="italic">Agency</text>
+      <text id="trait-C" x="282" y="42" text-anchor="start" fill="#5c6074" font-size="8.5" font-weight="600" letter-spacing="0.06em" font-style="italic">Plasticity</text>
+      <text id="trait-N" x="56" y="350" text-anchor="start" fill="#5c6074" font-size="8.5" font-weight="600" letter-spacing="0.06em" font-style="italic">Stability</text>
+      <text id="trait-H" x="270" y="350" text-anchor="start" fill="#5c6074" font-size="8.5" font-weight="600" letter-spacing="0.06em" font-style="italic">Communion</text>
+
+      <!-- Grid lines -->
+      <line x1="190" y1="40" x2="190" y2="340" stroke="#242838" stroke-width="0.5" stroke-dasharray="4,4"></line>
+      <line x1="40" y1="190" x2="340" y2="190" stroke="#242838" stroke-width="0.5" stroke-dasharray="4,4"></line>
+
+      <!-- Arrow paths (drawn by JS) -->
+      <g id="arrows"><path d="M162,100 L218,100" fill="none" stroke="#5cbfa0" stroke-width="2" stroke-opacity="0.7" marker-end="url(#arrowhead)" stroke-dasharray="200" stroke-dashoffset="200"><animate attributeName="stroke-dashoffset" from="200" to="0" dur="0.6s" begin="0s" fill="freeze"></animate></path><path d="M260,142 L260,238" fill="none" stroke="#5cbfa0" stroke-width="2" stroke-opacity="0.7" marker-end="url(#arrowhead)" stroke-dasharray="200" stroke-dashoffset="200"><animate attributeName="stroke-dashoffset" from="200" to="0" dur="0.6s" begin="0.15s" fill="freeze"></animate></path><path d="M218,280 L162,280" fill="none" stroke="#5cbfa0" stroke-width="2" stroke-opacity="0.7" marker-end="url(#arrowhead)" stroke-dasharray="200" stroke-dashoffset="200"><animate attributeName="stroke-dashoffset" from="200" to="0" dur="0.6s" begin="0.3s" fill="freeze"></animate></path><path d="M120,238 L120,142" fill="none" stroke="#5cbfa0" stroke-width="2" stroke-opacity="0.7" marker-end="url(#arrowhead)" stroke-dasharray="200" stroke-dashoffset="200"><animate attributeName="stroke-dashoffset" from="200" to="0" dur="0.6s" begin="0.44999999999999996s" fill="freeze"></animate></path></g>
+
+      <!-- Type nodes -->
+      <g id="node-D" class="type-node" style="cursor:pointer;">
+        <circle cx="120" cy="100" r="38" fill="rgba(196,96,96,0.12)" stroke="#c46060" stroke-width="2.5"></circle>
+        <text x="120" y="96" text-anchor="middle" fill="#c46060" font-size="26" font-weight="800">D</text>
+        <text x="120" y="114" text-anchor="middle" fill="#9093a8" font-size="9" font-weight="600">Dominant</text>
+      </g>
+      <g id="node-C" class="type-node" style="cursor:pointer;">
+        <circle cx="260" cy="100" r="38" fill="rgba(90,170,110,0.12)" stroke="#5aaa6e" stroke-width="2.5"></circle>
+        <text x="260" y="96" text-anchor="middle" fill="#5aaa6e" font-size="26" font-weight="800">C</text>
+        <text x="260" y="114" text-anchor="middle" fill="#9093a8" font-size="9" font-weight="600">Creative</text>
+      </g>
+      <g id="node-N" class="type-node" style="cursor:pointer;">
+        <circle cx="120" cy="280" r="38" fill="rgba(196,170,80,0.12)" stroke="#c4aa50" stroke-width="2.5"></circle>
+        <text x="120" y="276" text-anchor="middle" fill="#c4aa50" font-size="26" font-weight="800">N</text>
+        <text x="120" y="294" text-anchor="middle" fill="#9093a8" font-size="9" font-weight="600">Normalizing</text>
+      </g>
+      <g id="node-H" class="type-node" style="cursor:pointer;">
+        <circle cx="260" cy="280" r="38" fill="rgba(96,136,192,0.12)" stroke="#6088c0" stroke-width="2.5"></circle>
+        <text x="260" y="276" text-anchor="middle" fill="#6088c0" font-size="26" font-weight="800">H</text>
+        <text x="260" y="294" text-anchor="middle" fill="#9093a8" font-size="9" font-weight="600">Harmonizing</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="info-col">
+    <div class="info-panel" id="info-panel">
+      <div id="default-panel">
+        <h3 style="font-size:17px;color:var(--accent);margin-bottom:10px;">Same Grid, Different Corners</h3>
+        <p style="font-size:13px;color:var(--text-m);line-height:1.75;margin-bottom:12px;">The axes: <strong style="color:var(--text);">Outgoing↔Reserved</strong> and <strong style="color:var(--text);">Task-Focus↔People-Focus</strong>: are universal across all systems. What changes between Fisher and Gulenko are the <em>corner labels</em>: each system's name for the archetype at that position.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="background:rgba(152,120,192,0.06);border:1px solid rgba(152,120,192,0.15);border-radius:7px;padding:10px 12px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#9878c0;font-weight:700;margin-bottom:6px;">Gulenko / Nardi (Figure-8)</div>
+            <div style="font-size:11px;color:var(--text-m);line-height:1.7;">
+              <span style="color:#c46060;">D</span> → <strong style="color:var(--text);">Analytical</strong><br>
+              <span style="color:#5aaa6e;">C</span> → <strong style="color:var(--text);">Divergent</strong><br>
+              <span style="color:#c4aa50;">N</span> → <strong style="color:var(--text);">Convergent</strong><br>
+              <span style="color:#6088c0;">H</span> → <strong style="color:var(--text);">Holistic</strong>
+            </div>
+            <div style="font-size:10px;color:var(--text-d);margin-top:6px;line-height:1.5;">Gulenko's group roles echoed by Nardi's EEG-measurable processing modes.</div>
+          </div>
+          <div style="background:rgba(92,191,160,0.06);border:1px solid rgba(92,191,160,0.15);border-radius:7px;padding:10px 12px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5cbfa0;font-weight:700;margin-bottom:6px;">Fisher (Linear Spin)</div>
+            <div style="font-size:11px;color:var(--text-m);line-height:1.7;">
+              <span style="color:#c46060;">D</span> → <strong style="color:var(--text);">Agency</strong><br>
+              <span style="color:#5aaa6e;">C</span> → <strong style="color:var(--text);">Plasticity</strong><br>
+              <span style="color:#c4aa50;">N</span> → <strong style="color:var(--text);">Stability</strong><br>
+              <span style="color:#6088c0;">H</span> → <strong style="color:var(--text);">Communion</strong>
+            </div>
+            <div style="font-size:10px;color:var(--text-d);margin-top:6px;line-height:1.5;">DeYoung's meta-traits from neuroscience. Perimeter rotation traces the neurochemical gradient: one axis shifts per step.</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-d);line-height:1.65;margin:0;">The neurochemical labels (Testosterone, Dopamine, Serotonin, Estrogen) mark the biological substrate shared by both systems. The corner labels name what each system <em>sees</em> at that position: Fisher sees trait-space architecture; Gulenko/Nardi see information-processing style.</p>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);"><div style="background:rgba(201,122,74,0.10);border:1px solid rgba(201,122,74,0.35);border-left:3px solid #c97a4a;border-radius:6px;padding:9px 12px;font-size:12px;color:#e8a888;font-style:italic;font-weight:500;">↖ Click a type on the wheel for its full definition and cross-system correspondences.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ CROSS-SYSTEM COMPARISON ═══ -->
+<div class="section-heading">
+  <h2>Cross-System Comparison</h2>
+  <div class="line"></div>
+</div>
+<p style="font-size:14px;color:var(--text-m);line-height:1.75;margin-bottom:22px;">
+  Seven independent systems converge on the same four-archetype structure. Each brings a different evidential basis: from fMRI neurochemistry to Fortune 500 normative datasets to 30+ years of group-dynamic observation: yet they partition behavioral space identically along two orthogonal axes: Energy Direction (Outgoing↔Reserved) and Processing Orientation (Task-Focus↔People-Focus).
+</p>
+
+<div class="comp-grid" id="comp-grid"></div>
+
+<div class="divider"></div>
+
+<!-- ═══ COMMON DENOMINATORS ═══ -->
+<div class="section-heading">
+  <h2>Common Denominators</h2>
+  <div class="line"></div>
+</div>
+
+<div id="denom-section"></div>
+
+<div class="divider"></div>
+
+<!-- ═══ NEUROTICISM ═══ -->
+<div class="section-heading">
+  <h2>Neuroticism × DCNH</h2>
+  <div class="line"></div>
+</div>
+<p style="font-size:14px;color:var(--text-m);line-height:1.75;margin-bottom:22px;">
+  Gulenko identified the Initiality↔Terminality dichotomy as the DCNH analog of Big Five Neuroticism/NERIS Turbulence. Initial subtypes (C, H) are more nervous, variable, and randomized; Terminal subtypes (D, N) are more assertive, steady, and predictable. High or low Neuroticism cross-cuts all four types, creating eight behavioral profiles.
+</p>
+
+<div class="neuro-grid" id="neuro-grid"></div>
+
+<div class="divider"></div>
+
+<!-- ═══ 12 COMPLEX SUBTYPES ═══ -->
+<div class="section-heading">
+  <h2>The 12 Complex Subtypes: Dual Framework</h2>
+  <div class="line"></div>
+</div>
+<p style="font-size:14px;color:var(--text-m);line-height:1.75;margin-bottom:12px;">
+  Each complex subtype is described twice: once through the <strong style="color:#7aaa9a;">Gulenko's Extended DCNH</strong> lens (Gulenko/Varlawend SHS) and once through the <strong style="color:var(--accent);">FTI Neurochemical Styles</strong> lens (as well as being illustrated through parallels with Nardi's EEG-based approach, PAEI management roles, DiSC behavioral styles). The two descriptions converge on the same 2×2 archetype but sit at <em>different layers</em> of the cognitive stack relative to Socionics proper: the FTI lens reads the <strong>upstream neurochemical substrate</strong> that information metabolism is built on, while the Gulenko lens reads the <strong>downstream behavioral accentuations</strong> that an information-metabolic type expresses in group contexts. Socionics itself sits between them, at the information-processing layer.
+</p>
+<p style="font-size:13px;color:var(--text-d);line-height:1.7;margin-bottom:22px;">
+  <strong>Subtype Groups (Gulenko):</strong> Order subtypes share the same energy ring. Revision subtypes oppose on both dimensions. Dual subtypes share orientation but oppose on energy. &nbsp;|&nbsp;
+  <strong>Metabolisms (per Varlawend's SHS):</strong> Proactive = Gulenko's CW figure-8 cycle pairs (DC, CN, NH, HD). Reactive = CCW figure-8 cycle pairs (DH, CD, NC, HN). Mixed = Dual-relation pairs (DN, CH, ND, HC).
+</p>
+
+<!-- Tab controls -->
+<div class="controls" id="fw-controls" style="margin-bottom:20px;">
+  <button class="ctrl-btn active" data-fw="soc">Gulenko's Extended DCNH</button>
+  <button class="ctrl-btn" data-fw="fti">FTI Neurochemical Styles</button>
+</div>
+
+<div id="twelve-types"></div>
+
+<div class="divider"></div>
+
+<!-- ═══ SUBTYPE RELATIONS ═══ -->
+<div class="section-heading">
+  <h2>Subtype Relations</h2>
+  <div class="line"></div>
+</div>
+<p style="font-size:14px;color:var(--text-m);line-height:1.75;margin-bottom:22px;">
+  Just as Socionics types have intertype relations, DCNH subtypes have inter-subtype relations. These emerge from the structural position of each subtype on the 2×2 grid. Gulenko identified four fundamental subtype relations based on shared vs. opposing dichotomies.
+</p>
+
+<div class="comp-grid" id="relations-grid"></div>
+
+</div><!-- /container -->
+
+<script>
+// ─── DATA ───
+const TYPES = {
+  D: {
+    name: "Dominant", color: "#c46060", cx: 120, cy: 100,
+    formula: "PE(F): TE+FE (+SE)",
+    dichotomies: "Terminal · Contacting · Connecting",
+    temperament: "Linear-Assertive",
+    role: "Ambitious Hastening Leader",
+    desc: "Sets clear goals and pursues them with concentrated force. Competitive, recognized as leader, demands results. Active in hostile environments: approaches obstacles head-on. Energy flows linearly outward, one objective at a time. The strongest boundary-setter of the four types.",
+    fisher: "Director (Testosterone)", disc: "D: Dominance", nardi: "Frontal/left bias, executive functioning",
+    paei: "P: Producer", merrill: "Driver (High Assert / Low Respond)",
+    gulenko: "Linearly gives energy. Strengthens extraverted management functions (Te+Se). Fastest decision-maker. In stress: confronts and escalates.",
+    neuro: "Testosterone + Dopamine"
+  },
+  C: {
+    name: "Creative", color: "#5aaa6e", cx: 260, cy: 100,
+    formula: "IF(E): NE+SE (+FE)",
+    dichotomies: "Initial · Contacting · Ignoring",
+    temperament: "Flexible-Maneuvering",
+    role: "Inventive Rebellious Experimenter",
+    desc: "Generates novel solutions, breaks rules, seeks fresh experience. Active in favorable environments: explores when the coast is clear. Energy disperses flexibly across multiple fronts, quick to start and pivot. Promises more than they deliver but produces the most original ideas. Boundaries are permeable and playful.",
+    fisher: "Explorer (Dopamine)", disc: "i: Influence", nardi: "Starburst pattern, right-hemisphere exploratory",
+    paei: "E: Entrepreneur", merrill: "Expressive (High Assert / High Respond)",
+    gulenko: "Flexibly gives energy. Strengthens Fe+Ne. Most rebellious type: disobeys when bored. In stress: improvises and escapes.",
+    neuro: "Dopamine + Estrogen"
+  },
+  N: {
+    name: "Normalizing", color: "#c4aa50", cx: 120, cy: 280,
+    formula: "LR(S): Ti + Fi (+Si)",
+    dichotomies: "Terminal · Distancing · Ignoring",
+    temperament: "Balanced-Stable",
+    role: "Methodical Quality Finisher",
+    desc: "Follows established rules, maintains standards, completes work to specification. Reactive in hostile environments: steps back, freezes, lets it pass. Energy conserved and applied with precision, one careful step at a time. The most conservative and reliable of the four types. Strongest norm-adherence.",
+    fisher: "Builder (Serotonin)", disc: "C: Conscientiousness", nardi: "Even back/left distribution, step-by-step",
+    paei: "A: Administrator", merrill: "Analytical (Low Assert / Low Respond)",
+    gulenko: "Linearly conserves energy. Strengthens Ti+Fi. Most detail-oriented and persistent. In stress: withdraws into precision work.",
+    neuro: "Serotonin + Testosterone"
+  },
+  H: {
+    name: "Harmonizing", color: "#6088c0", cx: 260, cy: 280,
+    formula: "TS(R): Ni + Si (+Fi)",
+    dichotomies: "Initial · Distancing · Connecting",
+    temperament: "Receptive-Adaptive",
+    role: "Diplomatic Adaptive Corrector",
+    desc: "Senses atmospheres, smooths conflicts, adapts to people and environments. Reactive in favorable environments: responds to warmth with flexibility. Energy conserved and deployed with contextual sensitivity. The most empathic and mood-variable of the four. Strongest relational attunement.",
+    fisher: "Negotiator (Estrogen)", disc: "S: Steadiness", nardi: "Diamond cross-hemispheric, social-feedback sensitive",
+    paei: "I: Integrator", merrill: "Amiable (Low Assert / High Respond)",
+    gulenko: "Flexibly conserves energy. Strengthens Ni+Si. Most sensitive and conflict-avoidant. In stress: merges, appeases, or disappears.",
+    neuro: "Estrogen + Serotonin"
+  }
+};
+
+const MODES = {
+  "cw-linear": {
+    title: "Bottom-Up Spin: Inductive Neurochemical Cycle",
+    desc: "Traces the perimeter clockwise: D → C → H → N → D. The Explorer (C) gathers broad-spectrum novel data, the Negotiator (H) synthesizes it into holistic emergent patterns, the Builder (N) grounds those patterns into concrete norms and structure, and the Director (D) distills the structure into a single focused principle that shatters back out to seed the next cycle. Inductive, data-driven flow moving from plasticity toward constraint: the organism is shaped by the world and integrates upward toward a unified logic. The smooth single-axis neurochemical gradient runs Testosterone → Dopamine → Estrogen → Serotonin; each adjacent pair shares one axis (D↔C share Outgoing; C↔H share People-Focus; H↔N share Reserved; N↔D share Task-Focus). Corresponds to the Proactive temperament cycle in Fisher's framework.",
+    sequence: ["D","C","H","N"],
+    color: "#5cbfa0",
+    paths: [["D","C"],["C","H"],["H","N"],["N","D"]]
+  },
+  "ccw-linear": {
+    title: "Top-Down Spin: Deductive Neurochemical Cycle",
+    desc: "Traces the perimeter counterclockwise: D → N → H → C → D. The Director (D) sets the axiom as a focused logical framework, the Builder (N) breaks it into concrete implementation steps and infrastructure, the Negotiator (H) socializes the rigid structure for community fit and emotional feedback, and the Explorer (C) surfaces loopholes and novel applications that feed back up to revise the axiom. Deductive, concept-driven flow moving from constraint toward plasticity: the organism imposes its structure onto the world and descends into dynamic implementation. The reactive single-axis neurochemical gradient runs Testosterone → Serotonin → Estrogen → Dopamine. Mirror image of the Bottom-Up cycle: same smooth single-axis transitions, opposite rotational direction. Corresponds to the Reactive temperament cycle in Fisher's framework.",
+    sequence: ["D","N","H","C"],
+    color: "#c97a4a",
+    paths: [["D","N"],["N","H"],["H","C"],["C","D"]]
+  },
+  "cw-fig8": {
+    title: "Clockwise Figure-Eight: Proactive Functional Roles",
+    desc: "Traces the Z-pattern (Gulenko's original DCNH sequence): D → C → N → H → D. Crosses the diagonal twice (C→N and H→D), producing a figure-eight through the center. This is the functional role cascade in a work group: the Leader sets a goal (D), the Generator invents solutions (C), the Finisher systematizes them (N), the Corrector integrates feedback (H). The diagonal jump provides maximum contrast to keep the group process advancing.",
+    sequence: ["D","C","N","H"],
+    color: "#9878c0",
+    paths: [["D","C"],["C","N"],["N","H"],["H","D"]]
+  },
+  "ccw-fig8": {
+    title: "Counterclockwise Figure-Eight: Reactive Functional Roles",
+    desc: "Traces the reverse Z-pattern: D → H → N → C → D. The diagonal-crossing figure-eight traversed in reverse: reactive functional role sequence. The Corrector opens with adaptive sensitivity (H), the Finisher stabilizes and structures (N), the Generator injects creative options (C), and the Leader drives to decisive action (D). Same X-crossing pattern, opposite traversal direction.",
+    sequence: ["D","H","N","C"],
+    color: "#5a95d4",
+    paths: [["D","H"],["H","N"],["N","C"],["C","D"]]
+  }
+};
+
+// ─── ARROW DRAWING ───
+function drawArrows(mode) {
+  const g = document.getElementById("arrows");
+  g.innerHTML = "";
+  const m = MODES[mode];
+  const R = 42; // offset from center of node
+
+  m.paths.forEach(([from, to], i) => {
+    const fx = TYPES[from].cx, fy = TYPES[from].cy;
+    const tx = TYPES[to].cx, ty = TYPES[to].cy;
+    const dx = tx - fx, dy = ty - fy;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/len, uy = dy/len;
+    const x1 = fx + ux*R, y1 = fy + uy*R;
+    const x2 = tx - ux*R, y2 = ty - uy*R;
+
+    // For figure-8, curved paths on diagonals
+    const isDiag = Math.abs(dx) > 10 && Math.abs(dy) > 10;
+    const isFig8 = mode.includes("fig8");
+
+    let pathD;
+    if (isFig8 && isDiag) {
+      const mx = (x1+x2)/2, my = (y1+y2)/2;
+      const perpX = -uy * 30, perpY = ux * 30;
+      pathD = `M${x1},${y1} Q${mx+perpX},${my+perpY} ${x2},${y2}`;
+    } else {
+      pathD = `M${x1},${y1} L${x2},${y2}`;
+    }
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d", pathD);
+    path.setAttribute("fill","none");
+    path.setAttribute("stroke", m.color);
+    path.setAttribute("stroke-width","2");
+    path.setAttribute("stroke-opacity","0.7");
+    path.setAttribute("marker-end","url(#arrowhead)");
+
+    // Animate dash
+    path.setAttribute("stroke-dasharray","200");
+    path.setAttribute("stroke-dashoffset","200");
+    path.innerHTML = `<animate attributeName="stroke-dashoffset" from="200" to="0" dur="0.6s" begin="${i*0.15}s" fill="freeze"/>`;
+    g.appendChild(path);
+  });
+
+  // Arrowhead marker
+  if (!document.getElementById("arrowhead")) {
+    const defs = document.createElementNS("http://www.w3.org/2000/svg","defs");
+    defs.innerHTML = `<marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${m.color}" opacity="0.8"/></marker>`;
+    document.getElementById("wheel").prepend(defs);
+  } else {
+    document.querySelector("#arrowhead polygon").setAttribute("fill", m.color);
+  }
+}
+
+// ─── INFO PANEL ───
+function showTypeInfo(t) {
+  const d = TYPES[t];
+  document.getElementById("info-panel").innerHTML = `
+    <h3 style="color:${d.color};">${d.name}</h3>
+    <div class="meta">${d.dichotomies} · ${d.temperament}</div>
+    <p>${d.desc}</p>
+    <div class="badge-row">
+      <span class="badge" style="background:${d.color}18;color:${d.color};border:1px solid ${d.color}40;">${d.formula}</span>
+      <span class="badge" style="background:${d.color}18;color:${d.color};border:1px solid ${d.color}40;">${d.role}</span>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--text-m);line-height:1.7;">
+      <div style="margin-bottom:6px;"><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">Fisher:</span> ${d.fisher}</div>
+      <div style="margin-bottom:6px;"><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">DiSC:</span> ${d.disc}</div>
+      <div style="margin-bottom:6px;"><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">Nardi EEG:</span> ${d.nardi}</div>
+      <div style="margin-bottom:6px;"><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">PAEI:</span> ${d.paei}</div>
+      <div style="margin-bottom:6px;"><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">Merrill-Reid:</span> ${d.merrill}</div>
+      <div><span style="color:var(--text-d);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;font-weight:600;">Neurochemistry:</span> ${d.neuro}</div>
+    </div>
+  `;
+}
+
+// ─── CROSS-SYSTEM COMPARISON GRID ───
+function renderCompGrid() {
+  const systems = [
+    { name: "Gulenko / Varlawend (Socionics)", key: "gulenko", rows: [
+      {l:"D",v:"Dominant: Te+Fe(Se). Linear-Assertive. Leader."},
+      {l:"C",v:"Creative: Ne+Se(Fe). Flexible-Maneuvering. Generator."},
+      {l:"N",v:"Normalizing: Ti+Fi(Si). Balanced-Stable. Finisher."},
+      {l:"H",v:"Harmonizing: Ni+Si(Fi). Receptive-Adaptive. Connector."}
+    ]},
+    { name: "Dario Nardi (EEG)", key: "nardi", rows: [
+      {l:"D",v:"Analytic J+P. Frontal/left bias. Executive control."},
+      {l:"C",v:"Holistic J + Analytic P. Starburst. Creative synthesis."},
+      {l:"N",v:"Analytic J + Holistic P. Even back/left. Methodical."},
+      {l:"H",v:"Holistic J+P. Cross-hemispheric diamond. Social-feedback."}
+    ]},
+    { name: "Helen Fisher (FTI)", key: "fisher", rows: [
+      {l:"D",v:"Director: Testosterone. Analytical, decisive, spatial."},
+      {l:"C",v:"Explorer: Dopamine. Novelty-seeking, risk-tolerant."},
+      {l:"N",v:"Builder: Serotonin. Conventional, calm, structured."},
+      {l:"H",v:"Negotiator: Estrogen. Empathic, verbal, web-thinking."}
+    ]},
+    { name: "Merrill-Reid Social Styles", key: "merrill", rows: [
+      {l:"D",v:"Driver. High assertiveness, low responsiveness. Direct."},
+      {l:"C",v:"Expressive. High assertiveness/responsiveness. Animated."},
+      {l:"N",v:"Analytical. Low assertiveness, low responsiveness. Careful."},
+      {l:"H",v:"Amiable. Low assertiveness, high responsiveness. Warm."}
+    ]},
+    { name: "PAEI (Adizes)", key: "paei", rows: [
+      {l:"D",v:"P: Producer. Short-term effectiveness. Results now."},
+      {l:"C",v:"E: Entrepreneur. Long-term effectiveness. Visionary."},
+      {l:"N",v:"A: Administrator. Short-term efficiency. Systems order."},
+      {l:"H",v:"I: Integrator. Long-term efficiency. Cohesion & culture."}
+    ]},
+    { name: "DiSC (Marston)", key: "disc", rows: [
+      {l:"D",v:"D: Dominance. Active + hostile env. Results-driven."},
+      {l:"C",v:"i: Influence. Active + friendly env. Enthusiastic."},
+      {l:"N",v:"C: Conscientiousness. Reactive + hostile env. Precise."},
+      {l:"H",v:"S: Steadiness. Reactive + friendly env. Patient."}
+    ]}
+  ];
+  const colors = {D:"#c46060",C:"#5aaa6e",N:"#c4aa50",H:"#6088c0"};
+  const grid = document.getElementById("comp-grid");
+  systems.forEach(sys => {
+    let html = `<div class="comp-card"><h4>${sys.name}</h4>`;
+    sys.rows.forEach(r => {
+      html += `<div class="row"><span class="label" style="color:${colors[r.l]};">${r.l}</span><span class="val" style="font-size:11px;font-weight:500;color:var(--text-m);">${r.v}</span></div>`;
+    });
+    html += `</div>`;
+    grid.innerHTML += html;
+  });
+}
+
+// ─── COMMON DENOMINATORS ───
+function renderDenom() {
+  const denoms = [
+    { title: "Two Orthogonal Axes Across All Systems", color: "#9878c0",
+      text: "Every system decomposes into the same two dimensions. <strong>Axis 1 (Energy Direction)</strong>: Outgoing↔Reserved = Contacting↔Distancing = Active↔Passive = Dopamine↔Serotonin = BAS↔BIS = Extraversion↔Introversion = High Assert↔Low Assert. <strong>Axis 2 (Processing Orientation)</strong>: Task-Focus↔People-Focus = Analytic↔Holistic = Terminating↔Initiating = Testosterone↔Estrogen = Left-hemisphere↔Right-hemisphere = Low Respond↔High Respond. The convergence reflects the biological architecture of behavioral regulation: two independent neurochemical axes generating a 2×2 space." },
+    { title: "The <strong>Leader</strong> Invariant: D Across Systems", color: "#c46060",
+      text: "Every system identifies a type that is outgoing, task-focused, decisive, and competitive. This is D/Dominance/Director/Producer/Driver. The neurochemical substrate is high testosterone (analytical, assertive, spatial) + high dopamine (approach-oriented, energetically expansive). This produces frontal/left-hemisphere EEG dominance. The invariant behavioral signature: sets goals, takes charge, confronts obstacles, demands results, works linearly." },
+    { title: "The <strong>Innovator</strong> Invariant: C Across Systems", color: "#5aaa6e",
+      text: "Every system identifies a type that is outgoing, people-receptive, creative, and rule-breaking. This is C/Influence/Explorer/Entrepreneur/Expressive. The substrate is high dopamine (novelty-seeking) + high estrogen (holistic web-thinking). EEG shows the distinctive starburst pattern, with multiple regions activated simultaneously. The invariant signature: generates ideas, breaks conventions, engages socially through charm and novelty, starts things without finishing them." },
+    { title: "The <strong>Systematizer</strong> Invariant: N Across Systems", color: "#c4aa50",
+      text: "Every system identifies a type that is reserved, task-focused, methodical, and norm-following. This is N/Conscientiousness/Builder/Administrator/Analytical. The substrate is high serotonin (conventional stability) + high testosterone (analytical precision). EEG shows even posterior/left distribution: careful, step-by-step processing. The invariant signature: follows established procedures, maintains quality standards, completes tasks to specification, works within rules." },
+    { title: "The <strong>Harmonizer</strong> Invariant: H Across Systems", color: "#6088c0",
+      text: "Every system identifies a type that is reserved, people-receptive, empathic, and adaptive. This is H/Steadiness/Negotiator/Integrator/Amiable. The substrate is high estrogen (empathic web-thinking) + high serotonin (cautious stability). EEG shows the diamond cross-hemispheric pattern: social feedback sensitivity, vocal tonation awareness. The invariant signature: reads emotional atmospheres, smooths conflicts, adapts to others' needs, maintains relational harmony." }
+  ];
+  const sec = document.getElementById("denom-section");
+  denoms.forEach((d, i) => {
+    const isAxes = i === 0;
+    if (isAxes) {
+      sec.innerHTML += `
+        <div class="denom-card" style="border-left:4px solid ${d.color};background:linear-gradient(180deg,rgba(152,120,192,0.11) 0%,rgba(152,120,192,0.06) 100%);border-top:1px solid rgba(152,120,192,0.32);border-right:1px solid rgba(152,120,192,0.22);border-bottom:1px solid rgba(152,120,192,0.22);box-shadow:0 1px 0 rgba(152,120,192,0.12) inset;padding-top:16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${d.color};margin-bottom:8px;opacity:0.9;">Underlying Structure · Shared 2×2 Frame</div>
+          <h4 style="color:${d.color};font-size:16px;letter-spacing:0.01em;margin-bottom:10px;">${d.title}</h4>
+          <p style="margin-bottom:14px;">Every independent system partitions behavioral space along the same two dimensions. The convergence reflects the biological architecture of behavioral regulation: two orthogonal neurochemical axes generating a 2×2 space.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+            <div style="background:rgba(152,120,192,0.08);border:1px solid rgba(152,120,192,0.2);border-radius:8px;padding:12px 14px;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${d.color};margin-bottom:8px;">Axis 1 — Energy Direction</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                ${["Outgoing↔Reserved","Contacting↔Distancing","Active↔Passive","Extraversion↔Introversion","Dopamine↔Serotonin","BAS↔BIS","High Assert↔Low Assert"].map(t=>`<span style="font-size:11px;color:var(--text-m);background:rgba(152,120,192,0.1);border:1px solid rgba(152,120,192,0.2);border-radius:4px;padding:2px 7px;white-space:nowrap;">${t}</span>`).join('')}
+              </div>
+            </div>
+            <div style="background:rgba(152,120,192,0.08);border:1px solid rgba(152,120,192,0.2);border-radius:8px;padding:12px 14px;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${d.color};margin-bottom:8px;">Axis 2 — Processing Orientation</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                ${["Task-Focus↔People-Focus","Terminating↔Initiating","Structured↔Flexible","Testosterone↔Estrogen","Left-hemisphere↔Right-hemisphere","Low Respond↔High Respond"].map(t=>`<span style="font-size:11px;color:var(--text-m);background:rgba(152,120,192,0.1);border:1px solid rgba(152,120,192,0.2);border-radius:4px;padding:2px 7px;white-space:nowrap;">${t}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:4px;padding-top:10px;border-top:1px dashed rgba(152,120,192,0.28);font-size:11px;color:var(--text-d);font-style:italic;letter-spacing:0.01em;">↓ The four invariants below are the archetypes that occupy the corners of this 2×2 space.</div>
+        </div>`;
+    } else {
+      sec.innerHTML += `<div class="denom-card" style="border-left:3px solid ${d.color};"><h4 style="color:${d.color};">${d.title}</h4><p>${d.text}</p></div>`;
+    }
+  });
+}
+
+// ─── NEUROTICISM ───
+function renderNeuro() {
+  const items = [
+    { type: "D: Dominant", color: "#c46060",
+      hi: "Aggressive under pressure, domineering, explosive anger, controlling micro-manager. Testosterone amplified by cortisol → territorial volatility. The &ldquo;tyrant&rdquo; mode. May oscillate between ruthless ambition and anxious self-doubt about losing control.",
+      lo: "Steady decisive authority, calm under fire, composed commander. Testosterone without cortisol → confident stability. The &ldquo;general&rdquo; mode. Decisive without being reactive; assertive without aggression." },
+    { type: "C: Creative", color: "#5aaa6e",
+      hi: "Manic creativity, emotional volatility, dramatic mood swings, scattered attention. Dopamine amplified by anxiety → chaotic novelty-seeking that can't settle. The &ldquo;mercurial artist&rdquo; mode. Brilliant flashes punctuated by crashes.",
+      lo: "Joyful explorer, relaxed creativity, effortless charm, serene curiosity. Dopamine without anxiety → flowing, playful innovation. The &ldquo;renaissance soul&rdquo; mode. Generates ideas with ease and lets go of failed ones without distress." },
+    { type: "N: Normalizing", color: "#c4aa50",
+      hi: "Anxious perfectionist, rigid rule-following from fear, obsessive detail-checking, catastrophizing about errors. Serotonin disrupted by rumination → compulsive systematization as anxiety management. The &ldquo;worried accountant&rdquo; mode.",
+      lo: "Calm methodical worker, unflappable routine, steady precision, quiet confidence in expertise. Serotonin + low cortisol → serene competence. The &ldquo;master craftsman&rdquo; mode. Methodical because it works, not because alternatives terrify." },
+    { type: "H: Harmonizing", color: "#6088c0",
+      hi: "Emotional sponge, overwhelmed by others' feelings, passive-aggressive withdrawal, people-pleasing that builds hidden resentment. Estrogen's empathy amplified by anxiety → boundary dissolution. The &ldquo;anxious mediator&rdquo; mode.",
+      lo: "Serene peacekeeper, grounded empathy, natural mediator, warm without enmeshment. Estrogen + low cortisol → compassionate presence without self-loss. The &ldquo;wise counselor&rdquo; mode. Deeply attuned but maintains healthy separation." }
+  ];
+  const grid = document.getElementById("neuro-grid");
+  items.forEach(it => {
+    grid.innerHTML += `
+      <div class="neuro-card" style="border-left:3px solid ${it.color};">
+        <h4 style="color:${it.color};">${it.type}</h4>
+        <div class="hi"><strong>High Neuroticism:</strong> ${it.hi}</div>
+        <div class="lo"><strong>Low Neuroticism:</strong> ${it.lo}</div>
+      </div>`;
+  });
+}
+
+// ─── INIT ───
+let currentMode = "cw-linear";
+
+document.querySelectorAll("#controls .ctrl-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#controls .ctrl-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentMode = btn.dataset.mode;
+    const m = MODES[currentMode];
+    document.getElementById("scheme-title").textContent = m.title;
+    document.getElementById("scheme-desc").textContent = m.desc;
+    document.getElementById("scheme-box").style.borderLeftColor = m.color;
+    document.getElementById("scheme-box").style.borderLeft = `3px solid ${m.color}`;
+    drawArrows(currentMode);
+    updateAxisLabels(currentMode);
+    // Reset info panel to default if no type selected
+    const dp = document.getElementById("default-panel");
+    if (!dp) resetInfoPanel();
+  });
+});
+
+function updateAxisLabels(mode) {
+  const isFig8 = mode.includes("fig8");
+  // Corner trait labels switch per system
+  document.getElementById("trait-D").textContent = isFig8 ? "Analytical" : "Agency";
+  document.getElementById("trait-C").textContent = isFig8 ? "Divergent" : "Plasticity";
+  document.getElementById("trait-N").textContent = isFig8 ? "Convergent" : "Stability";
+  document.getElementById("trait-H").textContent = isFig8 ? "Holistic" : "Communion";
+}
+
+function resetInfoPanel() {
+  document.getElementById("info-panel").innerHTML = `
+    <div id="default-panel">
+      <h3 style="font-size:17px;color:var(--accent);margin-bottom:10px;">Same Grid, Different Corners</h3>
+      <p style="font-size:13px;color:var(--text-m);line-height:1.75;margin-bottom:12px;">The axes: <strong style="color:var(--text);">Outgoing↔Reserved</strong> and <strong style="color:var(--text);">Task-Focus↔People-Focus</strong>: are universal across all systems. What changes between Fisher and Gulenko are the <em>corner labels</em>: each system's name for the archetype at that position.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="background:rgba(152,120,192,0.06);border:1px solid rgba(152,120,192,0.15);border-radius:7px;padding:10px 12px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#9878c0;font-weight:700;margin-bottom:6px;">Gulenko / Nardi (Figure-8)</div>
+          <div style="font-size:11px;color:var(--text-m);line-height:1.7;"><span style="color:#c46060;">D</span> → <strong style="color:var(--text);">Analytical</strong><br/><span style="color:#5aaa6e;">C</span> → <strong style="color:var(--text);">Divergent</strong><br/><span style="color:#c4aa50;">N</span> → <strong style="color:var(--text);">Convergent</strong><br/><span style="color:#6088c0;">H</span> → <strong style="color:var(--text);">Holistic</strong></div>
+          <div style="font-size:10px;color:var(--text-d);margin-top:6px;line-height:1.5;">Gulenko's group roles echoed by Nardi's EEG-measurable processing modes.</div>
+        </div>
+        <div style="background:rgba(92,191,160,0.06);border:1px solid rgba(92,191,160,0.15);border-radius:7px;padding:10px 12px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5cbfa0;font-weight:700;margin-bottom:6px;">Fisher (Linear Spin)</div>
+          <div style="font-size:11px;color:var(--text-m);line-height:1.7;"><span style="color:#c46060;">D</span> → <strong style="color:var(--text);">Agency</strong><br/><span style="color:#5aaa6e;">C</span> → <strong style="color:var(--text);">Plasticity</strong><br/><span style="color:#c4aa50;">N</span> → <strong style="color:var(--text);">Stability</strong><br/><span style="color:#6088c0;">H</span> → <strong style="color:var(--text);">Communion</strong></div>
+          <div style="font-size:10px;color:var(--text-d);margin-top:6px;line-height:1.5;">DeYoung's meta-traits from neuroscience. Perimeter rotation traces the neurochemical gradient: one axis shifts per step.</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-d);line-height:1.65;margin:0;">The neurochemical labels (Testosterone, Dopamine, Serotonin, Estrogen) mark the biological substrate shared by both systems. The corner labels name what each system <em>sees</em> at that position: Fisher sees trait-space architecture; Gulenko/Nardi see information-processing style.</p>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);"><div style="background:rgba(201,122,74,0.10);border:1px solid rgba(201,122,74,0.35);border-left:3px solid #c97a4a;border-radius:6px;padding:9px 12px;font-size:12px;color:#e8a888;font-style:italic;font-weight:500;">↖ Click a type on the wheel for its full definition and cross-system correspondences.</div></div>
+    </div>`;
+}
+
+document.querySelectorAll(".type-node").forEach(node => {
+  node.addEventListener("click", () => {
+    const t = node.id.replace("node-","");
+    showTypeInfo(t);
+    // Highlight
+    document.querySelectorAll(".type-node circle").forEach(c => c.setAttribute("stroke-width","2.5"));
+    node.querySelector("circle").setAttribute("stroke-width","4");
+  });
+});
+
+drawArrows(currentMode);
+renderCompGrid();
+renderDenom();
+renderNeuro();
+
+// ─── 12 COMPLEX SUBTYPES DATA ───
+const SUBTYPES = [
+  { code:"DC", name:"Audacious Dynamo",
+    gulGroup:"Order", fisherGroup:"Proactive", gulDich:"Contacting · Terminating", shared:"Outgoing axis",
+    fti: "Director/Explorer: Testosterone+Dopamine. The most forcefully charismatic blend: analytical decisiveness fueled by novelty-seeking energy. Nardi EEG: frontal executive activation transitioning to starburst exploratory mode: strategic planning punctuated by creative improvisation. PAEI: Producer-Entrepreneur (PE): drives short-term results while scanning for long-term opportunities. DiSC Di profile: action-oriented and enthusiastic, bringing innovation with urgency. Neurochemically, testosterone provides the narrow strategic focus while dopamine provides restless energy to pursue it. This type acts quickly and boldly, breaking rules when they impede goals. They set the pace for others and expect it to be matched. Most likely to be found leading startups, political campaigns, or any high-stakes venture that demands both vision and execution speed.",
+    soc: "Dominant-Creative: Fe+Te strengthened, with Se+Ne as secondary complex. An Order subtype (contacting): both components share the Outgoing/Contacting axis, creating specialized high-energy social work capacity. The Dominant's linear drive to compete and organize combines with the Creative's flexible spontaneity. Varlawend: 'In-charge and busily forcing those around them to a necessary pace. Easily break rules and act spontaneously to get what they want.' Group role: Motivator-Contactor. They set ambitious goals (D) then generate creative solutions on the fly (C). The most common high-energy double subtype: the two components harmonize naturally because both give energy outward. Proactive metabolism (Gulenko's sequence): first position in the civilizing chain, introducing new ambitious initiatives."
+  },
+  { code:"DN", name:"Self-Disciplined Authoritarian",
+    gulGroup:"Dual", fisherGroup:"Mixed", gulDich:"Terminating · Terminating", shared:"Task-Focus axis",
+    fti: "Director/Builder: Testosterone+Serotonin. The most rigid and structured blend: analytical decisiveness combined with conventional discipline. Nardi EEG: frontal executive control transitioning to even posterior distribution: strategic command followed by methodical implementation. PAEI: Producer-Administrator (PA): maximizes both short-term results and short-term efficiency, creating an intensely task-focused profile. DiSC DC profile: demanding, results-driven with exacting standards. Both hormones are task-oriented (testosterone=analytical, serotonin=systematic), producing someone almost entirely work-focused. Fisher's data shows this combination favors hierarchical institutions, military structures, and traditional authority. They rise through conscientiousness and hold power through discipline. Risk of rigidity and dictatorship when both hormones reinforce each other's control-seeking tendencies.",
+    soc: "Dominant-Normalizing: Fe+Te strengthened, with Fi+Ti as secondary. A Dual subtype (terminating): both D and N are terminal, making this the most termination-oriented of all subtypes. Varlawend: 'A fast decision-maker who organizes others authoritatively, conforming to strict laws and plans on their own territory.' Both components share the Analytic/Terminating orientation: life is almost entirely work. They take the attitude that everything should serve productive goals. Often rise to high positions through sheer conscientiousness. Can become dictatorial when the D's need for control reinforces the N's rigidity. Connective+Ignorative balance. Group role: Organizer-Coordinator. This is the institutional taskmaster: effective but potentially tyrannical."
+  },
+  { code:"DH", name:"Wholesome Leader",
+    gulGroup:"Revision", fisherGroup:"Reactive", gulDich:"Connecting · Connecting", shared:"Opposing",
+    fti: "Director/Negotiator: Testosterone+Estrogen. Maximum internal contrast on the Processing axis: analytical decisiveness meets holistic empathy. Nardi EEG: frontal executive control transitioning to diamond cross-hemispheric network: strategic thinking coupled with social-feedback sensitivity. PAEI: Producer-Integrator (PI): drives results while maintaining organizational cohesion. DiSC DS profile: results-oriented but relationship-aware. The neurochemical tension is the defining feature: testosterone's narrow-deep focus vs. estrogen's broad-shallow web-thinking create the most psychologically complex blend. Fisher notes this combination produces leaders who track the wellbeing of those they lead. At best: the benevolent patriarch, the counselor-king. At worst: sophisticated psychological manipulation, wielding empathic insight as a weapon.",
+    soc: "Dominant-Harmonizing: Fe+Te strengthened, with Si+Ni as secondary. A Revision subtype (connecting): D and H oppose on both dichotomies (Contact vs. Distant, Terminal vs. Initial), creating maximum internal contradiction. Varlawend: 'Skilled at including others under their decisive leadership, with goals that continually track the peace and safety of those in their charge.' The revision tension means each component slows the other: D's aggression is tempered by H's sensitivity, H's passivity is overridden by D's forcefulness. Reactive metabolism (Gulenko's sequence). Both D and H are Connective, meaning this type reads and shapes the environment actively. Group role: Motivator-Decorator. Most psychologically unpredictable of the D-primary subtypes."
+  },
+  { code:"CD", name:"Determined Maverick",
+    gulGroup:"Order", fisherGroup:"Reactive", gulDich:"Contacting · Contacting", shared:"Outgoing axis",
+    fti: "Explorer/Director: Dopamine+Testosterone. Novelty-seeking spontaneity backed by analytical self-discipline. Nardi EEG: starburst creative pattern transitioning to frontal executive control: wild ideation followed by decisive execution. PAEI: Entrepreneur-Producer (EP): long-term vision combined with immediate action capacity. DiSC iD profile: action-driven creativity with autonomous control. Where DC forces the pace on others, CD forces it on themselves. Dopamine leads (exploration, risk, independence) but testosterone provides the backbone to follow through. Fisher's research associates this blend with solo entrepreneurs, maverick inventors, and autonomous operators who need no external validation. The 'lone wolf who builds empires': self-reliant intensity without the social display of DC.",
+    soc: "Creative-Dominant: Se+Ne strengthened, with Fe+Te as secondary. An Order subtype (contacting): both C and D share the Outgoing/Contacting axis. Varlawend: 'Expressing themselves brightly no matter the reaction of others, acting decisively and resourcefully to maintain independent control over their own affairs.' Where DC organizes others, CD organizes themselves. The Creative's rebellious spontaneity is primary, but the Dominant's forcefulness ensures follow-through. Reactive metabolism (Gulenko's sequence): first position in the adaptive chain, asserting fresh talents. Group role: Contactor-Motivator. The most self-reliant of the C-primary subtypes: they don't need an audience, they need autonomy."
+  },
+  { code:"CN", name:"Meticulous Explorer",
+    gulGroup:"Revision", fisherGroup:"Proactive", gulDich:"Ignoring · Ignoring", shared:"Opposing",
+    fti: "Explorer/Builder: Dopamine+Serotonin. Maximum internal contrast on the Energy axis: novelty-seeking expansiveness meets conventional stability. Nardi EEG: starburst creative activation transitioning to even posterior distribution: explosive ideation followed by careful documentation. PAEI: Entrepreneur-Administrator (EA): visionary innovation grounded by systematic process management. DiSC iC profile: enthusiastic exploration grounded by analytical precision. The neurochemical tension defines the type: dopamine wants to explore everything new, serotonin wants to stay with what works. This produces the rigorous innovator: the scientist who both discovers and systematizes. Fisher notes this combination creates methodical creativity, where bold exploration is progressively disciplined by accumulated expertise. The explorer who keeps a meticulous lab notebook.",
+    soc: "Creative-Normalizing: Se+Ne strengthened, with Fi+Ti as secondary. A Revision subtype (ignorative): C and N oppose on both dichotomies (Contact vs. Distant, Initial vs. Terminal), creating maximum tension. Varlawend: 'Boldly and spontaneously adventuring in unexplored territory, then mapping their trials carefully and adhering to firm principles learned along the way.' Both C and N are Ignorative: they ignore the environment, implementing their own projects regardless of social feedback. Proactive metabolism (Gulenko's sequence): second position in the civilizing chain, inventing systematic solutions. Group role: Contactor-Conscience → Ideator-Coordinator. The internal contradiction between creative chaos and methodical order produces the most innovative scientific types."
+  },
+  { code:"CH", name:"Easygoing Free-Spirit",
+    gulGroup:"Dual", fisherGroup:"Mixed", gulDich:"Initiating · Initiating", shared:"People-Focus axis",
+    fti: "Explorer/Negotiator: Dopamine+Estrogen. The most open and receptive blend: novelty-seeking curiosity meets empathic intuition. Nardi EEG: starburst creative pattern transitioning to diamond cross-hemispheric network: playful ideation flowing into relational sensitivity. PAEI: Entrepreneur-Integrator (EI): long-term vision fused with long-term social cohesion. DiSC iS profile: enthusiastic, warm, sociable, broad interests. Both hormones favor holistic processing and social openness. Fisher associates this blend with artists, writers, therapists, and spiritual seekers. Dopamine provides adventurous curiosity, estrogen provides warmth and intuitive depth. The 'Peter Pan' energy: diversely talented, almost zero tolerance for boredom or disciplined routine. Risk of chronic irresponsibility and scattered attention.",
+    soc: "Creative-Harmonizing: Se+Ne strengthened, with Si+Ni as secondary. A Dual subtype (initiating): both C and H are Initial, making this the most initiation-oriented of all subtypes. Varlawend: 'At ease taking risks and making contacts to pursue their interests, at peace with themselves and calm and flexible with the similarly-minded.' Both components share the Initial/Holistic orientation: life is almost entirely play. Open-minded as a child, generating the freshest ideas while being open to others' hearts. Connective+Ignorative balance. Group role: Contactor-Decorator → Ideator-Expert. The polar opposite of DN: where DN is all work, CH is all exploration and connection."
+  },
+  { code:"ND", name:"Strict Devotee",
+    gulGroup:"Dual", fisherGroup:"Mixed", gulDich:"Terminating · Terminating", shared:"Task-Focus axis",
+    fti: "Builder/Director: Serotonin+Testosterone. Conventional methodical precision backed by decisive authority. Nardi EEG: even posterior distribution transitioning to frontal executive control: careful systematic work that escalates to forceful enforcement when standards are violated. PAEI: Administrator-Producer (AP): systematic efficiency combined with results capacity. DiSC CD profile: high standards with willingness to confront non-compliance. Serotonin leads (methodical, conventional, cautious) but testosterone provides enforcement power. Fisher's data shows this combination favors quality control, regulatory enforcement, and institutional maintenance. Where DN leads aggressively and then systematizes, ND systematizes first and then enforces. The 'quality inspector' who has the authority to shut things down when standards aren't met.",
+    soc: "Normalizing-Dominant: Fi+Ti strengthened, with Fe+Te as secondary. A Dual subtype (terminating): like DN, both N and D are Terminal, producing an almost completely work-oriented person. Varlawend: 'With a thorough eye for quality and a strong commitment to a stable system, willing to confront and rebuke disorder and laxity on their territory.' The Normalizer's systematic precision is primary, but the Dominant's forcefulness emerges when standards are violated. Group role: Conscience-Motivator → Coordinator-Engine. Less aggressive than DN but potentially more stubborn: they enforce through meticulous procedure rather than brute authority."
+  },
+  { code:"NC", name:"Experimenting Systematist",
+    gulGroup:"Revision", fisherGroup:"Reactive", gulDich:"Ignoring · Ignoring", shared:"Opposing",
+    fti: "Builder/Explorer: Serotonin+Dopamine. The mirror of CN: conventional stability meets novelty-seeking curiosity, but here serotonin leads. Nardi EEG: even posterior distribution transitioning to starburst creative pattern: methodical foundation periodically refreshed by exploratory bursts. PAEI: Administrator-Entrepreneur (AE): systematic process management that periodically ventures into innovation. DiSC Ci profile: analytical precision with occasional creative enthusiasm. Serotonin provides the stable operating base; dopamine provides periodic creative injections that prevent stagnation. Fisher notes this blend produces systematic innovators who experiment within constraints: they don't throw out the existing system, they improve it incrementally through controlled experimentation. The pharmaceutical researcher, the R&D process engineer.",
+    soc: "Normalizing-Creative: Fi+Ti strengthened, with Se+Ne as secondary. A Revision subtype (ignorative): N and C oppose on both dichotomies, creating maximum internal contradiction. Varlawend: 'Preferring well-ordered methods and seeking an ever more perfect system, freely testing new options and incorporating only what improves the system.' Like CN, both components are Ignorative. Reactive metabolism (Gulenko's sequence): fourth position in the adaptive chain, carefully expanding the framework. Group role: Conscience-Contactor → Coordinator-Ideator. Where CN explores boldly then documents carefully, NC documents carefully then explores cautiously. The methodical step-by-step approach is primary, periodically refreshed by creative bursts."
+  },
+  { code:"NH", name:"Finetuning Stabilizer",
+    gulGroup:"Order", fisherGroup:"Proactive", gulDich:"Distancing · Distancing", shared:"Reserved axis",
+    fti: "Builder/Negotiator: Serotonin+Estrogen. The most stable and gentle blend: conventional methodical precision meets empathic contextual sensitivity. Nardi EEG: even posterior distribution transitioning to diamond cross-hemispheric network: careful specialization enriched by social-feedback awareness. PAEI: Administrator-Integrator (AI): systematic efficiency combined with long-term social cohesion. DiSC CS profile: cautious, detail-oriented, and diplomatic. Both hormones favor reserved, careful processing: serotonin stabilizes while estrogen softens. Fisher associates this blend with teachers, nurses, institutional caretakers, and any role requiring patient precision combined with interpersonal sensitivity. The perfectionist who remembers that systems serve people. Lowest-energy of the order subtypes: specialized for calm, information-intensive work.",
+    soc: "Normalizing-Harmonizing: Fi+Ti strengthened, with Si+Ni as secondary. An Order subtype (distancing): both N and H share the Reserved/Distancing axis. Varlawend: 'Steadily working out specialized tasks and problems to finality, then sensitively adapting rules in context to make systems accommodating.' Both components conserve energy: N conserves it linearly, H flexibly. Proactive metabolism (Gulenko's sequence): third position in the civilizing chain, bringing solutions to finest perfection. Group role: Conscience-Decorator → Coordinator-Expert. The most common low-energy double subtype. They specialize in calm, sedentary work requiring careful information processing. Naturally harmonious components."
+  },
+  { code:"HD", name:"Firm-Willed Soother",
+    gulGroup:"Revision", fisherGroup:"Proactive", gulDich:"Connecting · Connecting", shared:"Opposing",
+    fti: "Negotiator/Director: Estrogen+Testosterone. Maximum internal contrast mirroring DH: empathic holistic thinking meets analytical decisiveness, but here estrogen leads. Nardi EEG: diamond cross-hemispheric network transitioning to frontal executive control: relational sensitivity that escalates to decisive action under pressure. PAEI: Integrator-Producer (IP): long-term social cohesion combined with short-term results capacity. DiSC SD profile: patient and supportive but capable of taking decisive action when needed. Estrogen's web-thinking provides the primary relational awareness; testosterone kicks in when firm intervention is required. Fisher notes this combination produces the therapist who can also be the surgeon: invisible empathic management from a low-energy position that escalates to firm action when stakes demand it. The gentle hand with iron underneath.",
+    soc: "Harmonizing-Dominant: Si+Ni strengthened, with Fe+Te as secondary. A Revision subtype (connecting): H and D oppose on both dichotomies, creating maximum internal contradiction. Varlawend: 'Gently aware of sensitivities and seeking peace, but acting timely and firmly to influence pressure points of close people to ensure gentler eventualities.' Both H and D are Connective: they read and respond to the environment. Proactive metabolism (Gulenko's sequence): fourth position in the civilizing chain, smooth invisible management. Group role: Decorator-Motivator → Expert-Engine. The empathic foundation is genuine, but the decisive capability emerges under pressure: the quiet person who suddenly takes charge in a crisis."
+  },
+  { code:"HC", name:"Diverse Includer",
+    gulGroup:"Dual", fisherGroup:"Mixed", gulDich:"Initiating · Initiating", shared:"People-Focus axis",
+    fti: "Negotiator/Explorer: Estrogen+Dopamine. Empathic relational depth meets adventurous curiosity, but here estrogen leads. Nardi EEG: diamond cross-hemispheric network transitioning to starburst creative pattern: compassionate presence that opens into playful exploration. PAEI: Integrator-Entrepreneur (IE): long-term social cohesion refreshed by visionary innovation. DiSC Si profile: supportive, warm, flexible with genuine interest in new ideas. Estrogen provides the primary empathic and relational foundation; dopamine adds exploratory curiosity and openness to novelty. Fisher associates this blend with inclusive leaders, diversity advocates, and anyone who harmonizes disparate groups while remaining open to new approaches. The polar opposite of DN: where DN closes ranks and enforces, HC opens boundaries and includes.",
+    soc: "Harmonizing-Creative: Si+Ni strengthened, with Se+Ne as secondary. A Dual subtype (initiating): like CH, both H and C are Initial, producing an almost completely play-oriented person. Varlawend: 'Seeing the harmony in disparate things and keen to remove any strife, open to agreeable new experiences and ideas to expand this delicate sensibility.' Where CH explores and finds peace, HC seeks peace and discovers novelty along the way. Group role: Decorator-Contactor → Expert-Ideator. The most inclusive of all subtypes: combines empathic sensitivity with creative openness to create spaces where everyone feels welcome and new ideas are encouraged."
+  },
+  { code:"HN", name:"Expert Consultant",
+    gulGroup:"Order", fisherGroup:"Reactive", gulDich:"Distancing · Distancing", shared:"Reserved axis",
+    fti: "Negotiator/Builder: Estrogen+Serotonin. The most reserved and reflective blend: empathic relational depth meets conventional stability. Nardi EEG: diamond cross-hemispheric network transitioning to even posterior distribution: intuitive social awareness grounded by careful methodical processing. PAEI: Integrator-Administrator (IA): long-term cohesion combined with systematic process efficiency. DiSC SC profile: supportive, patient, methodical, and precise. Both hormones favor reserved energy conservation: estrogen provides intuitive wisdom, serotonin provides stable structure. Fisher associates this blend with sage advisors, experienced mentors, and counselors who draw on deep practical wisdom. More adaptive flexibility than NH (where serotonin leads), because estrogen's holistic perception allows contextual adjustment that pure serotonin-thinking cannot.",
+    soc: "Harmonizing-Normalizing: Si+Ni strengthened, with Fi+Ti as secondary. An Order subtype (distancing): like NH, both H and N share the Reserved/Distancing axis. Varlawend: 'Able to give sage advice to smooth over difficulties as they arise, collecting firm principles close to their experience as a consistent stable core.' Reactive metabolism (Gulenko's sequence): third position in the adaptive chain, adaptively collecting information while maintaining shape. Group role: Decorator-Conscience → Expert-Coordinator. Where NH perfects systems, HN perfects counsel. The experienced mentor who has seen it all before and can guide others through complexity with patience and wisdom."
+  }
+];
+
+// Subtype Relations data
+const RELATIONS = [
+  { name: "Identical", color: "#8a90a4",
+    pairs: "D–D, C–C, N–N, H–H",
+    desc: "Same subtype to same subtype. Complete understanding of behavioral style, motivations, and stress responses. Easy rapport but risk of competition for the same group role. Identical subtypes will immediately recognize each other's energy patterns. Two Dominants compete for leadership; two Creatives feed off each other's ideas but neither finishes anything; two Normalizers create efficient but uninspired systems; two Harmonizers create warmth but lack direction."
+  },
+  { name: "Order", color: "#5a95d4",
+    pairs: "D ↔ C, N ↔ H",
+    desc: "Share the Energy axis (both Outgoing or both Reserved) but differ on Processing orientation (Task-Focus vs. People-Focus). D and C are both Outgoing/Contacting: they understand each other's high-energy approach but process information differently (D analytically, C holistically). N and H are both Reserved/Distancing: they share low-energy conservation but differ in analytical vs. relational orientation. Order relations provide easy energy-level compatibility with stimulating difference in cognitive style. Good collaborative pairs for projects requiring diverse perspectives within a compatible energy frame."
+  },
+  { name: "Duality", color: "#5aaa6e",
+    pairs: "D ↔ N, C ↔ H",
+    desc: "Opposite on the Energy axis (Outgoing↔Reserved) but sharing the Processing orientation (both Task-Focused or both People-Focused). The most complementary subtype relation. D and N are both Task-Focused/Terminal: D gives energy linearly, N conserves it linearly. They complete each other's work cycle. C and H are both People-Focused/Initial: C generates ideas flexibly, H receives and harmonizes them. Duality provides the stability of shared orientation with the dynamism of contrasting energy levels. The 'Adjust' pairs in the revision grid: they adapt to each other naturally."
+  },
+  { name: "Revision", color: "#c97a4a",
+    pairs: "D ↔ H, C ↔ N",
+    desc: "Opposite on <em>both</em> axes simultaneously: maximum structural opposition. D (Outgoing+Task-Focus) vs. H (Reserved+People-Focus): the decisive commander clashes with the empathic peacekeeper. C (Outgoing+People-Focus) vs. N (Reserved+Task-Focus): the chaotic innovator clashes with the methodical rule-follower. These pairs occupy diagonal corners of the 2×2, sharing no axis. Communication is difficult because neither behavioral energy style nor processing orientation overlap. However, revision pairs have the most to learn from each other: each holds what the other lacks entirely."
+  }
+];
+
+// ─── RENDER 12 TYPES ───
+let currentFw = "soc";
+const colors = {D:"#c46060",C:"#5aaa6e",N:"#c4aa50",H:"#6088c0"};
+const groupColors = {Order:"#5a95d4",Revision:"#c97a4a",Dual:"#5aaa6e"};
+const fisherColors = {Proactive:"#5cbfa0",Reactive:"#c97a4a",Mixed:"#c8b844"};
+
+// Fisher (FTI) type names per DCNH letter
+const fisherLetter = {D:"Director",C:"Explorer",N:"Builder",H:"Negotiator"};
+// Fisher neurochemical substrate per DCNH letter
+const hormoneLetter = {D:"Testosterone",C:"Dopamine",N:"Serotonin",H:"Estrogen"};
+
+function renderTwelve() {
+  const container = document.getElementById("twelve-types");
+  container.innerHTML = "";
+  SUBTYPES.forEach(s => {
+    const pc = colors[s.code[0]];
+    const sc = colors[s.code[1]];
+    const text = currentFw === "fti" ? s.fti : s.soc;
+    const fwLabel = currentFw === "fti" ? "FTI / Empirical" : "Socionics / SHS";
+    // Display name switches per framework
+    const socName = s.name;
+    const ftiName = `${fisherLetter[s.code[0]]}-${fisherLetter[s.code[1]]}`;
+    const displayName = currentFw === "fti" ? ftiName : socName;
+    // Sublabel: Gulenko shows "Polarity · Relation"; Fisher shows "Hormone1 · Hormone2".
+    // The trailing "Shared: X axis" stays unchanged across both modes.
+    const polarity = s.gulDich.split(" · ")[0];
+    const socSub = `${polarity}`;
+    const ftiSub = `${hormoneLetter[s.code[0]]} · ${hormoneLetter[s.code[1]]}`;
+    const subLeft = currentFw === "fti" ? ftiSub : socSub;
+    const gc = groupColors[s.gulGroup];
+    const fc = fisherColors[s.fisherGroup];
+    const div = document.createElement("div");
+    div.className = "denom-card";
+    div.style.borderLeftColor = pc;
+    div.style.cursor = "pointer";
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="display:flex;gap:2px;align-items:end;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:${pc}20;border:2px solid ${pc};font-size:14px;font-weight:800;color:${pc};">${s.code[0]}</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:${sc}15;border:1.5px solid ${sc}80;font-size:11px;font-weight:700;color:${sc};margin-left:-6px;margin-top:6px;">${s.code[1]}</span>
+        </div>
+        <div style="flex:1;">
+          <h4 style="color:${pc};margin:0;font-size:15px;"><span style="color:${pc};">${s.code}</span>: ${displayName}</h4>
+          <div style="font-size:10px;color:var(--text-d);margin-top:2px;">${subLeft} · (${s.shared})</div>
+        </div>
+        <span class="badge" style="background:${gc}18;color:${gc};border:1px solid ${gc}40;font-size:10px;${currentFw==='fti'?'display:none;':''}">${s.gulGroup}</span>
+        <span style="color:var(--text-d);font-size:16px;" class="expand-arrow">▸</span>
+      </div>
+      <div class="type-body" style="display:none;font-size:13px;color:var(--text-m);line-height:1.75;margin-top:10px;">
+        <div style="font-size:10px;color:${currentFw==='fti'?'var(--accent)':'#7aaa9a'};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:6px;">${fwLabel}</div>
+        ${text}
+      </div>
+    `;
+    div.addEventListener("click", () => {
+      const body = div.querySelector(".type-body");
+      const arrow = div.querySelector(".expand-arrow");
+      if (body.style.display === "none") {
+        body.style.display = "block";
+        arrow.textContent = "▾";
+      } else {
+        body.style.display = "none";
+        arrow.textContent = "▸";
+      }
+    });
+    container.appendChild(div);
+  });
+}
+
+// ─── RENDER RELATIONS ───
+function renderRelations() {
+  const grid = document.getElementById("relations-grid");
+  RELATIONS.forEach(r => {
+    grid.innerHTML += `
+      <div class="comp-card" style="border-left-color:${r.color};">
+        <h4 style="color:${r.color};">${r.name}</h4>
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">${r.pairs}</div>
+        <div style="font-size:12px;color:var(--text-m);line-height:1.7;">${r.desc}</div>
+      </div>`;
+  });
+}
+
+// Framework tab switching
+document.querySelectorAll("#fw-controls .ctrl-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelectorAll("#fw-controls .ctrl-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFw = btn.dataset.fw;
+    renderTwelve();
+  });
+});
+
+renderTwelve();
+renderRelations();
+</script>
+
+
+</body></html>

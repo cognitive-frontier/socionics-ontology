@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Circumplex of the Socion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Familjen+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    background: linear-gradient(145deg, #0d0d14 0%, #141420 50%, #0d0d18 100%);
+    font-family: 'Familjen Grotesk', 'DM Sans', system-ui, sans-serif;
+    padding: 8px 16px 20px; overflow-x: hidden;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: #14b8a6;
+    letter-spacing: 1.5px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  h1.title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 4px;
+    text-align: center;
+    background: linear-gradient(135deg, #e8e4df, #9ca3af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+  p.subtitle {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(13px, 2vw, 16px);
+    color: rgba(232,228,223,0.55);
+    margin-bottom: 6px;
+    text-align: center;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .diagram-wrap {
+    width: 100%;
+    max-width: min(920px, calc(100vh - 300px));
+    position: relative;
+  }
+  .diagram-wrap svg { overflow: visible; display: block; width: 100%; height: auto; }
+  #tooltip {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(20,20,32,0.92); backdrop-filter: blur(12px);
+    border: 1px solid rgba(232,228,223,0.12); border-radius: 10px;
+    padding: 10px 18px; display: flex; gap: 20px; align-items: center;
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.18s ease;
+    max-width: 95vw;
+  }
+  #tooltip.visible { opacity: 1; }
+  #tooltip .tt-types { color: #e8e4df; font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; letter-spacing: 1px; }
+  #tooltip .tt-sign { color: rgba(232,228,223,0.6); font-size: 13.5px; font-weight: 500; font-family: 'Familjen Grotesk', sans-serif; }
+  .legend {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 6px 20px;
+    justify-content: center;
+    align-items: center;
+  }
+  .legend .cell {
+    color: rgba(232,228,223,0.55);
+    font-size: 15px;
+    font-family: 'Fira Code', monospace;
+    white-space: nowrap;
+  }
+  .legend .cell.left { justify-self: end; }
+  .legend .cell.right { justify-self: start; }
+  .legend .cell b {
+    color: rgba(232,228,223,0.85);
+    font-weight: 400;
+    font-size: 17px;
+    margin-right: 4px;
+  }
+  .legend .dot {
+    color: rgba(232,228,223,0.3);
+    font-size: 15px;
+    justify-self: center;
+  }
+  .attribution {
+    color: rgba(232,228,223,0.18); font-size: 10px; margin-top: 6px;
+    letter-spacing: 1px; font-family: 'Familjen Grotesk', sans-serif;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: #14b8a6;
+    letter-spacing: 1.5px;
+    margin-top: 14px;
+    text-align: center;
+  }
+  .hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    padding: 4px 11px;
+    background: rgba(20, 184, 166, 0.06);
+    border: 1px solid rgba(20, 184, 166, 0.22);
+    border-radius: 999px;
+    color: rgba(94, 234, 212, 0.85);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .hint::before {
+    content: "";
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(94, 234, 212, 0.9);
+    box-shadow: 0 0 8px rgba(94, 234, 212, 0.6);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.25); }
+  }
+  .dcnh-key {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 16px;
+    border-top: 1px solid rgba(232,228,223,0.06);
+    border-bottom: 1px solid rgba(232,228,223,0.06);
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .dcnh-key .dcnh-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: rgba(232,228,223,0.5);
+  }
+  .dcnh-key .dcnh-item b {
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Familjen Grotesk', sans-serif;
+    letter-spacing: 0.5px;
+  }
+  .dcnh-key .dcnh-item.d b { color: #e04545; }
+  .dcnh-key .dcnh-item.c b { color: #65b5e8; }
+  .dcnh-key .dcnh-item.n b { color: #e0b838; }
+  .dcnh-key .dcnh-item.h b { color: #72b84e; }
+  .dcnh-key .sep {
+    color: rgba(232,228,223,0.15);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="title">Circumplex of the Socion</h1>
+<p class="subtitle">A Cross-Theoretical Synthesis of Personality Structure</p>
+<span class="hint">Hover any segment to explore</span>
+
+<div class="diagram-wrap">
+  <svg id="diagram" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="tooltip">
+    <span class="tt-types"></span>
+    <span class="tt-sign"></span>
+  </div>
+</div>
+
+<div class="dcnh-key">
+  <span class="dcnh-item d"><b>D</b> Dominant</span>
+  <span class="sep">/</span>
+  <span class="dcnh-item c"><b>C</b> Creative</span>
+  <span class="sep">/</span>
+  <span class="dcnh-item n"><b>N</b> Normalizing</span>
+  <span class="sep">/</span>
+  <span class="dcnh-item h"><b>H</b> Harmonizing</span>
+</div>
+
+<div class="legend">
+  <span class="cell left"><b>?</b> Separation (Asking)</span>
+  <span class="dot">·</span>
+  <span class="cell right"><b>%</b> Individualism (Democratic)</span>
+  <span class="cell left"><b>!</b> Acceptance (Declaring)</span>
+  <span class="dot">·</span>
+  <span class="cell right"><b>#</b> Collectivism (Aristocratic)</span>
+</div>
+<div class="eyebrow">Socionics · Big Five Metatraits (CPM) · Interpersonal Circumplex (IPC)</div>
+<p class="attribution">Based on Romanov (2018) · Socion Value Ring of R-Dual Pairs</p>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("diagram");
+  const tooltip = document.getElementById("tooltip");
+  const ttTypes = tooltip.querySelector(".tt-types");
+  const ttSign  = tooltip.querySelector(".tt-sign");
+
+  const CX = 450, CY = 450;
+  const R_CENTER = 56, R_DCNH = 108, R_SYM_INNER = 132, R_SYMBOL = 156;
+  const R_TYPE_INNER = 168, R_TYPE_OUTER = 302, R_SIGN_OUTER = 342, R_LABEL = 395;
+
+  function p2c(r, deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
+  }
+  function arc(ri, ro, a0, a1) {
+    const os = p2c(ro, a0), oe = p2c(ro, a1), is_ = p2c(ri, a0), ie = p2c(ri, a1);
+    const la = (a1 - a0) > 180 ? 1 : 0;
+    return `M${os.x},${os.y}A${ro},${ro} 0 ${la} 1 ${oe.x},${oe.y}L${ie.x},${ie.y}A${ri},${ri} 0 ${la} 0 ${is_.x},${is_.y}Z`;
+  }
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "textContent") e.textContent = v;
+      else if (k === "style" && typeof v === "object") Object.assign(e.style, v);
+      else e.setAttribute(k, v);
+    }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function cm(c, pct, base) { return `color-mix(in srgb, ${c} ${pct}%, ${base})`; }
+
+  /* ================================================================
+     DATA
+  ================================================================ */
+  const SLICES = [
+    { sa:315, c:"#c43030", hc:"#e04545", types:["LIE","EIE"], sign:"\u2212Si", sm:"Vulnerable Si" },
+    { sa:0,   c:"#a83561", hc:"#c44b7d", types:["SLE","SEE"], sign:"+Se",      sm:"Leading Se" },
+    { sa:45,  c:"#2a47a8", hc:"#3d5ec5", types:["ILI","IEI"], sign:"+Ni",      sm:"Leading Ni" },
+    { sa:90,  c:"#4a9fd4", hc:"#65b5e8", types:["ILE","IEE"], sign:"+Ne",      sm:"Leading Ne" },
+    { sa:135, c:"#1a7a3a", hc:"#2a9e50", types:["SEI","SLI"], sign:"+Si",      sm:"Leading Si" },
+    { sa:180, c:"#5a9e3a", hc:"#72b84e", types:["EII","LII"], sign:"\u2212Se", sm:"Vulnerable Se" },
+    { sa:225, c:"#c9a020", hc:"#e0b838", types:["ESE","LSE"], sign:"\u2212Ni", sm:"Vulnerable Ni" },
+    { sa:270, c:"#d4831e", hc:"#e89938", types:["ESI","LSI"], sign:"\u2212Ne", sm:"Vulnerable Ne" },
+  ];
+
+  const DCNH = [{l:"D",a:0},{l:"C",a:90},{l:"H",a:180},{l:"N",a:270}];
+
+  // DCNH quadrant → contained types (North=D, East=C, South=H, West=N)
+  // Each quadrant spans 90° centered on its cardinal direction
+  const DCNH_TYPES = {
+    "D": new Set(["LIE","EIE","SLE","SEE"]), // North quadrant (315°→45°)
+    "C": new Set(["ILI","IEI","ILE","IEE"]), // East quadrant (45°→135°)
+    "H": new Set(["SEI","SLI","EII","LII"]), // South quadrant (135°→225°)
+    "N": new Set(["ESE","LSE","ESI","LSI"]), // West quadrant (225°→315°)
+  };
+
+  const DCNH_NAME = {
+    "D": "Dominant",
+    "C": "Creative",
+    "H": "Harmonizing",
+    "N": "Normalizing",
+  };
+
+  // Angular range per DCNH quadrant (for quadrant arc highlight)
+  const DCNH_RANGE = {
+    "D": { s: 315, e: 405 },
+    "C": { s: 45,  e: 135 },
+    "H": { s: 135, e: 225 },
+    "N": { s: 225, e: 315 },
+  };
+
+  const SRI = [
+    { sym:"%", s:0,   e:90,  col:"#6a2868", name:"Democratic" },
+    { sym:"!", s:90,  e:180, col:"#2a4a8a", name:"Declaratim" },
+    { sym:"%", s:180, e:270, col:"#2a6a3a", name:"Democratic" },
+    { sym:"!", s:270, e:360, col:"#9a7a20", name:"Declaratim" },
+  ];
+  const SRO = [
+    { sym:"#", s:315, e:45,  col:"#a83828", name:"Aristocratic" },
+    { sym:"?", s:45,  e:135, col:"#3a3090", name:"Questim" },
+    { sym:"#", s:135, e:225, col:"#1a6a4a", name:"Aristocratic" },
+    { sym:"?", s:225, e:315, col:"#6a8a28", name:"Questim" },
+  ];
+
+  const POLES = [
+    { a:0,   main:"AGENCY",     sub:"Extraversion + Decisiveness",  src:"IPC" },
+    { a:90,  main:"PLASTICITY", sub:"Spontaneity (P) + Intuition (N)", src:"CPM" },
+    { a:180, main:"COMMUNION",  sub:"Introversion + Judiciousness",  src:"IPC" },
+    { a:270, main:"STABILITY",  sub:"Control (J) + Sensing (S)",     src:"CPM" },
+  ];
+
+  const QBG = [
+    { s:315, e:405, f:"rgba(200,60,40,0.08)" },
+    { s:45,  e:135, f:"rgba(100,50,160,0.08)" },
+    { s:135, e:225, f:"rgba(40,120,180,0.08)" },
+    { s:225, e:315, f:"rgba(80,160,50,0.08)" },
+  ];
+
+  // Reinin dichotomy type memberships
+  const DICH = {
+    "%": new Set(["ILE","LII","ESE","SEI","SEE","ESI","LIE","ILI"]),
+    "#": new Set(["SLE","LSI","EIE","IEI","LSE","SLI","IEE","EII"]),
+    "?": new Set(["ILE","LII","EIE","IEI","SEE","ESI","LSE","SLI"]),
+    "!": new Set(["ESE","SEI","SLE","LSI","LIE","ILI","IEE","EII"]),
+  };
+  const DICH_NAME = { "%":"Individualism (Democratic)", "#":"Collectivism (Aristocratic)", "?":"Separation (Asking)", "!":"Acceptance (Declaring)" };
+
+  /* ================================================================
+     RENDER
+  ================================================================ */
+  let mode = null; // null | "slice" | "dich"
+
+  // Defs
+  const defs = el("defs", {}, svg);
+  const rg = el("radialGradient", { id:"cg", cx:"50%", cy:"50%", r:"50%" }, defs);
+  el("stop", { offset:"0%", "stop-color":"rgba(255,255,255,0.06)" }, rg);
+  el("stop", { offset:"100%", "stop-color":"rgba(255,255,255,0)" }, rg);
+
+  // Quadrant bg
+  QBG.forEach(q => el("path", { d:arc(R_CENTER, R_SIGN_OUTER+30, q.s, q.e), fill:q.f }, svg));
+
+  // Ref circles
+  [R_SIGN_OUTER, R_TYPE_OUTER, R_TYPE_INNER].forEach((r,i) =>
+    el("circle", { cx:CX, cy:CY, r, fill:"none", stroke:`rgba(232,228,223,${i?0.06:0.08})`, "stroke-width":"0.5" }, svg));
+
+  // ── Symbol rings (interactive) ──
+  const symPaths = {};  // sym → [pathEls]
+
+  function drawSymRing(ring, ri, ro) {
+    ring.forEach(s => {
+      const en = s.e < s.s ? s.e + 360 : s.e;
+      const baseFill = cm(s.col, 22, "#1a1a22");
+      const hoverFill = cm(s.col, 50, "#1a1a22");
+      const p = el("path", {
+        d: arc(ri, ro, s.s, en), fill: baseFill,
+        stroke: "#1a1a22", "stroke-width": "0.8",
+        style: { cursor:"pointer", transition:"fill 0.18s, opacity 0.18s" }
+      }, svg);
+      p._baseFill = baseFill;
+      p._hoverFill = hoverFill;
+      p._sym = s.sym;
+      if (!symPaths[s.sym]) symPaths[s.sym] = [];
+      symPaths[s.sym].push(p);
+      p.addEventListener("mouseenter", () => activateDich(s.sym));
+      p.addEventListener("mouseleave", resetAll);
+    });
+  }
+  drawSymRing(SRI, R_DCNH, R_SYM_INNER);
+  drawSymRing(SRO, R_SYM_INNER, R_SYMBOL);
+  el("circle", { cx:CX, cy:CY, r:R_SYM_INNER, fill:"none", stroke:"rgba(26,26,34,0.9)", "stroke-width":"0.8" }, svg);
+
+  // ── Type slices ──
+  // Each sub-slice stored individually for per-type dimming
+  const subPaths = []; // 16 entries: { el, type, sliceIdx, subIdx }
+  const sliceData = []; // per-slice: { g, p1, p2, sp, hl, slice }
+
+  SLICES.forEach((s, i) => {
+    const ea = s.sa + 45, ma = s.sa + 22.5;
+    const g = el("g", { style:{ cursor:"pointer", transition:"opacity 0.18s" } }, svg);
+
+    const p1 = el("path", {
+      d: arc(R_TYPE_INNER, R_TYPE_OUTER, s.sa, s.sa+22.5),
+      fill: s.c, stroke:"#1a1a22", "stroke-width":"1.2",
+      style: { transition:"fill 0.15s, opacity 0.18s" }
+    }, g);
+
+    const p2 = el("path", {
+      d: arc(R_TYPE_INNER, R_TYPE_OUTER, s.sa+22.5, ea),
+      fill: cm(s.c,75,"black"), stroke:"#1a1a22", "stroke-width":"1.2",
+      style: { transition:"fill 0.15s, opacity 0.18s" }
+    }, g);
+
+    const sp = el("path", {
+      d: arc(R_TYPE_OUTER, R_SIGN_OUTER, s.sa, ea),
+      fill: cm(s.c,30,"#1a1a22"), stroke:"#1a1a22", "stroke-width":"1",
+      style: { transition:"opacity 0.18s" }
+    }, g);
+
+    const hl = el("path", {
+      d: arc(R_TYPE_INNER-2, R_SIGN_OUTER+2, s.sa-0.5, ea+0.5),
+      fill:"none", stroke:"#ffffffcc", "stroke-width":"2", opacity:"0",
+      style: { filter:"drop-shadow(0 0 6px rgba(255,255,255,0.3))", transition:"opacity 0.18s" }
+    }, g);
+
+    subPaths.push({ el:p1, type:s.types[0], si:i, sub:0 });
+    subPaths.push({ el:p2, type:s.types[1], si:i, sub:1 });
+
+    const sd = { g, p1, p2, sp, hl, s };
+    sliceData.push(sd);
+
+    // Labels
+    const rm = (R_TYPE_INNER+R_TYPE_OUTER)/2;
+    s.types.forEach((t, ti) => {
+      const ang = s.sa + (ti ? 33.75 : 11.25);
+      const pos = p2c(rm, ang);
+      let ta = ang; if (ta > 90 && ta < 270) ta += 180;
+      el("text", {
+        x:pos.x, y:pos.y, "text-anchor":"middle", "dominant-baseline":"central",
+        fill:"#e8e4df", "font-size":"15", "font-weight":"700",
+        "font-family":"'Fira Code','JetBrains Mono','SF Mono',monospace",
+        "letter-spacing":"0.5", transform:`rotate(${ta},${pos.x},${pos.y})`,
+        textContent:t, style:{ pointerEvents:"none" }
+      }, g);
+    });
+    const sPos = p2c((R_TYPE_OUTER+R_SIGN_OUTER)/2, ma);
+    el("text", {
+      x:sPos.x, y:sPos.y, "text-anchor":"middle", "dominant-baseline":"central",
+      fill:"rgba(232,228,223,0.88)", "font-size":"13.5", "font-weight":"700",
+      "font-family":"'Fira Code','JetBrains Mono',monospace", "letter-spacing":"0.3",
+      textContent:s.sign, style:{ pointerEvents:"none" }
+    }, g);
+
+    // Slice hover
+    g.addEventListener("mouseenter", () => {
+      if (mode === "dich" || mode === "dcnh") return;
+      mode = "slice";
+      sliceData.forEach((d, j) => d.g.style.opacity = j === i ? "1" : "0.5");
+      p1.setAttribute("fill", s.hc);
+      p2.setAttribute("fill", s.c);
+      hl.setAttribute("opacity", "1");
+      ttTypes.textContent = `${s.types[0]} \u00b7 ${s.types[1]}`;
+      ttSign.textContent = `${s.sign} = ${s.sm}`;
+      tooltip.classList.add("visible");
+    });
+    g.addEventListener("mouseleave", () => {
+      if (mode !== "slice") return;
+      mode = null;
+      sliceData.forEach(d => d.g.style.opacity = "1");
+      p1.setAttribute("fill", s.c);
+      p2.setAttribute("fill", cm(s.c,75,"black"));
+      hl.setAttribute("opacity", "0");
+      tooltip.classList.remove("visible");
+    });
+  });
+
+  // ── Dichotomy hover ──
+  function activateDich(sym) {
+    mode = "dich";
+    const match = DICH[sym];
+
+    sliceData.forEach((d, i) => {
+      const s = d.s;
+      const m0 = match.has(s.types[0]);
+      const m1 = match.has(s.types[1]);
+
+      if (m0 && m1) {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = "1";
+        d.p2.style.opacity = "1";
+        d.sp.style.opacity = "1";
+      } else if (!m0 && !m1) {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = "0.15";
+        d.p2.style.opacity = "0.15";
+        d.sp.style.opacity = "0.15";
+      } else {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = m0 ? "1" : "0.15";
+        d.p2.style.opacity = m1 ? "1" : "0.15";
+        d.sp.style.opacity = "0.6";
+      }
+    });
+
+    Object.entries(symPaths).forEach(([s, paths]) => {
+      paths.forEach(p => {
+        p.setAttribute("fill", s === sym ? p._hoverFill : p._baseFill);
+        p.style.opacity = s === sym ? "1" : "0.25";
+      });
+    });
+
+    ttTypes.textContent = DICH_NAME[sym];
+    ttSign.textContent = [...match].join(" \u00b7 ");
+    tooltip.classList.add("visible");
+  }
+
+  // ── DCNH quadrant hover ──
+  function activateDCNH(letter) {
+    mode = "dcnh";
+    const match = DCNH_TYPES[letter];
+
+    sliceData.forEach((d) => {
+      const s = d.s;
+      const m0 = match.has(s.types[0]);
+      const m1 = match.has(s.types[1]);
+
+      if (m0 && m1) {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = "1";
+        d.p2.style.opacity = "1";
+        d.sp.style.opacity = "1";
+      } else if (!m0 && !m1) {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = "0.15";
+        d.p2.style.opacity = "0.15";
+        d.sp.style.opacity = "0.15";
+      } else {
+        d.g.style.opacity = "1";
+        d.p1.style.opacity = m0 ? "1" : "0.15";
+        d.p2.style.opacity = m1 ? "1" : "0.15";
+        d.sp.style.opacity = "0.6";
+      }
+    });
+
+    // Dim symbol rings (they're orthogonal to DCNH, so no matching subset)
+    Object.values(symPaths).forEach(arr =>
+      arr.forEach(p => { p.setAttribute("fill", p._baseFill); p.style.opacity = "0.25"; })
+    );
+
+    // Highlight the hovered DCNH quadrant, dim the others
+    Object.entries(dcnhPaths).forEach(([l, p]) => {
+      if (l === letter) {
+        p.setAttribute("fill", p._hoverFill);
+        p.style.opacity = "1";
+      } else {
+        p.setAttribute("fill", p._baseFill);
+        p.style.opacity = "0.3";
+      }
+    });
+
+    ttTypes.textContent = `${letter} = ${DCNH_NAME[letter]}`;
+    ttSign.textContent = [...match].join(" \u00b7 ");
+    tooltip.classList.add("visible");
+  }
+
+  function resetAll() {
+    if (mode !== "dich" && mode !== "dcnh") return;
+    mode = null;
+    sliceData.forEach(d => {
+      d.g.style.opacity = "1";
+      d.p1.style.opacity = "1";
+      d.p2.style.opacity = "1";
+      d.sp.style.opacity = "1";
+    });
+    Object.values(symPaths).forEach(arr =>
+      arr.forEach(p => { p.setAttribute("fill", p._baseFill); p.style.opacity = "1"; })
+    );
+    Object.values(dcnhPaths).forEach(p => {
+      p.setAttribute("fill", p._baseFill);
+      p.style.opacity = "1";
+    });
+    tooltip.classList.remove("visible");
+  }
+
+  // ── Symbol text labels (non-interactive) ──
+  function symLabels(ring, ri, ro) {
+    ring.forEach(s => {
+      const en = s.e < s.s ? s.e+360 : s.e;
+      const pos = p2c((ri+ro)/2, (s.s+en)/2);
+      el("text", {
+        x:pos.x, y:pos.y, "text-anchor":"middle", "dominant-baseline":"central",
+        fill:"rgba(232,228,223,0.78)", "font-size":"16", "font-weight":"800",
+        "font-family":"'Fira Code',monospace", textContent:s.sym,
+        style:{ pointerEvents:"none" }
+      }, svg);
+    });
+  }
+  symLabels(SRI, R_DCNH, R_SYM_INNER);
+  symLabels(SRO, R_SYM_INNER, R_SYMBOL);
+
+  // ── DCNH ── (interactive quadrant wedges)
+  // Build DCNH quadrant wedges as individual hoverable paths
+  // Each wedge spans a 90° arc centered on its cardinal direction
+  const dcnhPaths = {}; // letter → path element
+  const dcnhColors = { "D": "#c43030", "C": "#4a9fd4", "H": "#5a9e3a", "N": "#c9a020" };
+
+  DCNH.forEach(d => {
+    // Wedge centered on d.a, spanning ±45°
+    const s = d.a - 45;
+    const e = d.a + 45;
+    const baseFill = "#1a1a22";
+    const hoverFill = cm(dcnhColors[d.l], 35, "#1a1a22");
+    const p = el("path", {
+      d: arc(R_CENTER, R_DCNH, s, e),
+      fill: baseFill,
+      stroke: "rgba(232,228,223,0.12)",
+      "stroke-width": "0.8",
+      style: { cursor: "pointer", transition: "fill 0.18s, opacity 0.18s" }
+    }, svg);
+    p._baseFill = baseFill;
+    p._hoverFill = hoverFill;
+    p._letter = d.l;
+    dcnhPaths[d.l] = p;
+    p.addEventListener("mouseenter", () => activateDCNH(d.l));
+    p.addEventListener("mouseleave", resetAll);
+  });
+  // Outer boundary of DCNH ring
+  el("circle", { cx:CX, cy:CY, r:R_DCNH, fill:"none", stroke:"rgba(232,228,223,0.12)", "stroke-width":"1", style:{ pointerEvents:"none" } }, svg);
+
+  DCNH.forEach(d => {
+    const pos = p2c((R_CENTER+R_DCNH)/2, d.a);
+    el("text", { x:pos.x, y:pos.y-4, "text-anchor":"middle", "dominant-baseline":"central",
+      fill:"#e8e4df", "font-size":"18", "font-weight":"700",
+      "font-family":"'Familjen Grotesk',sans-serif", "letter-spacing":"1", textContent:d.l,
+      style:{ pointerEvents:"none" } }, svg);
+  });
+
+  // ── Center ──
+  el("circle", { cx:CX, cy:CY, r:R_CENTER, fill:"#0f0f18", stroke:"rgba(232,228,223,0.18)", "stroke-width":"1.5", style:{ pointerEvents:"none" } }, svg);
+  el("circle", { cx:CX, cy:CY, r:R_CENTER, fill:"url(#cg)", style:{ pointerEvents:"none" } }, svg);
+  el("text", { x:CX, y:CY-3, "text-anchor":"middle", "dominant-baseline":"central",
+    fill:"rgba(232,228,223,0.82)", "font-size":"12.5", "font-weight":"800",
+    "font-family":"'Familjen Grotesk',sans-serif", "letter-spacing":"3", textContent:"SOCION",
+    style:{ pointerEvents:"none" } }, svg);
+
+  // ── Poles ──
+  POLES.forEach(pole => {
+    const v = pole.a===0||pole.a===180, top=pole.a===0, rt=pole.a===90;
+    let ax, ay, anc;
+    if (v) { ax=CX; ay=top?CY-R_LABEL-34:CY+R_LABEL+4; anc="middle"; }
+    else { ay=CY; ax=rt?CX+R_LABEL+15:CX-R_LABEL; anc=rt?"start":"end"; }
+    const mainEl = el("text",{x:ax,y:ay,"text-anchor":anc,"dominant-baseline":"central",fill:"#e8e4df",
+      "font-size":"16","font-weight":"700","font-family":"'Familjen Grotesk',sans-serif",
+      "letter-spacing":"4",textContent:pole.main},svg);
+
+    // For horizontal poles, compute the true center of the main label
+    // and render both sub-labels centered there (using text-anchor=middle).
+    // For vertical poles, ax already equals the center.
+    let centerX = ax;
+    if (!v) {
+      const bb = mainEl.getBBox();
+      centerX = bb.x + bb.width / 2;
+    }
+    // PLASTICITY (east pole) sub-labels nudged right so they don't crowd the ring
+    const subXOffset = (pole.a === 90) ? -1 : 0;
+
+    el("text",{x:centerX + subXOffset,y:ay+20,"text-anchor":"middle","dominant-baseline":"central",
+      fill:"rgba(232,228,223,0.48)","font-size":"11.5","font-weight":"400",
+      "font-family":"'Familjen Grotesk',sans-serif","letter-spacing":"0.8",textContent:pole.sub},svg);
+    if(pole.src) {
+      el("text",{x:centerX + subXOffset,y:ay+36,"text-anchor":"middle","dominant-baseline":"central",
+        fill:"rgba(232,228,223,0.24)","font-size":"10","font-weight":"500",
+        "font-family":"'Fira Code',monospace","letter-spacing":"1.5",textContent:pole.src},svg);
+    }
+  });
+
+  // ── Ticks ──
+  [0,45,90,135,180,225,270,315].forEach(a => {
+    const m=a%90===0, i=p2c(R_SIGN_OUTER+4,a), o=p2c(R_SIGN_OUTER+(m?16:8),a);
+    el("line",{x1:i.x,y1:i.y,x2:o.x,y2:o.y,stroke:`rgba(232,228,223,${m?0.3:0.12})`,"stroke-width":m?"1.5":"1"},svg);
+  });
+
+})();
+</script>
+</body>
+</html>

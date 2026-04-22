@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Complete Socionics Ontology: Foundations & Dichotomies</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #10111a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ═══════════════ DESIGN TOKENS ═══════════════ */
+const C = {
+  bg:"#08090e",card:"#10111a",border:"#252538",
+  text:"#e4e4e7",textMuted:"#9ca3af",textDim:"#6b7280",
+  // Tab accent colors
+  origins:"#f59e0b", modelA:"#06b6d4", modelG:"#10b981", empirical:"#8b5cf6", dich:"#ec4899",
+  // Semantic
+  jung:"#f59e0b", kepinski:"#06b6d4", augusta:"#ec4899", gulenko:"#10b981", talanov:"#8b5cf6",
+  reinin:"#06b6d4", tencer:"#ef4444", conjunct:"#14b8a6",
+  teal:"#14b8a6", rose:"#ec4899", lime:"#84cc16", amber:"#d97706",
+  // IME colors
+  Ne:"#10b981",Ni:"#d97706",Se:"#7c3aed",Si:"#c084fc",
+  Te:"#0ea5e9",Ti:"#22d3ee",Fe:"#f43f5e",Fi:"#fb923c",
+};
+
+/* ═══════════════ SHARED COMPONENTS ═══════════════ */
+const Divider=({label,color})=>(
+  <div style={{display:"flex",alignItems:"center",gap:16,margin:"48px 0 28px"}}>
+    <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,${color}40)`}}/>
+    <span style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:13,letterSpacing:4,textTransform:"uppercase",color,fontWeight:600}}>{label}</span>
+    <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,${color}40)`}}/>
+  </div>
+);
+
+const Card=({children,color=C.border,style={}})=>(
+  <div style={{background:C.card,border:`1px solid ${color}30`,borderRadius:14,padding:24,marginBottom:8,...style}}>{children}</div>
+);
+
+const Tag=({label,color})=>(
+  <span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:10,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",background:`${color}15`,color,border:`1px solid ${color}30`,fontFamily:"'JetBrains Mono',monospace"}}>{label}</span>
+);
+
+const Prose=({children,style={}})=>(
+  <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7,margin:"0 0 16px",...style}}>{children}</p>
+);
+
+const SmallProse=({children,style={}})=>(
+  <p style={{fontSize:12,color:C.textDim,lineHeight:1.65,margin:0,...style}}>{children}</p>
+);
+
+const SectionTitle=({children,color=C.text})=>(
+  <h3 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:18,color,margin:"0 0 14px"}}>{children}</h3>
+);
+
+const Mono=({children,color=C.textDim})=>(
+  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color}}>{children}</span>
+);
+
+const TabBtn=({label,active,onClick,color})=>(
+  <button onClick={onClick} style={{padding:"8px 18px",borderRadius:8,border:active?`1px solid ${color}50`:`1px solid ${C.border}`,background:active?`${color}15`:"transparent",color:active?color:C.textMuted,fontSize:12,fontWeight:600,cursor:"pointer",letterSpacing:0.5,fontFamily:"'JetBrains Mono',monospace",transition:"all 0.15s"}}>{label}</button>
+);
+
+const LensCard=({lens,color,content})=>(
+  <div style={{background:`${color}06`,border:`1px solid ${color}18`,borderRadius:10,padding:"16px 14px"}}>
+    <div style={{fontSize:11,fontWeight:700,color,letterSpacing:2,textTransform:"uppercase",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>{lens}</div>
+    <SmallProse style={{color:C.textMuted}}>{content}</SmallProse>
+  </div>
+);
+
+const FigureCard=({name,dates,color,role,contributions})=>(
+  <div style={{background:`${color}06`,border:`1px solid ${color}18`,borderRadius:10,padding:16,flex:"1 1 200px",minWidth:200}}>
+    <div style={{fontSize:14,fontWeight:700,color,marginBottom:2,fontFamily:"'Playfair Display',Georgia,serif"}}>{name}</div>
+    <div style={{fontSize:10,color:C.textDim,marginBottom:8,fontFamily:"'JetBrains Mono',monospace"}}>{dates}</div>
+    <div style={{fontSize:11,color:C.textMuted,fontStyle:"italic",marginBottom:8}}>{role}</div>
+    {contributions.map((c,i)=>(
+      <div key={i} style={{fontSize:12,color:C.text,lineHeight:1.6,marginBottom:4,paddingLeft:12,position:"relative"}}>
+        <span style={{position:"absolute",left:0,top:6,width:4,height:4,borderRadius:"50%",background:color,opacity:0.7}}/>
+        {c}
+      </div>
+    ))}
+  </div>
+);
+
+const FuncBlock=({label,positions,color,desc})=>(
+  <div style={{background:`${color}08`,border:`1px solid ${color}20`,borderRadius:10,padding:14,flex:"1 1 200px",minWidth:200}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+      <span style={{fontSize:13,fontWeight:700,color,fontFamily:"'JetBrains Mono',monospace"}}>{label}</span>
+      <span style={{fontSize:10,color:C.textDim}}>{positions}</span>
+    </div>
+    <SmallProse style={{color:C.textMuted}}>{desc}</SmallProse>
+  </div>
+);
+
+const DichRow=({code,name,pole1,pole2,color,tier,desc})=>(
+  <tr>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontFamily:"'JetBrains Mono',monospace",fontSize:10,color,fontWeight:700,whiteSpace:"nowrap"}}>{code}</td>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:12,color:C.text,fontWeight:600}}>{name}</td>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textMuted}}>{pole1}</td>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textMuted}}>{pole2}</td>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:10,color:C.textDim}}>{tier}</td>
+    <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textDim,minWidth:160}}>{desc}</td>
+  </tr>
+);
+
+/* ═══════════════ MAIN APP ═══════════════ */
+function FoundationsReport(){
+  const [activeSection,setActiveSection]=useState("origins");
+
+  const sections=[
+    {id:"origins",label:"Origins",color:C.origins},
+    {id:"modelA",label:"Model A",color:C.modelA},
+    {id:"modelG",label:"Model G",color:C.modelG},
+    {id:"empirical",label:"Empirical Approaches",color:C.empirical},
+    {id:"dich",label:"Dichotomies",color:C.dich},
+  ];
+
+  return(
+    <div style={{fontFamily:"'Inter',-apple-system,sans-serif",background:C.bg,color:C.text,minHeight:"100vh",padding:"0 0 60px"}}>
+      {/* ═══ HERO ═══ */}
+      <div style={{background:`radial-gradient(ellipse at 20% 0%,${C.origins}06,transparent 55%),radial-gradient(ellipse at 80% 0%,${C.empirical}05,transparent 55%),radial-gradient(ellipse at 50% 100%,${C.dich}04,transparent 50%)`,padding:"48px 28px 36px",borderBottom:`1px solid ${C.border}`,textAlign:"center"}}>
+        <Mono color={C.teal}>The Complete Socionics Ontology</Mono>
+        <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"clamp(26px,5vw,40px)",fontWeight:700,lineHeight:1.15,margin:"14px 0",background:`linear-gradient(135deg,${C.text},${C.textMuted})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
+          Foundations & Dichotomies
+        </h1>
+        <Prose style={{maxWidth:700,margin:"0 auto 18px",textAlign:"center"}}>
+          From Platonic archetypes through Jungian functions and Kepinski's information metabolism to Augusta's Model A, Gulenko's energy model, Talanov's statistical validation, and the modern 15+ dichotomy framework, this is the complete intellectual lineage and structural architecture of Socionics.
+        </Prose>
+        <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
+          {["Philosophical Roots","Information Metabolism","Energy Metabolism","Statistical Validation","15+ Dichotomies"].map((l,i)=>(
+            <Tag key={i} label={l} color={[C.origins,C.modelA,C.modelG,C.empirical,C.dich][i]}/>
+          ))}
+        </div>
+      </div>
+
+      <div style={{maxWidth:960,margin:"0 auto",padding:"0 20px"}}>
+        {/* ═══ NAV ═══ */}
+        <div style={{display:"flex",gap:6,marginTop:28,flexWrap:"wrap",justifyContent:"center"}}>
+          {sections.map(s=>(
+            <TabBtn key={s.id} label={s.label} active={activeSection===s.id} onClick={()=>setActiveSection(s.id)} color={s.color}/>
+          ))}
+        </div>
+
+{/* ════════════════════════════════════════════════════════════════
+    TAB 1: ORIGINS
+════════════════════════════════════════════════════════════════ */}
+{activeSection==="origins"&&<>
+  <Divider label="Why Personality Theory Matters" color={C.origins}/>
+  <Card color={C.origins}>
+    <SectionTitle color={C.origins}>A Science Without a Center</SectionTitle>
+    <Prose>
+      Psychology, alone among the major sciences, lacks a unified hub theory. Physics has general relativity and quantum mechanics. Biology has evolution and molecular genetics. Chemistry has the periodic table. But personality psychology remains a landscape of competing frameworks that barely communicate: the Big Five, HEXACO, temperament models, psychoanalytic object relations, attachment theory, and behavioral genetics each describe a slice of personality without integrating into a coherent whole. The field produces thousands of papers per year measuring isolated trait-outcome correlations, yet the fundamental question, <em>what is a person?</em>, remains unanswered.
+    </Prose>
+    <Prose>
+      This is not merely an academic problem. There is a growing and consequential disconnect between the science of personality and the lives personality science is supposed to illuminate. Depression, loneliness, and anxiety have reached epidemic proportions across developed nations. Suicide rates have climbed steadily for two decades. Divorce rates hover near 50%. Job dissatisfaction is widespread even among the highly educated. People report feeling misunderstood by their partners, misplaced in their careers, and unable to articulate what makes them fundamentally different from the people around them. The tools that personality science offers, an array of percentile scores on continuous dimensions, are statistically rigorous but experientially hollow: knowing you are "72nd percentile on Conscientiousness" does not help you understand <em>why</em> you keep clashing with your partner, or why a career that looks perfect on paper leaves you drained.
+    </Prose>
+    <Prose style={{marginBottom:0}}>
+      This is the gap that discrete typological frameworks, from Jung through Socionics, exist to fill: not as replacements for dimensional models, but as <em>structural maps</em> that organize continuous variation into meaningful, actionable patterns. The enduring public appetite for personality types, despite decades of academic criticism, is not naivety. It reflects a real need for models that match lived experience: people <em>do</em> encounter qualitatively different cognitive styles, not just quantitatively different trait levels. Understanding why these frameworks work, and how to put them on firmer empirical footing, is the project that runs from Plato to the present.
+    </Prose>
+  </Card>
+
+  <Divider label="The Philosophical Pipeline" color={C.origins}/>
+  <Card>
+    <SectionTitle color={C.origins}>From Platonic Forms to Information Metabolism</SectionTitle>
+    <Prose>
+      Socionics did not emerge from a vacuum. It sits at the terminus of a 2,400-year intellectual pipeline that runs from ancient Greek typological thinking, through German Idealist philosophy, into 20th-century analytical psychology and Polish cybernetic psychiatry. Each link in this chain contributed a specific structural insight that became load-bearing in the final theory.
+    </Prose>
+    <Prose>
+      The pipeline can be summarized as a sequence of increasingly precise answers to one question: <em>Why are people systematically different in how they perceive and process the world?</em> Plato said eternal archetypes. Kant said the structure of cognition itself. Schopenhauer said the irrational Will underlying rational representation. Jung said eight modes of consciousness. Kepinski said information metabolism. Augusta said all of the above, formalized as a mathematical model.
+    </Prose>
+  </Card>
+
+  {/* Timeline SVG */}
+  <Card color={C.origins}>
+    <SectionTitle>Intellectual Lineage</SectionTitle>
+    <div style={{overflowX:"auto",padding:"10px 0"}}>
+      <svg viewBox="0 0 980 120" width="100%" height="120" style={{minWidth:750}}>
+        {/* Timeline line */}
+        <line x1="40" y1="60" x2="940" y2="60" stroke={C.border} strokeWidth="2"/>
+        {[
+          {x:60,label:"Plato",year:"c.380 BC",color:"#eab308"},
+          {x:175,label:"Kant",year:"1764",color:"#10b981"},
+          {x:290,label:"Schopenhauer",year:"1818",color:"#8b5cf6"},
+          {x:405,label:"Jung",year:"1921",color:C.jung},
+          {x:510,label:"Kepinski",year:"1966",color:C.kepinski},
+          {x:625,label:"Augusta",year:"1978",color:C.augusta},
+          {x:730,label:"Reinin",year:"1984",color:C.reinin},
+          {x:835,label:"Gulenko",year:"1995",color:C.gulenko},
+          {x:940,label:"Talanov",year:"2016",color:C.talanov},
+        ].map((n,i)=>(
+          <g key={i}>
+            <circle cx={n.x} cy={60} r={6} fill={n.color} opacity={0.9}/>
+            <text x={n.x} y={42} textAnchor="middle" fontSize="10" fontWeight="700" fill={n.color} fontFamily="'JetBrains Mono',monospace">{n.label}</text>
+            <text x={n.x} y={82} textAnchor="middle" fontSize="8" fill={C.textDim} fontFamily="'JetBrains Mono',monospace">{n.year}</text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  </Card>
+
+  <Divider label="Key Figures" color={C.origins}/>
+  <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
+    <FigureCard name="Plato" dates="c. 428-348 BC" color={"#eab308"} role="Archetypes and the tripartite soul"
+      contributions={["Theory of Forms: individual variation masks a finite set of ideal archetypes","Tripartite soul (reason, spirit, appetite) prefigures Freud's Ego/Superego/Id and Model A's block structure","Four character types (Iconic, Pistic, Noetic, Dianoetic) linked to Hippocratic humors"]}/>
+    <FigureCard name="Immanuel Kant" dates="1724-1804" color={"#10b981"} role="Phenomenology and the cognitive matrix"
+      contributions={["Organized temperaments into a 2x2 matrix (feeling vs. activity), establishing the combinatorial pattern all typologies inherit","Phenomena vs. noumena: the mind does not passively receive reality but actively structures it through cognitive faculties","Laid the epistemological groundwork that Schopenhauer would transform into the rational/irrational divide"]}/>
+    <FigureCard name="Arthur Schopenhauer" dates="1788-1860" color={"#8b5cf6"} role="Will, representation, and the irrational"
+      contributions={["Replaced Kant's unknowable noumenon with the Will, a blind irrational force underlying all phenomena","Directly prefigured Jung's classification: intellect (rational functions) serves the irrational Will (perceiving functions)","Identified grades of the Will's objectification with Platonic Ideas, connecting ancient archetypes to modern process philosophy","Jung acknowledged Schopenhauer explicitly in Psychological Types"]}/>
+  </div>
+  <div style={{display:"flex",flexWrap:"wrap",gap:12,marginTop:12}}>
+    <FigureCard name="Carl Gustav Jung" dates="1875-1961" color={C.jung} role="Eight cognitive functions and Psychological Types"
+      contributions={["Two attitudes: Extraversion (interest toward external objects) and Introversion (interest toward internal subject)","Four functions: Thinking + Feeling (rational/judging) and Sensation + Intuition (irrational/perceiving)","8 function-attitudes from crossing 4 functions x 2 attitudes, the direct basis for socionics' 8 information elements","Dominant function governs consciousness, its opposite characterizes the unconscious, auxiliary provides depth"]}/>
+    <FigureCard name="Sigmund Freud" dates="1856-1939" color={"#ef4444"} role="Structural model of the psyche"
+      contributions={["Ego, Superego, and Id (The Ego and the Id, 1923) gave Augusta the naming convention for Model A's four blocks","Concept of unconscious projection and defense mechanisms parallels how subdued functions operate outside awareness","The layered psyche with agencies in tension, some conscious and some unconscious, directly shapes functional asymmetry"]}/>
+    <FigureCard name="Antoni Kepinski" dates="1918-1972" color={C.kepinski} role="Information Metabolism and the cybernetic psyche"
+      contributions={["Bridged subjective psychology and objective thermodynamics: the mind obeys the same laws as physical processes","Cell analogy: consciousness = nucleus, perceptual boundary = membrane, information centers = organelles, energy centers = mitochondria","Two-phase metabolism: involuntary reception (environment to attitude) and voluntary response (decision to action)","Each organism develops a specific structure of information metabolism, accentuating only certain signals, the direct origin of TIM"]}/>
+  </div>
+
+  <Divider label="The Cybernetic Convergence" color={C.kepinski}/>
+  <Card color={C.kepinski}>
+    <SectionTitle color={C.kepinski}>Kepinski and Friston: Two Independent Routes to the Same Insight</SectionTitle>
+    <Prose>
+      Kepinski's information metabolism reads, at first glance, like an evocative mid-century metaphor: the psyche as a cell, consciousness as nucleus, perception as membrane, attitudes as the metabolic flux of signals across a boundary. What is striking is that three decades later, the British neuroscientist <strong style={{color:C.text}}>Karl Friston</strong> arrived at a mathematically rigorous version of the same picture from an entirely different direction. Friston's <em>Free Energy Principle</em> (FEP, formalized 2005) models any self-organizing system, including the brain, as a Bayesian inference machine that minimizes <em>variational free energy</em>, an information-theoretic upper bound on surprise. The two frameworks share no lineage, no citations, and no common research community, yet they converge on a single thesis: <strong style={{color:C.text}}>a mind is a bounded thermodynamic process that resists dissipation by metabolizing information about its environment</strong>. Both descend, knowingly or not, from Schrodinger's 1944 <em>What is Life?</em> and its proposal that organisms maintain order by feeding on negentropy.
+    </Prose>
+
+    {/* Parallel mapping visual */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:0,alignItems:"stretch",margin:"18px 0 6px",border:`1px solid ${C.kepinski}25`,borderRadius:10,overflow:"hidden"}}>
+      <div style={{padding:"10px 14px",background:`${C.kepinski}10`,borderBottom:`1px solid ${C.kepinski}20`}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:C.kepinski,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase"}}>Kepinski (1970s)</div>
+        <div style={{fontSize:10,color:C.textDim,marginTop:2}}>Information Metabolism</div>
+      </div>
+      <div style={{background:`${C.kepinski}10`,borderBottom:`1px solid ${C.kepinski}20`}}/>
+      <div style={{padding:"10px 14px",background:`${C.kepinski}10`,borderBottom:`1px solid ${C.kepinski}20`}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:C.kepinski,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase"}}>Friston (2000s)</div>
+        <div style={{fontSize:10,color:C.textDim,marginTop:2}}>Free Energy Principle</div>
+      </div>
+
+      {[
+        ["Energy-information boundary (cell membrane analogy) separating subject from environment","Markov blanket: a statistical boundary partitioning internal from external states"],
+        ["Negentropy maintenance: organism preserves internal order by metabolizing environmental signals","Free energy minimization: system bounds surprise to remain in expected (low-entropy) states"],
+        ["Two-phase metabolism: involuntary attitude (signal evaluated) then voluntary response (action chosen)","Perception (passive inference updates the generative model) then active inference (policy minimizes expected free energy)"],
+        ["Hierarchical value filtering (biological then emotional then sociocultural) selects which signals matter","Precision-weighted hierarchical generative models, with higher levels modulating which prediction errors propagate"],
+        ["Pathology = disrupted metabolism, attitude imbalance, boundary rupture, entropy rise","Pathology = maladaptive inference, miscalibrated precision, persistent high free energy"],
+      ].map(([k,f],i,arr)=>(
+        <React.Fragment key={i}>
+          <div style={{padding:"11px 14px",fontSize:11,color:C.textMuted,lineHeight:1.55,borderBottom:i<arr.length-1?`1px solid ${C.kepinski}15`:"none"}}>{k}</div>
+          <div style={{padding:"11px 6px",display:"flex",alignItems:"center",justifyContent:"center",borderBottom:i<arr.length-1?`1px solid ${C.kepinski}15`:"none",borderLeft:`1px solid ${C.kepinski}15`,borderRight:`1px solid ${C.kepinski}15`}}>
+            <span style={{color:C.kepinski,fontFamily:"'JetBrains Mono',monospace",fontSize:13,opacity:0.7}}>{'\u21D4'}</span>
+          </div>
+          <div style={{padding:"11px 14px",fontSize:11,color:C.textMuted,lineHeight:1.55,borderBottom:i<arr.length-1?`1px solid ${C.kepinski}15`:"none"}}>{f}</div>
+        </React.Fragment>
+      ))}
+    </div>
+
+    <Prose style={{marginTop:18}}>
+      The resemblance is not derivative but <em>convergent</em>: two thinkers, working in different decades, languages, and disciplines, independently rediscovered the organism as an <em>autopoietic negentropic agent</em>. Kepinski reached it through clinical phenomenology and a poetic biological analogy; Friston reached it through variational Bayes and statistical physics. The implication is that something deep about minds was waiting to be formalized, and Kepinski's framework is best understood not as a quaint metaphor but as a <em>pre-mathematical anticipation</em> of what predictive processing would later make rigorous.
+    </Prose>
+    <Prose style={{marginBottom:0}}>
+      This matters for Socionics because it retroactively upgrades the theory's foundation. Kepinski gave Augusta the conceptual scaffold; Friston gave that scaffold mathematical legs. The bridge has now been built explicitly: <strong style={{color:C.text}}>Safron and DeYoung (2021)</strong> formally integrated Cybernetic Big Five Theory with the Free Energy Principle, recasting personality traits as <em>stable parameters of a person's generative model</em> — prior precision, prediction-error sensitivity, preferred policies. Different types become different attractor states in the space of possible generative models, each a configuration that minimizes free energy for a particular organism-environment coupling. What Kepinski intuited about specific structures of information metabolism, and what Augusta operationalized as 16 functional configurations, can now be read as a typology of <em>generative-model parameter regimes</em>. The basin landscape introduced in the next section is not a borrowed metaphor; it falls directly out of treating the psyche as a free-energy-minimizing system.
+    </Prose>
+  </Card>
+
+  <Divider label="The Synthesis" color={C.augusta}/>
+  <Card color={C.augusta}>
+    <SectionTitle color={C.augusta}>Ausra Augustinaviciute (1927-2005)</SectionTitle>
+    <Prose>
+      Lithuanian economist and sociologist Ausra Augustinaviciute founded Socionics through a series of works between 1968 and 1985. Her central realization, reportedly occurring in 1968 while studying Jung's Psychological Types, was that Jung's cognitive functions must correspond to <em>aspects of objective reality</em> accessible to all types, not just the one or two functions Jung emphasized. This led her to expand Jung's model from a dominant-auxiliary focus to a full <em>8-function model</em> where every type possesses all eight information elements, each occupying a distinct functional position with specific properties.
+    </Prose>
+    <Prose>
+      By synthesizing Jung's cognitive functions with Kepinski's information metabolism framework, Augusta transformed a descriptive typology into a <em>structural theory of how the psyche processes information</em>. She defined 8 information elements (renamed from Jung's function-attitudes), placed them into an 8-position model (Model A), developed a complete theory of 16 intertype relations based on how two functional configurations interact, and introduced the concept of the Socion, the complete set of 16 types forming a self-regulating social organism.
+    </Prose>
+    <Prose style={{marginBottom:0,fontStyle:"italic",color:C.augusta}}>
+      "We have not thought up anything ourselves, but have just extended and elaborated on the provisions of C.G. Jung, though in the process some of them have changed beyond recognition."
+    </Prose>
+  </Card>
+
+  <Divider label="The Case for Structured Typology" color={C.teal}/>
+  <Card>
+    <SectionTitle color={C.teal}>Why Discrete Types in a Continuous World?</SectionTitle>
+    <Prose>
+      The most common criticism of typological systems is that personality is continuous, not categorical, and that forcing people into discrete boxes distorts reality. This criticism is valid against naive type theories that treat categories as absolute. But it misses a deeper possibility: that personality space has <em>topological structure</em>, with natural basins of attraction that make certain configurations far more common and stable than others, even if the underlying dimensions are continuous.
+    </Prose>
+    {/* Ball-in-basin SVG */}
+    <div style={{overflowX:"auto",padding:"8px 0"}}>
+      <svg viewBox="0 0 680 240" width="100%" style={{minWidth:520,maxWidth:720,display:"block",margin:"0 auto"}}>
+        <defs>
+          <radialGradient id="ballGrad" cx="40%" cy="35%"><stop offset="0%" stopColor="#fbbf24"/><stop offset="100%" stopColor="#b45309"/></radialGradient>
+          <radialGradient id="ballGrad2" cx="40%" cy="35%"><stop offset="0%" stopColor="#f472b6"/><stop offset="100%" stopColor="#9d174d"/></radialGradient>
+        </defs>
+        <rect width="680" height="240" fill="#10111a" rx="10"/>
+        {/* Landscape curve - valleys at x=140(A), x=360(B), x=555(C), ridges at x=245, x=465 */}
+        <path d="M15,78 C55,78 95,142 140,142 C185,142 215,52 245,52 C275,52 320,168 360,168 C400,168 430,52 465,52 C495,52 525,130 555,130 C590,130 640,76 665,76" fill="none" stroke="#6b7280" strokeWidth="2.5"/>
+        {/* Fill below curve */}
+        <path d="M15,78 C55,78 95,142 140,142 C185,142 215,52 245,52 C275,52 320,168 360,168 C400,168 430,52 465,52 C495,52 525,130 555,130 C590,130 640,76 665,76 L665,230 L15,230 Z" fill="#252538" opacity="0.3"/>
+        {/* Basin floor glow highlights - centered on valley bottoms */}
+        <ellipse cx="140" cy="148" rx="50" ry="8" fill="#8b5cf6" opacity="0.15"/>
+        <ellipse cx="360" cy="174" rx="55" ry="9" fill="#06b6d4" opacity="0.2"/>
+        <ellipse cx="555" cy="136" rx="42" ry="7" fill="#10b981" opacity="0.12"/>
+        {/* Settled ball - snug in Basin B valley floor */}
+        <circle cx="360" cy="155" r="13" fill="url(#ballGrad)" opacity="0.95"/>
+        <ellipse cx="360" cy="170" rx="11" ry="3" fill="#000" opacity="0.25"/>
+        <text x="360" y="136" textAnchor="middle" fontSize="9" fill="#f59e0b" fontFamily="'JetBrains Mono',monospace" fontWeight="600">settled type</text>
+        {/* Unstable ball - perched on ridge between A and B */}
+        <circle cx="245" cy="40" r="10" fill="url(#ballGrad2)" opacity="0.8"/>
+        <ellipse cx="245" cy="52" rx="8" ry="2.5" fill="#000" opacity="0.2"/>
+        {/* Wobble arrows showing instability */}
+        <path d="M230,47 L218,58" stroke="#ec4899" strokeWidth="1.2" opacity="0.5" strokeDasharray="3,2"/>
+        <path d="M260,47 L272,58" stroke="#ec4899" strokeWidth="1.2" opacity="0.5" strokeDasharray="3,2"/>
+        <text x="245" y="26" textAnchor="middle" fontSize="8" fill="#ec4899" fontFamily="'JetBrains Mono',monospace" opacity="0.9">unstable</text>
+        {/* Basin labels - below the landscape */}
+        <text x="140" y="192" textAnchor="middle" fontSize="10" fill="#8b5cf6" fontFamily="'JetBrains Mono',monospace" fontWeight="600">Basin A</text>
+        <text x="140" y="205" textAnchor="middle" fontSize="8" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">shallow</text>
+        <text x="360" y="200" textAnchor="middle" fontSize="10" fill="#06b6d4" fontFamily="'JetBrains Mono',monospace" fontWeight="600">Basin B</text>
+        <text x="360" y="213" textAnchor="middle" fontSize="8" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">deepest</text>
+        <text x="555" y="186" textAnchor="middle" fontSize="10" fill="#10b981" fontFamily="'JetBrains Mono',monospace" fontWeight="600">Basin C</text>
+        <text x="555" y="199" textAnchor="middle" fontSize="8" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">moderate</text>
+        {/* Axis label */}
+        <text x="340" y="232" textAnchor="middle" fontSize="9" fill="#4b5563" fontFamily="'JetBrains Mono',monospace">{'\u2190'} personality dimension {'\u2192'}</text>
+      </svg>
+    </div>
+    <Prose>
+      Think of personality space as a landscape with hills and valleys. Each valley (basin of attraction) represents a type. A person is like a ball on this landscape: they naturally roll toward the nearest valley floor, where they settle into a stable pattern. Deep basins (strong types) hold the ball firmly, small perturbations return it to the center. Shallow basins (weak types) are more easily escaped, and the ball may migrate to a neighboring valley during major life transitions. A person perched on a ridge between two basins is in an unstable transitional state, liable to tip either way.
+    </Prose>
+    <Prose>
+      This is why millions of people recognize themselves in type descriptions that Big Five percentile scores leave cold. The percentile tells you <em>where</em> you are on a dimension, the type tells you <em>which basin you fell into</em>, and that basin carries a coherent package of cognitive habits, relational patterns, vocational affinities, and developmental challenges that co-occur precisely because they are attracted to the same region of personality space. Socionics' contribution is to map this basin structure with mathematical precision: the 16 types are not arbitrary labels but algebraically determined attractor states generated by the intersection of independent information-processing dimensions, each carrying a complete functional configuration (Model A), a set of intertype dynamics, and empirically measurable trait signatures.
+    </Prose>
+    <Prose style={{marginBottom:0}}>
+      This is what Socionics offers that no other personality framework currently provides in a single integrated system: a <em>unified hub theory</em> connecting cognitive architecture (functions), interpersonal dynamics (intertype relations), group structure (quadras, clubs), vocational orientation (clubs and subtypes), and developmental trajectory (function positions and DCNH subtypes), all derived from a small set of foundational axioms and empirically testable against dimensional trait data. The project is unfinished, the empirical foundation still being laid, but the structural blueprint is unlike anything else in personality science.
+    </Prose>
+  </Card>
+</>}
+
+{/* ════════════════════════════════════════════════════════════════
+    TAB 2: MODEL A
+════════════════════════════════════════════════════════════════ */}
+{activeSection==="modelA"&&<>
+  <Divider label="Information Metabolism" color={C.modelA}/>
+  <Card>
+    <SectionTitle color={C.modelA}>Kepinski's Framework Applied to Typology</SectionTitle>
+    <Prose>
+      Information metabolism, as formulated by Antoni Kepinski and adapted by Augusta, treats the human psyche as an open thermodynamic system that exchanges information with its environment. Just as biological cells metabolize nutrients through specialized organelles, the psyche metabolizes information through specialized cognitive functions. Each type has a unique <em>metabolic configuration</em>, processing some categories of information with advanced competence and others with minimal capacity.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>
+      <LensCard lens="Processing Phase (Involuntary)" color={C.modelA} content="The individual receives energy from the environment and converts it into information, metabolizes it and develops a basic attitude towards it. Depending on how strongly this information is prioritized, the unconscious attitude orients either 'towards' (valued) or 'away' (subdued) from the stimulus. This phase is automatic and pre-conscious."/>
+      <LensCard lens="Behavioral Phase (Voluntary)" color={C.teal} content="After the processing phase has metabolized the information, options of how to respond begin to develop. Once the individual has reached a decision, they respond back to the environment, converting information back into energy via physical action. This phase is deliberate and conscious, completing the metabolism cycle."/>
+      <LensCard lens="The Cell Analogy" color={C.origins} content="Kepinski modeled the psyche as a eukaryotic cell: consciousness as the nucleus (regulating cognition), the perceptual boundary as the cell membrane (mediating subject-object exchange), information centers as the endoplasmic reticulum (processing unconscious/conscious layers at close or far range), and energy centers as mitochondria (powering the two-phase metabolism cycle)."/>
+    </div>
+  </Card>
+
+  <Divider label="The Eight Information Elements" color={C.modelA}/>
+  <Card>
+    <SectionTitle>From Jung's Functions to Augusta's Elements</SectionTitle>
+    <Prose>
+      Augusta redefined Jung's 8 function-attitudes as 8 <em>information elements</em> (IEs), each representing a category of information about reality rather than a psychological attitude. The IEs are generated by crossing three information dichotomies: Rational/Irrational (symbol vs. referent), Abstract/Involved (detached vs. visceral), and Extraverted/Introverted (energizing vs. integrating). This yields exactly 8 elements, which form 4 complementary pairs along information axes.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:10}}>
+      {[
+        {ie:"Ne",label:"Extraverted Intuition",color:C.Ne,desc:"Possibilities, alternatives, potential, novelty. Expanding the range of perspectives considered."},
+        {ie:"Ni",label:"Introverted Intuition",color:C.Ni,desc:"Time, foresight, imagery, deep patterns. Narrowing focus to essential vision and meaning."},
+        {ie:"Se",label:"Extraverted Sensing",color:C.Se,desc:"Force, willpower, territory, impact. Actively controlling and reshaping the physical environment."},
+        {ie:"Si",label:"Introverted Sensing",color:C.Si,desc:"Comfort, harmony, aesthetics, health. Passively adapting to and appreciating physical surroundings."},
+        {ie:"Te",label:"Extraverted Logic",color:C.Te,desc:"Facts, efficiency, methods, productivity. Accumulating and applying practical procedural knowledge."},
+        {ie:"Ti",label:"Introverted Logic",color:C.Ti,desc:"Structure, systems, consistency, frameworks. Simplifying understanding into coherent logical models."},
+        {ie:"Fe",label:"Extraverted Ethics",color:C.Fe,desc:"Expression, atmosphere, morale, belonging. Expanding emotional connections and group ambiance."},
+        {ie:"Fi",label:"Introverted Ethics",color:C.Fi,desc:"Attitudes, loyalty, morality, personal bonds. Differentiating relationships by depth of individual connection."},
+      ].map((el,i)=>(
+        <div key={i} style={{background:`${el.color}08`,border:`1px solid ${el.color}20`,borderRadius:10,padding:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+            <div style={{width:24,height:24,borderRadius:5,background:`${el.color}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:el.color,fontFamily:"'JetBrains Mono',monospace"}}>{el.ie}</div>
+            <span style={{fontSize:11,fontWeight:600,color:el.color}}>{el.label}</span>
+          </div>
+          <SmallProse style={{color:C.textMuted}}>{el.desc}</SmallProse>
+        </div>
+      ))}
+    </div>
+  </Card>
+
+  <Divider label="Model A Structure" color={C.modelA}/>
+  <Card>
+    <SectionTitle color={C.modelA}>Eight Functions, Four Blocks, Seven Dichotomies</SectionTitle>
+    <Prose>
+      Model A arranges the 8 information elements into 8 uniquely defined functional positions. The placement is not arbitrary: 7 function dichotomies constrain the arrangement so that only 16 valid configurations (types) exist. Three placement rules are sufficient to generate the entire model: (1) if a Bold function is Extraverted, all Bold functions are Extraverted; (2) if a Mental function is Static, all Mental functions are Static; (3) if an Accepting function is Rational, all Accepting functions are Rational.
+    </Prose>
+    <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
+      <FuncBlock label="Ego Block" positions="[1-2] Base + Creative" color={C.modelA}
+        desc="Strong + Valued. What we are and want to be. The special talents we bring to the world, the behavior that feels most natural. The Ego is 'always on.'"/>
+      <FuncBlock label="Super-Ego Block" positions="[3-4] Role + Vulnerable" color={"#ef4444"}
+        desc="Weak + Subdued. What others want us to be, but we do not want to be. The Role strains to meet social expectations. The Vulnerable consistently rejects its information."/>
+      <FuncBlock label="Super-Id Block" positions="[5-6] Suggestive + Mobilizing" color={C.empirical}
+        desc="Weak + Valued. What we aspire to be, but cannot be without outside support. The Suggestive happily accepts help. The Mobilizing is a high-priority developmental edge."/>
+      <FuncBlock label="Id Block" positions="[7-8] Ignoring + Demonstrative" color={C.textDim}
+        desc="Strong + Subdued. What we can be, but choose not to be. The Ignoring restricts its scope. The Demonstrative operates passively in the background, competent but unrewarded."/>
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle>The Presence Cube: Beyond the 2x4 Grid</SectionTitle>
+    <Prose>
+      Classical socionics visualized Model A as a flat 2x4 grid emphasizing horizontal blocking. But the mathematical structure supports a richer geometry. By selecting the three most externally visible function dichotomies, Strong/Weak, Valued/Subdued, and Bold/Cautious (the "presence traits"), Model A can be arranged as a three-dimensional cube. This <em>Presence Cube</em> reveals two projections not visible in the flat grid:
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+      <div style={{background:`${C.origins}08`,border:`1px solid ${C.origins}20`,borderRadius:10,padding:14,textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.origins,marginBottom:4}}>Dimensionality</div>
+        <div style={{fontSize:10,color:C.textDim,marginBottom:6}}>Strong/Weak x Bold/Cautious</div>
+        <SmallProse style={{color:C.textMuted,textAlign:"left"}}>How accessible and easy to use each function is. 4D (Strong+Bold) is the most competent, 1D (Weak+Cautious) the least.</SmallProse>
+      </div>
+      <div style={{background:`${C.modelA}08`,border:`1px solid ${C.modelA}20`,borderRadius:10,padding:14,textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.modelA,marginBottom:4}}>Priority</div>
+        <div style={{fontSize:10,color:C.textDim,marginBottom:6}}>Valued/Subdued x Bold/Cautious</div>
+        <SmallProse style={{color:C.textMuted,textAlign:"left"}}>How much a type directly prefers that information. 4P (Valued+Bold) is highest priority, 1P (Subdued+Cautious) is trivial.</SmallProse>
+      </div>
+      <div style={{background:`${C.dich}08`,border:`1px solid ${C.dich}20`,borderRadius:10,padding:14,textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.dich,marginBottom:4}}>Level</div>
+        <div style={{fontSize:10,color:C.textDim,marginBottom:6}}>L = (D + P) / 2</div>
+        <SmallProse style={{color:C.textMuted,textAlign:"left"}}>How present a function is in the psyche overall. The Base is the only 4L function. The Vulnerable is the only 1L.</SmallProse>
+      </div>
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle>Intertype Relations</SectionTitle>
+    <Prose>
+      Augusta's most consequential application of Model A was deriving 16 distinct intertype relations from the structural interaction of two types' functional configurations. When two people interact, each person's information output is received by specific functions in the other's model. Duality (the theoretically optimal relation) pairs types whose Ego block fills the other's Super-Id, the area of greatest need. Conflict pairs types whose Ego block hits the other's Super-Ego, the area of greatest discomfort. The Benefit and Supervision rings create asymmetric dynamics where energy and information flow in one direction more than the other. These relations are not prescriptive descriptions of how two people will get along, but structural predictions about which information channels will be activated or stressed in interaction.
+    </Prose>
+  </Card>
+</>}
+
+{/* ════════════════════════════════════════════════════════════════
+    TAB 3: MODEL G
+════════════════════════════════════════════════════════════════ */}
+{activeSection==="modelG"&&<>
+  <Divider label="Humanitarian Socionics" color={C.modelG}/>
+  <Card>
+    <SectionTitle color={C.modelG}>Viktor Gulenko and the School of Humanitarian Socionics</SectionTitle>
+    <Prose>
+      Viktor Gulenko, operating from Kiev since founding the School of Humanitarian Socionics (SHS) in 1993, developed the most architecturally ambitious extension of classical socionics. His central argument: Augusta herself acknowledged that energy metabolism is "equivalent and complementary" to information metabolism, but never developed the energy side. Model G fills this gap.
+    </Prose>
+    <Prose>
+      Where classical socionics asks <em>"What information does this type process, and how?"</em>, Gulenko adds a second question: <em>"What energy does this type generate, exchange, and consume in social interaction?"</em> The two models are complementary lenses on the same psyche, just as biology studies both the informational (DNA) and energetic (ATP) aspects of cellular life.
+    </Prose>
+  </Card>
+
+  <Card>
+    <SectionTitle color={C.modelG}>Model G: Energy Metabolism (Horizontal Blocks)</SectionTitle>
+    <Prose>
+      Model G (proposed December 1995) restructures the 8 functions using a <em>far/close distance</em> framework instead of Model A's mental/vital rings. For extraverts, all extraverted functions operate at far distance (society, strangers, large groups) while introverted functions operate at close distance (intimates, small groups). For introverts, this reverses. The model connects functions through <em>benefit relationships</em> (energy transfer) rather than Model A's supervision relationships (information transfer).
+    </Prose>
+    <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
+      {[
+        {label:"Social Mission",pos:"1-2",color:C.modelG,desc:"The most powerful block. How the type serves its social function, the energy it projects into the world at large."},
+        {label:"Social Adaptation",pos:"3-4",color:C.origins,desc:"The survival block. How the type adapts to environmental demands and social pressures to maintain stability."},
+        {label:"Creative Self-Realization",pos:"5-6",color:C.empirical,desc:"Personal self-affirmation. Where the type develops its individuality and creative expression."},
+        {label:"Inflation",pos:"7-8",color:"#ef4444",desc:"The weakest block. Energy here 'inflates like a bubble' with increasing tension until it bursts. The point of greatest vulnerability."},
+      ].map((b,i)=>(
+        <FuncBlock key={i} label={b.label} positions={`[${b.pos}]`} color={b.color} desc={b.desc}/>
+      ))}
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle color={C.modelG}>Energy Levels: Maximum, Optimum, Minimum, Pessimum</SectionTitle>
+    <Prose>
+      Beyond the horizontal blocks, Model G introduces <em>vertical blocks</em> representing an energy hierarchy. These pair functions from different horizontal blocks based on their energetic activation level. Critically, energy level does not simply mirror Model A's dimensionality: some informationally strong functions (like Ignoring, 3D) sit at the lowest energy level, while some informationally weak ones (like Suggestive, 1D) sit at the second-highest.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12,marginBottom:16}}>
+      {[
+        {level:"Maximum",color:"#3b82f6",dim:"4D+3D",funcs:"Base [1] + Creative [2]",desc:"The Ego block. Sets the direction for energy use. The most powerful functions, operating with continuous understanding. Always active."},
+        {level:"Optimum",color:C.modelG,dim:"4D+1D",funcs:"Demonstrative [8] + Suggestive [5]",desc:"Optimizes across the full range, both extremes and in-between. Demo is informationally strong but energetically complements the informationally weak Suggestive."},
+        {level:"Minimum",color:C.origins,dim:"2D+1D",funcs:"Role [3] + Vulnerable [4]",desc:"The Super-Ego block. Adapts to situations only in binary extremes. Oriented poorly without social norms. Threshold of conscious competence."},
+        {level:"Pessimum",color:"#ef4444",dim:"2D+3D",funcs:"Mobilizing [6] + Ignoring [7]",desc:"Off/On with no gradient. Despite Ignoring's informational strength (3D), it receives minimal energetic investment. Least flexible energy deployment."},
+      ].map((l,i)=>(
+        <div key={i} style={{background:`${l.color}08`,border:`1px solid ${l.color}20`,borderRadius:10,padding:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+            <div style={{fontSize:13,fontWeight:700,color:l.color}}>{l.level}</div>
+            <span style={{fontSize:10,color:C.textDim,fontFamily:"'JetBrains Mono',monospace"}}>{l.dim}</span>
+          </div>
+          <div style={{fontSize:10,color:l.color,marginBottom:6,fontFamily:"'JetBrains Mono',monospace"}}>{l.funcs}</div>
+          <SmallProse style={{color:C.textMuted}}>{l.desc}</SmallProse>
+        </div>
+      ))}
+    </div>
+    {/* Energy x Dimensionality Chart */}
+    <div style={{overflowX:"auto",padding:"8px 0"}}>
+      <svg viewBox="0 0 660 420" width="100%" style={{minWidth:520,maxWidth:720,display:"block",margin:"0 auto"}}>
+        {/* Background */}
+        <rect x="0" y="0" width="660" height="420" fill="#10111a" rx="8"/>
+        {/* Chart area: left=140, right=620, top=50, bottom=360 */}
+        {/* Vertical grid lines at 1D=260, 2D=340, 3D=420, 4D=500 — but we use column centers at 200,300,400,500 */}
+        {/* Horizontal grid lines at Max=75, Opt=160, Min=245, Pes=330 */}
+        {[75,160,245,330].map(y=>(
+          <line key={`h${y}`} x1="155" y1={y} x2="600" y2={y} stroke="#252538" strokeWidth="1" strokeDasharray="4,4"/>
+        ))}
+        {[230,340,450,560].map(x=>(
+          <line key={`v${x}`} x1={x} y1="50" x2={x} y2="365" stroke="#252538" strokeWidth="1" strokeDasharray="4,4"/>
+        ))}
+        {/* Axes */}
+        <line x1="155" y1="365" x2="610" y2="365" stroke="#6b7280" strokeWidth="2"/>
+        <line x1="155" y1="365" x2="155" y2="40" stroke="#6b7280" strokeWidth="2"/>
+        {/* Axis labels */}
+        <text x="385" y="400" textAnchor="middle" fontSize="11" fill="#9ca3af" fontFamily="'JetBrains Mono',monospace" fontWeight="700">Dimension (Model A) {'\u2192'}</text>
+        <text x="28" y="205" textAnchor="middle" fontSize="11" fill="#9ca3af" fontFamily="'JetBrains Mono',monospace" fontWeight="700" transform="rotate(-90,28,205)">{'\u2191'} Energy (Model G)</text>
+        {/* Dimension column labels */}
+        {[{x:230,l:"1D"},{x:340,l:"2D"},{x:450,l:"3D"},{x:560,l:"4D"}].map(d=>(
+          <text key={d.l} x={d.x} y="382" textAnchor="middle" fontSize="10" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">{d.l}</text>
+        ))}
+        {/* Energy level labels — left of axis with clear gap */}
+        {[
+          {y:75,label:"Maximum",color:"#3b82f6"},
+          {y:160,label:"Optimum",color:"#10b981"},
+          {y:245,label:"Minimum",color:"#f59e0b"},
+          {y:330,label:"Pessimum",color:"#ef4444"},
+        ].map((e,i)=>(
+          <text key={i} x="148" y={e.y+4} textAnchor="end" fontSize="10" fill={e.color} fontFamily="'JetBrains Mono',monospace" fontWeight="600">{e.label}</text>
+        ))}
+        {/* Function boxes — each placed at (dimension_column, energy_row) */}
+        {/* Maximum row (y=75): Creative[2] at 3D, Base[1] at 4D */}
+        {/* Optimum row (y=160): Suggestive[5] at 1D, Demo[8] at 4D */}
+        {/* Minimum row (y=245): PoLR[4] at 1D, Role[3] at 2D */}
+        {/* Pessimum row (y=330): Mobilizing[6] at 2D, Ignoring[7] at 3D */}
+        {[
+          {x:450,y:75,label:"Creative [2]",color:"#3b82f6"},
+          {x:560,y:75,label:"Base [1]",color:"#3b82f6"},
+          {x:230,y:160,label:"Suggestive [5]",color:"#10b981"},
+          {x:560,y:160,label:"Demo [8]",color:"#10b981"},
+          {x:230,y:245,label:"PoLR [4]",color:"#f59e0b"},
+          {x:340,y:245,label:"Role [3]",color:"#f59e0b"},
+          {x:340,y:330,label:"Mobilizing [6]",color:"#ef4444"},
+          {x:450,y:330,label:"Ignoring [7]",color:"#ef4444"},
+        ].map((f,i)=>(
+          <g key={i}>
+            <rect x={f.x-52} y={f.y-14} width={104} height={28} rx={5} fill={`${f.color}15`} stroke={f.color} strokeWidth="1.5"/>
+            <text x={f.x} y={f.y+4} textAnchor="middle" fontSize="10" fill={f.color} fontFamily="'JetBrains Mono',monospace" fontWeight="600">{f.label}</text>
+          </g>
+        ))}
+        {/* Diagonal presence line */}
+        <line x1="210" y1="340" x2="580" y2="65" stroke="#8b5cf6" strokeWidth="1.5" strokeDasharray="6,3" opacity="0.4"/>
+        <text x="595" y="58" fontSize="8" fill="#8b5cf6" fontFamily="'JetBrains Mono',monospace" opacity="0.6">Presence</text>
+      </svg>
+    </div>
+    <SmallProse style={{textAlign:"center",marginTop:8}}>
+      Note how energy level and dimensionality are <em>dissociated</em>: Ignoring [7] is 3D (informationally strong) but sits at Pessimum, while Suggestive [5] is 1D (informationally weak) but sits at Optimum. This dissociation is Model G's central insight: energetic investment is not simply a function of informational competence.
+    </SmallProse>
+  </Card>
+
+  <Divider label="DCNH Subtypes" color={C.modelG}/>
+  <Card>
+    <SectionTitle color={C.modelG}>Why Same-Type People Behave So Differently</SectionTitle>
+    <Prose>
+      Gulenko's DCNH subtype system (formalized 2006) addresses one of classical socionics' most glaring problems: people of the same type often behave very differently. The system identifies four subtypes, each strengthening a different functional pair and mapping onto Gulenko's four temperament groups. Any type can have any subtype, yielding 64 unique type-subtype combinations (256 with the extended 8-subtype system).
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
+      {[
+        {code:"D",name:"Dominant",color:"#ef4444",temp:"EJ / Linear-Assertive",traits:"Contacting, terminating, connecting",desc:"Strengthens Te+Fe. Sustained directed drive, organized pursuit of external goals, decisive social leadership."},
+        {code:"C",name:"Creative",color:C.origins,temp:"EP / Flexible-Maneuvering",traits:"Contacting, initiating, ignoring",desc:"Strengthens Se+Ne. Explosive novelty-seeking, broad environmental scanning, spontaneous initiative."},
+        {code:"N",name:"Normalizing",color:C.modelA,temp:"IJ / Balanced-Stable",traits:"Distancing, terminating, ignoring",desc:"Strengthens Ti+Fi. Methodical persistence, deep principled analysis, systematic and structured approach."},
+        {code:"H",name:"Harmonizing",color:C.modelG,temp:"IP / Receptive-Adaptive",traits:"Distancing, initiating, connecting",desc:"Strengthens Si+Ni. Sensitive environmental attunement, responsive adaptation, diplomatic mediation."},
+      ].map((s,i)=>(
+        <div key={i} style={{background:`${s.color}08`,border:`1px solid ${s.color}20`,borderRadius:10,padding:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+            <div style={{width:28,height:28,borderRadius:6,background:`${s.color}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:s.color,fontFamily:"'JetBrains Mono',monospace"}}>{s.code}</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:700,color:s.color}}>{s.name}</div>
+              <div style={{fontSize:9,color:C.textDim,fontFamily:"'JetBrains Mono',monospace"}}>{s.temp}</div>
+            </div>
+          </div>
+          <div style={{fontSize:10,color:s.color,marginBottom:6,fontFamily:"'JetBrains Mono',monospace"}}>{s.traits}</div>
+          <SmallProse style={{color:C.textMuted}}>{s.desc}</SmallProse>
+        </div>
+      ))}
+    </div>
+    <SmallProse style={{marginTop:14,color:C.textDim}}>
+      Subtypes carry their own intertype dynamics: D and N are duals, C and H are duals. The DCNH benefit ring runs D, C, N, H, D. Gulenko views personality as three layers: the fixed Core (sociotype), the semi-stable Subtype (DCNH), and the changeable Profile (accentuation).
+    </SmallProse>
+  </Card>
+
+  <Card>
+    <SectionTitle>Key Innovations Beyond Model A</SectionTitle>
+    <Prose>
+      Gulenko introduced a Latin letter notation system now widely adopted: E (Fe), R (Fi), P (Te), L (Ti), S (Si), F (Se), T (Ni), I (Ne). Critically, he reframed these as <em>functional states</em>, arguing that a person enters a behavioral-psychological state rather than merely processing a category of information. This shift from information-processing to state-entering has significant implications: it means types can be identified through observable behavioral shifts, not just self-reported cognitive preferences, and it grounds socionics in something closer to the behavioral sciences.
+    </Prose>
+  </Card>
+</>}
+
+{/* ════════════════════════════════════════════════════════════════
+    TAB 4: EMPIRICAL ERA
+════════════════════════════════════════════════════════════════ */}
+{activeSection==="empirical"&&<>
+  <Divider label="Statistical Socionics" color={C.empirical}/>
+  <Card>
+    <SectionTitle color={C.empirical}>Talanov and Romanov: Model A Put to the Test</SectionTitle>
+    <Prose>
+      The most radical methodological departure in socionics comes from the St. Petersburg school built on Viktor Talanov's statistical research. Talanov developed standardized questionnaires (up to 584 questions) administered to over 5,600 respondents, making his the largest empirical dataset in socionics history. His framework treats socionics as a <em>trait model</em> (like the Big Five) rather than a discrete type theory, assigning each person similarity scores to all 16 reference types rather than a single categorical assignment.
+    </Prose>
+    <Prose>
+      Talanov's variance analyses delivered findings that challenge classical assumptions. The four Jungian dichotomies account for the vast majority of explained variance, with Extraversion/Introversion alone contributing 17-20%. The higher-order Reinin dichotomies (questimity, positivism-negativism) contribute negligible independent variance, casting doubt on their utility for typing. No more than 3% of total variance is associated with function position within a psychotype, suggesting that the elaborate 8-function model may overspecify what is fundamentally a 4-axis system.
+    </Prose>
+  </Card>
+
+  <Card>
+    <SectionTitle color={C.empirical}>The Model A Reliability Problem</SectionTitle>
+    <Prose>
+      Talanov's data delivers a particularly pointed challenge to classical Model A. While the Lead (1st) and Vulnerable/PoLR (4th) functions show strong, reliable statistical signatures, several other function positions, especially the Mobilizing (6th) and Ignoring (7th), proved empirically unreliable. The rigid 8-position structure where every function has a fixed, well-defined behavioral profile was not supported by the data. The Vital ring functions (5th through 8th) are the least reliably distinguishable, their behavioral manifestations blurring together or failing to match classical predictions.
+    </Prose>
+    <Prose>
+      Talanov's conclusion: a type is most fundamentally defined by the <em>imbalance between the Lead and PoLR functions</em>, the axis of maximum asymmetry in the psyche. The Lead is what a person does best and most naturally, the PoLR is what they most consistently avoid or fail at. This Lead-PoLR axis is the primary distinction of a type's attributes and the most reliably measurable. The remaining six functions are liable to shift from where classical Model A would predict them to be, influenced by subtype, development, life circumstances, and individual variation. This does not invalidate Model A as a structural framework, but it reframes it as an idealized schema rather than a rigid empirical law, with the Lead-PoLR polarity as the stable core and the other six positions as probabilistic tendencies rather than fixed coordinates.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
+      {[
+        {label:"High Reliability",color:"#10b981",funcs:"Lead [1], PoLR [4]",desc:"Strong statistical signatures. The axis of maximum asymmetry. Reliably distinguishable across populations and consistent with theoretical predictions."},
+        {label:"Moderate Reliability",color:C.origins,funcs:"Creative [2], Role [3]",desc:"Detectable but noisier signals. Mental ring functions show more consistency than Vital ring counterparts but with substantial individual variation."},
+        {label:"Low Reliability",color:"#ef4444",funcs:"Suggestive [5], Mobilizing [6], Ignoring [7], Demo [8]",desc:"Vital ring functions are the least reliably distinguishable. Behavioral profiles blur together, fail to match classical predictions, and shift significantly with subtype and development."},
+      ].map((t,i)=>(
+        <div key={i} style={{background:`${t.color}08`,border:`1px solid ${t.color}20`,borderRadius:10,padding:14}}>
+          <div style={{fontSize:12,fontWeight:700,color:t.color,marginBottom:4}}>{t.label}</div>
+          <div style={{fontSize:10,color:t.color,marginBottom:8,fontFamily:"'JetBrains Mono',monospace"}}>{t.funcs}</div>
+          <SmallProse style={{color:C.textMuted}}>{t.desc}</SmallProse>
+        </div>
+      ))}
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle color={C.empirical}>Romanov's Theoretical Extensions</SectionTitle>
+    <Prose>
+      Ivan Romanov (operating socionavigator.com) translates Talanov's statistical findings into theoretical innovations. His most provocative claim: socionics requires <em>12 functions, not 8</em>. The standard 8 are retained with descriptive renamed labels (Imagination of Metamorphosis for Ni, Sense of Homeostasis for Si, Calculation of Laws for Ti, Suggestion of Synchrony for Fe, etc.), but four additional "functions of self-positioning in society" are derived from elevating the Questim/Declatim axis to fundamental status.
+    </Prose>
+    <Prose>
+      Romanov redefines all 15 Reinin dichotomies with new semantic content derived exclusively from statistical analysis, rejecting classical names where data contradicts tradition. "Judicious/Decisive" becomes Peacefulness/Rivalness. "Merry/Serious" becomes Universalisation/Specialisation. "Democratic/Aristocratic" becomes Liberalism/Paternalism. Each type receives an evolutionary survival strategy (ILE as "innovation/founder effect," SLE as "enhancing natural selection"), grounding typological description in evolutionary biology rather than introspection.
+    </Prose>
+  </Card>
+
+  <Divider label="Dichotomy Variance Rankings" color={C.empirical}/>
+  <Card color={C.empirical}>
+    <SectionTitle color={C.empirical}>Empirical Signal Strength: Which Dichotomies Matter Most?</SectionTitle>
+    <Prose>
+      Talanov's factor analyses (5,600+ respondents) and sociotype.xyz's independent factor-analytic work converge on a clear hierarchy of dichotomy signal strength. The two sources align closely on the top tier and diverge primarily in naming conventions for the lower tiers. The table below ranks all 15 Reinin dichotomies by their population-average contribution to the overall diversity of personality traits, with Talanov's data as the primary source and sociotype.xyz percentages noted where available.
+    </Prose>
+    <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+        <thead>
+          <tr>
+            {["#","Dichotomy","Pop. Avg.","Subj. Max","XYZ %","Tier"].map((h,i)=>(
+              <th key={i} style={{padding:"10px 6px",textAlign:i>1?"center":"left",borderBottom:`1px solid ${C.border}`,color:C.text,fontSize:9,letterSpacing:1,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            {n:1,name:"Extraversion / Introversion",pop:"17-20%",max:">90%",xyz:"18%",tier:"Strong",color:"#10b981"},
+            {n:2,name:"Logic / Ethics",pop:"17-20%",max:">90%",xyz:"18%",tier:"Strong",color:"#10b981"},
+            {n:3,name:"Intuition / Sensing",pop:"14-17%",max:"~85%",xyz:"15%",tier:"Strong",color:"#10b981"},
+            {n:4,name:"Irrational / Rational",pop:"10-12%",max:"~65%",xyz:"11%",tier:"Strong",color:"#10b981"},
+            {n:5,name:"Judicious / Decisive",pop:"8-10%",max:"~50%",xyz:"9%",tier:"Strong",color:"#10b981"},
+            {n:6,name:"Merry / Serious",pop:"3-6%",max:"~25%",xyz:"5%",tier:"Medium",color:C.origins},
+            {n:7,name:"Asking / Declaring",pop:"3-6%",max:"~25%",xyz:"~4%",tier:"Medium",color:C.origins},
+            {n:8,name:"Static / Dynamic",pop:"3-5%",max:"~15%",xyz:"3%",tier:"Medium",color:C.origins},
+            {n:9,name:"Democratic / Aristocratic",pop:"2-4%",max:"~10%",xyz:"3%",tier:"Weak",color:"#ef4444"},
+            {n:10,name:"Constructivist / Emotivist",pop:"2-4%",max:"~10%",xyz:"~3%",tier:"Weak",color:"#ef4444"},
+            {n:11,name:"Positivist / Negativist",pop:"2-4%",max:"~10%",xyz:"3%",tier:"Weak",color:"#ef4444"},
+            {n:12,name:"Process / Result",pop:"1.5-3%",max:"<10%",xyz:"2%",tier:"Marginal",color:C.textDim},
+            {n:13,name:"Yielding / Obstinate",pop:"1.5-3%",max:"<10%",xyz:"~2%",tier:"Marginal",color:C.textDim},
+            {n:14,name:"Tactical / Strategic",pop:"1.5-3%",max:"<10%",xyz:"~2%",tier:"Marginal",color:C.textDim},
+            {n:15,name:"Carefree / Farsighted",pop:"1.5-3%",max:"<10%",xyz:"~2%",tier:"Marginal",color:C.textDim},
+          ].map((r,i)=>(
+            <tr key={i} style={{background:i<5?`${r.color}06`:i<8?`${r.color}04`:"transparent"}}>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:11,color:C.textDim,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{r.n}</td>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:12,color:C.text,fontWeight:500}}>{r.name}</td>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:11,color:r.color,fontWeight:600,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{r.pop}</td>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:11,color:C.textMuted,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{r.max}</td>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:11,color:C.textMuted,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{r.xyz}</td>
+              <td style={{padding:"7px 6px",borderBottom:`1px solid ${C.border}15`,fontSize:10,color:r.color,fontWeight:600,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{r.tier}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <SmallProse style={{marginTop:12}}>
+      <strong>Sources:</strong> Talanov VL (socionavigator.com, Pop. Avg. and Subj. Max columns) and sociotype.xyz/d (XYZ % column). The two sources align closely on the top 5 dichotomies. Sociotype.xyz uses novel nomenclature for some lower-tier axes (e.g. "Cooperation/Competition" for Judicious/Decisive, "Passionarism/Pragmatism" for Merry/Serious), but the underlying factor structure converges. The "Strong" tier (top 5) accounts for ~70% of all explained personality variance, while the "Marginal" tier (bottom 4) contributes less than 10% combined.
+    </SmallProse>
+  </Card>
+
+  <Divider label="Modern Platforms" color={C.empirical}/>
+  <Card>
+    <SectionTitle color={C.empirical}>Sociotype.xyz: Dichotomies First, Types Second</SectionTitle>
+    <Prose>
+      Sociotype.xyz represents the most aggressively modernizing approach. Its 2025 manifesto declares that "all existing models in classic socionics are conditional schemes that have never been proven." The site inverts the classical hierarchy: <em>dichotomies are primary</em>, and functions, types, and small groups are derived mathematically from them, not the reverse.
+    </Prose>
+    <Prose>
+      The platform measures 15 core dichotomies organized into weighted tiers reflecting explanatory power. Core factors (Extraversion ~18%, Intuiting ~15%, Thinking ~18%, Perceiving ~11%) dominate, followed by secondary and tertiary factors including novel axes like Cooperation/Competition and Passionarism/Pragmatism. The site embraces continuous spectra over discrete types, introduces "Spectra Type" notation representing individuals as composites of 2-3 standard types, and proposes that personality can change even in adulthood, contradicting classical axioms of type permanence.
+    </Prose>
+  </Card>
+
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+    <Card color={C.teal}>
+      <SectionTitle color={C.teal}>WikiSocion: The Neutral Archive</SectionTitle>
+      <Prose>
+        WikiSocion (wikisocion.github.io) serves as the field's school-neutral encyclopedia, aggregating perspectives from classical Augusta, Kiev School (Bukalov/Ermak dimensionality), Gulenko's SHS, Dynamic Socionics (Mironov), and the St. Petersburg school. For each type, it provides a dozen or more profiles from different authors. Its treatment of Reinin dichotomies honestly acknowledges the gap between mathematical proof and empirical content.
+      </Prose>
+    </Card>
+    <Card color={C.modelA}>
+      <SectionTitle color={C.modelA}>OpenSocionics: Philosophical Foundation</SectionTitle>
+      <Prose>
+        OpenSocionics (opensocionics.gitbook.io) provides the most detailed English-language treatment of Kepinski's theory, grounding the information elements in semiotics, epistemology, and linguistics. Its distinctive contribution is the Abstract/Involved dichotomy and an extended blocking system arguing that Augusta described only horizontal blocks while Vertical, Dimensional, and Priority blocks also exist mathematically.
+      </Prose>
+    </Card>
+  </div>
+
+  <Divider label="Types as Attractor States" color={C.empirical}/>
+  <Card color={C.empirical}>
+    <SectionTitle color={C.empirical}>Neither Fixed Nor Fluid: The Attractor Model of Personality Type</SectionTitle>
+    <Prose>
+      Both Talanov's empirical findings and sociotype.xyz's theoretical framework converge on a view that resolves the oldest debate in personality typology: are types fixed categories or arbitrary slices of a continuum? The answer, increasingly, is <em>neither</em>. Types are best understood as <em>attractor states</em> in a dynamic system, regions of personality space toward which individuals are drawn but around which they orbit with varying degrees of stability.
+    </Prose>
+    <Prose>
+      In dynamical systems theory, a strange attractor is a set of states toward which a system evolves over time, but which the system never reaches exactly, instead tracing complex, non-repeating paths in its vicinity. This is the compromise between the statism and dynamism of personality: the type is real (the attractor exists as a structural feature of the space), but the person is not rigidly locked into it (their actual trajectory wanders around the attractor, sometimes approaching neighboring attractors during developmental transitions, stress, or subtype shifts).
+    </Prose>
+    {/* Attractor Basin SVG */}
+    <div style={{overflowX:"auto",padding:"12px 0"}}>
+      <svg viewBox="0 0 700 300" width="100%" style={{minWidth:560,maxWidth:750,display:"block",margin:"0 auto"}}>
+        <defs>
+          <radialGradient id="basinA" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25"/><stop offset="100%" stopColor="#8b5cf6" stopOpacity="0"/></radialGradient>
+          <radialGradient id="basinB" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#06b6d4" stopOpacity="0.2"/><stop offset="100%" stopColor="#06b6d4" stopOpacity="0"/></radialGradient>
+          <radialGradient id="basinC" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#10b981" stopOpacity="0.15"/><stop offset="100%" stopColor="#10b981" stopOpacity="0"/></radialGradient>
+        </defs>
+        <rect width="700" height="300" fill="#10111a" rx="10"/>
+        {/* Attractor basins */}
+        <ellipse cx="200" cy="150" rx="130" ry="110" fill="url(#basinA)"/>
+        <ellipse cx="420" cy="130" rx="120" ry="100" fill="url(#basinB)"/>
+        <ellipse cx="560" cy="190" rx="90" ry="80" fill="url(#basinC)"/>
+        {/* Basin borders */}
+        <ellipse cx="200" cy="150" rx="130" ry="110" fill="none" stroke="#8b5cf6" strokeWidth="1" strokeDasharray="4,3" opacity="0.4"/>
+        <ellipse cx="420" cy="130" rx="120" ry="100" fill="none" stroke="#06b6d4" strokeWidth="1" strokeDasharray="4,3" opacity="0.4"/>
+        <ellipse cx="560" cy="190" rx="90" ry="80" fill="none" stroke="#10b981" strokeWidth="1" strokeDasharray="4,3" opacity="0.3"/>
+        {/* Attractor cores */}
+        <circle cx="200" cy="150" r="6" fill="#8b5cf6" opacity="0.9"/>
+        <circle cx="420" cy="130" r="6" fill="#06b6d4" opacity="0.9"/>
+        <circle cx="560" cy="190" r="5" fill="#10b981" opacity="0.7"/>
+        {/* Person trajectory (spiraling around attractor A) */}
+        <path d="M160,110 Q180,100 200,115 Q225,130 215,155 Q205,175 185,165 Q165,150 175,135 Q185,120 200,130 Q210,140 205,150 Q198,155 200,150" fill="none" stroke="#f59e0b" strokeWidth="2" opacity="0.8"/>
+        <circle cx="200" cy="150" r="3" fill="#f59e0b"/>
+        {/* Person trajectory (transitioning between B and A) */}
+        <path d="M430,100 Q445,95 450,110 Q455,130 440,145 Q420,160 395,155 Q360,145 330,140 Q290,135 260,148 Q230,158 215,155" fill="none" stroke="#ec4899" strokeWidth="1.5" strokeDasharray="3,2" opacity="0.7"/>
+        <circle cx="430" cy="100" r="3" fill="#ec4899" opacity="0.5"/>
+        <circle cx="215" cy="155" r="3" fill="#ec4899"/>
+        {/* Labels */}
+        <text x="200" y="40" textAnchor="middle" fontSize="12" fontWeight="700" fill="#8b5cf6" fontFamily="'Playfair Display',Georgia,serif">Type A</text>
+        <text x="200" y="54" textAnchor="middle" fontSize="9" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">strong attractor</text>
+        <text x="420" y="35" textAnchor="middle" fontSize="12" fontWeight="700" fill="#06b6d4" fontFamily="'Playfair Display',Georgia,serif">Type B</text>
+        <text x="420" y="49" textAnchor="middle" fontSize="9" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">moderate attractor</text>
+        <text x="560" y="105" textAnchor="middle" fontSize="11" fontWeight="600" fill="#10b981" fontFamily="'Playfair Display',Georgia,serif">Type C</text>
+        <text x="560" y="118" textAnchor="middle" fontSize="9" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">weak attractor</text>
+        {/* Legend */}
+        <line x1="40" y1="270" x2="55" y2="270" stroke="#f59e0b" strokeWidth="2"/>
+        <circle cx="55" cy="270" r="3" fill="#f59e0b"/>
+        <text x="62" y="273" fontSize="9" fill="#9ca3af" fontFamily="'JetBrains Mono',monospace">Stable orbit (settled type)</text>
+        <line x1="40" y1="286" x2="55" y2="286" stroke="#ec4899" strokeWidth="1.5" strokeDasharray="3,2"/>
+        <circle cx="55" cy="286" r="3" fill="#ec4899"/>
+        <text x="62" y="289" fontSize="9" fill="#9ca3af" fontFamily="'JetBrains Mono',monospace">Transition trajectory (type shift)</text>
+      </svg>
+    </div>
+    <Prose>
+      Talanov's profile system (socionavigator.com/profile) operationalizes this directly: each person receives a similarity score to all 16 types, producing a landscape of relative affinities rather than a single label. A person strongly attracted to one basin shows a sharp, peaked profile (high score on one type, low on all others). A person near the boundary between two basins shows a flatter profile with two elevated peaks, the "Spectra Type" that sociotype.xyz formalizes as a composite notation. Personality can shift across the lifespan, especially during developmental transitions, but the attractor structure of the space means most shifts are local (moving to an adjacent type) rather than radical (jumping across the entire socion).
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+      <LensCard lens="Talanov's Position" color={C.empirical} content="Types are not strictly quantized. Transitional forms between adjacent sociotypes exist and are common. The personal profile is a continuous similarity vector across all 16 types. Subtype, accentuation, and life development shift the profile over time. The Lead-PoLR axis remains the most stable feature, while peripheral functions are more fluid."/>
+      <LensCard lens="Sociotype.xyz's Position" color={C.dich} content="Personality is shaped by 15+ continuous factor dimensions. Types are attractor states, not discrete bins. 'Spectra Types' represent individuals as composites of 2-3 standard types, capturing over 10,000 possible personality profiles. Functions form the 'mutable shell' of personality and can strengthen or weaken throughout life, with individual agency playing a role in shaping growth trajectory."/>
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle>The Typing Reliability Problem</SectionTitle>
+    <Prose>
+      The field's central empirical challenge is fundamental: different schools frequently type the same person differently. Convergence between Gulenko's typings and Western practitioners runs around 40%. Without reliable, standardized typing instruments validated against external criteria, all downstream statistical analyses rest on contested ground. This is not a peripheral issue but the bottleneck preventing socionics from achieving scientific credibility. The emerging consensus across modern approaches, whether Talanov's trait model, sociotype.xyz's factor-analytic method, or Gulenko's behavioral observation, is that typing must become more rigorous and less reliant on self-report or expert intuition.
+    </Prose>
+  </Card>
+</>}
+
+{/* ════════════════════════════════════════════════════════════════
+    TAB 5: DICHOTOMIES
+════════════════════════════════════════════════════════════════ */}
+{activeSection==="dich"&&<>
+  <Divider label="The 15+ Dichotomy Framework" color={C.dich}/>
+  <Card>
+    <SectionTitle color={C.dich}>Two Spaces, One Socion</SectionTitle>
+    <Prose>
+      The mathematical structure of the Socion supports not one but <em>two</em> complete dichotomy spaces, each containing 16 dichotomies (including the trivial Valid/Null identity). These spaces share 8 dichotomies in common (the <em>Conjunct Plane</em>), yielding 24 unique dichotomies total: 8 exclusive to the first space (Reinin), 8 exclusive to the second space (derived from Jungian Aspects and Jungian Axes mandala decomposition, independently discovered by Ibrahim Tencer and Yurii Minaiev), and 8 shared between both.
+    </Prose>
+    <Prose>
+      The Reinin space is generated by taking the 4 Jungian basis dichotomies and computing all possible Boolean products, yielding 15 non-trivial dichotomies. The second space is generated by decomposing two fundamental small groups, the Jungian Aspects mandala (which leading function aspect: Intuition, Sensing, Logic, or Ethics) and the Jungian Axes mandala (which quadra: Alpha, Beta, Gamma, or Delta), into their component dichotomy pairs, then computing their products.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:2,background:C.border,borderRadius:10,overflow:"hidden",marginBottom:16}}>
+      <div style={{background:C.card,padding:"16px 12px",textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.reinin,marginBottom:4}}>Reinin Space</div>
+        <div style={{fontSize:28,fontWeight:800,color:C.reinin,fontFamily:"'JetBrains Mono',monospace"}}>16</div>
+        <div style={{fontSize:10,color:C.textDim}}>dichotomies (incl. Valid)</div>
+        <div style={{fontSize:10,color:C.textMuted,marginTop:4}}>8 exclusive + 8 shared</div>
+      </div>
+      <div style={{background:C.card,padding:"16px 12px",textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.conjunct,marginBottom:4}}>Conjunct Plane</div>
+        <div style={{fontSize:28,fontWeight:800,color:C.conjunct,fontFamily:"'JetBrains Mono',monospace"}}>8</div>
+        <div style={{fontSize:10,color:C.textDim}}>shared dichotomies</div>
+        <div style={{fontSize:10,color:C.textMuted,marginTop:4}}>Exist in both spaces</div>
+      </div>
+      <div style={{background:C.card,padding:"16px 12px",textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:C.tencer,marginBottom:4}}>Minaiev Space</div>
+        <div style={{fontSize:28,fontWeight:800,color:C.tencer,fontFamily:"'JetBrains Mono',monospace"}}>16</div>
+        <div style={{fontSize:10,color:C.textDim}}>dichotomies (incl. Valid)</div>
+        <div style={{fontSize:10,color:C.textMuted,marginTop:4}}>8 exclusive + 8 shared</div>
+      </div>
+    </div>
+    <SmallProse>
+      The significance of these two spaces is not merely mathematical. Certain intertype relations can only be defined in one space: Mirror, Conflict, Activity, and Quasi-Identity are Reinin-only; Kindred, Lookalike, Semi-dual, and Illusionary are Minaiev-only. The asymmetric relations (Benefit and Supervision rings) require <em>both</em> spaces simultaneously, arising from the binary product of a Reinin dichotomy and a Minaiev dichotomy.
+    </SmallProse>
+  </Card>
+
+  <Divider label="The 15 Reinin Dichotomies" color={C.reinin}/>
+  <Card color={C.reinin}>
+    <SectionTitle color={C.reinin}>Algebraic Generation from Four Jungian Axes</SectionTitle>
+    <Prose>
+      Grigoriy Reinin proved in 1984 that 4 independent binary dichotomies generate exactly 15 non-trivial dichotomies through Boolean combination, forming an abelian group under logical equality. The combinatorial proof: C(4,1) + C(4,2) + C(4,3) + C(4,4) = 4 + 6 + 4 + 1 = 15. Each product dichotomy inherits semantic content from its component axes, though the higher-order products become progressively harder to define.
+    </Prose>
+    <Card style={{background:`${C.origins}06`,border:`1px solid ${C.origins}18`,marginBottom:16}}>
+      <div style={{fontSize:11,fontWeight:700,color:C.origins,letterSpacing:2,textTransform:"uppercase",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>Note: Two Basis Systems</div>
+      <SmallProse style={{color:C.textMuted}}>
+        The table below uses <strong>Talanov's basis</strong> (X, A, B, C), where the four independent dichotomies are Extraversion (X), Logic/Ethics (A), Intuition/Sensing (B), and Asking/Declaring (C). In this system, Irrational/Rational is the <em>maximal 4th-order product</em> (XABC), not a basis dichotomy. This differs from the conventional <strong>Model A basis</strong>, where the four independent dichotomies are E/I, N/S, T/F, and Irr/Rat, making Asking/Declaring the 4th-order product instead. The dichotomies themselves are identical in both systems, only their algebraic derivation order changes. The choice of basis is a mathematical convention, not an empirical claim about which axis is more fundamental: Romanov notes explicitly that the socion can in principle be constructed on any quartet of mutually independent dichotomies. The conceptual motivation for treating Rat/Irr as the maximal product is that Rationality/Irrationality is itself a meta-property, asking whether the judging functions (T/F) or the perceiving functions (N/S) dominate, which makes it natural to derive from those more elementary axes together with the energetic (X) and communicative (C) ones. This reshuffles tier assignments: for example, Judicious/Decisive (AC) and Merry/Serious (BC) become simpler 2nd-order products in Talanov's system rather than the 3rd-order products they are in the conventional system.
+      </SmallProse>
+    </Card>
+    <Prose>
+      The 15 dichotomies naturally organize into a <em>3x3 triadic architecture</em> that maps directly onto the three fundamental small group types in socionics. Three dichotomies determine Temperament (how you process), three determine Club/Strength (what you process), and three determine Quadra Values (what you prioritize). The remaining six dichotomies act as products bridging these triads.
+    </Prose>
+    <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+        <thead>
+          <tr>
+            {["Code","Name","Pole (+)","Pole (-)","Order","Semantic Core"].map((h,i)=>(
+              <th key={i} style={{padding:"10px 6px",textAlign:"left",borderBottom:`1px solid ${C.border}`,color:C.text,fontSize:9,letterSpacing:1,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <DichRow code="X" name="Extraversion / Introversion" pole1="Extravert" pole2="Introvert" color={C.reinin} tier="1st" desc="Cortical excitation vs. inhibition balance, energy throughput"/>
+          <DichRow code="A" name="Logic / Ethics" pole1="Logical" pole2="Ethical" color={C.reinin} tier="1st" desc="Object-oriented calculation vs. subject-oriented suggestion"/>
+          <DichRow code="B" name="Intuition / Sensing" pole1="Intuitive" pole2="Sensor" color={C.reinin} tier="1st" desc="Abstract-imaginal vs. concrete-sensory filter width"/>
+          <DichRow code="C" name="Asking / Declaring" pole1="Questim" pole2="Declatim" color={C.reinin} tier="1st" desc="Separateness-divergence vs. acceptance-convergence"/>
+          <DichRow code="XA" name="Yielding / Obstinate" pole1="Yielding" pole2="Obstinate" color={C.conjunct} tier="2nd" desc="Compliance vs. resistance to external pressure"/>
+          <DichRow code="XB" name="Carefree / Farsighted" pole1="Carefree" pole2="Farsighted" color={C.conjunct} tier="2nd" desc="Short-range tactical vs. long-range anticipatory orientation"/>
+          <DichRow code="XC" name="Process / Result" pole1="Process" pole2="Result" color={C.conjunct} tier="2nd" desc="Evolutory (left) vs. involutory (right) information flow"/>
+          <DichRow code="AB" name="Democratic / Aristocratic" pole1="Democratic" pole2="Aristocratic" color={C.conjunct} tier="2nd" desc="Individualistic-liberal vs. collectivistic-paternalistic identity"/>
+          <DichRow code="AC" name="Judicious / Decisive" pole1="Judicious" pole2="Decisive" color={C.conjunct} tier="2nd" desc="Peacefulness vs. rivalness, conflict avoidance vs. confrontation"/>
+          <DichRow code="BC" name="Merry / Serious" pole1="Merry" pole2="Serious" color={C.conjunct} tier="2nd" desc="Universalisation (subjectivist) vs. specialisation (objectivist)"/>
+          <DichRow code="XAB" name="Positivist / Negativist" pole1="Positivist" pole2="Negativist" color={C.reinin} tier="3rd" desc="Affirming what is present vs. noting what is absent"/>
+          <DichRow code="XAC" name="Tactical / Strategic" pole1="Tactical" pole2="Strategic" color={C.reinin} tier="3rd" desc="Means-oriented vs. ends-oriented planning"/>
+          <DichRow code="XBC" name="Constructivist / Emotivist" pole1="Constructivist" pole2="Emotivist" color={C.reinin} tier="3rd" desc="Logic-first then ethics vs. ethics-first then logic communication"/>
+          <DichRow code="ABC" name="Static / Dynamic" pole1="Static" pole2="Dynamic" color={C.reinin} tier="3rd" desc="Discrete snapshot cognition vs. continuous flow cognition"/>
+          <DichRow code="XABC" name="Irrational / Rational" pole1="Irrational (P)" pole2="Rational (J)" color={C.reinin} tier="4th" desc="Frontal executive control vs. spontaneous perception"/>
+        </tbody>
+      </table>
+    </div>
+  </Card>
+
+  <Card>
+    <SectionTitle>The 3x3 Triadic Architecture</SectionTitle>
+    <Prose>
+      The 15 Reinin dichotomies organize into a 3x3 matrix of three triads, each generating a distinct layer of type structure. Talanov's variance analyses confirm this organization empirically: each triad's dichotomies cluster together in factor space.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:2,background:C.border,borderRadius:10,overflow:"hidden",marginBottom:16}}>
+      {[
+        {label:"Strength (Clubs)",code:"A, B, C",color:C.modelA,sub:"What you can do",detail:"T/F, N/S, Ask/Decl",group:"NT · NF · ST · SF"},
+        {label:"Temperament",code:"X, ABC, XABC",color:C.origins,sub:"How you do it",detail:"E/I, St/Dy, Irr/Rat",group:"EP · IJ · EJ · IP"},
+        {label:"Quadra Values",code:"AC, BC, AB",color:C.empirical,sub:"What you want",detail:"Jud/Dec, Mer/Ser, Dem/Ari",group:"α · β · γ · δ"},
+      ].map((cell,i)=>(
+        <div key={i} style={{background:C.card,padding:"16px 12px",textAlign:"center"}}>
+          <div style={{fontSize:12,fontWeight:700,color:cell.color,marginBottom:4}}>{cell.label}</div>
+          <Mono>{cell.code}</Mono>
+          <div style={{fontSize:11,color:C.textMuted,fontStyle:"italic",marginTop:6}}>{cell.sub}</div>
+          <div style={{fontSize:10,color:C.textDim,marginTop:4}}>{cell.detail}</div>
+          <div style={{fontSize:10,color:cell.color,marginTop:6,fontFamily:"'JetBrains Mono',monospace"}}>{cell.group}</div>
+        </div>
+      ))}
+    </div>
+  </Card>
+
+  <Divider label="The 8 Minaiev Dichotomies" color={C.tencer}/>
+  <Card color={C.tencer}>
+    <SectionTitle color={C.tencer}>The Second Dichotomy Space</SectionTitle>
+    <Prose>
+      Some small groups, like the four leading cognitive functions (Intuition, Sensing, Logic, Ethics), are part of classical Jungian typology but cannot be created by intersecting two Reinin dichotomies. A parallel dichotomy space can be constructed when these groups are decomposed into their component dichotomy pairs. This second space (independently discovered by Ibrahim Tencer and Yurii Minaiev) shares 8 dichotomies with Reinin space (the Conjunct Plane) but contains 8 additional dichotomies unique to it.
+    </Prose>
+    <Prose>
+      The 8 Minaiev-exclusive dichotomies arise from decomposing two fundamental tetrachotomies. The <em>Jungian Aspects mandala</em> (leading function aspect) decomposes into Abstracted/Embodied and Implicit/Explicit for both leading and creative functions. The <em>Jungian Axes mandala</em> decomposes into Generative/Optimizing and Stewarding/Mobilizing for both leading and creative functions. These dichotomies are less widely tested and their semantic content is still being refined.
+    </Prose>
+    <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+        <thead>
+          <tr>
+            {["Source","Name","Pole (+)","Pole (-)","Types (+)"].map((h,i)=>(
+              <th key={i} style={{padding:"10px 6px",textAlign:"left",borderBottom:`1px solid ${C.border}`,color:C.text,fontSize:9,letterSpacing:1,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            {src:"Jungian Aspects",name:"1st Abstracted / 1st Embodied",p1:"1st Abstracted (NT)",p2:"1st Embodied (SF)",types:"ILE, IEI, ILI, IEE, LII, LSI, LIE, LSE"},
+            {src:"Jungian Aspects",name:"1st Implicit / 1st Explicit",p1:"1st Implicit (NF)",p2:"1st Explicit (ST)",types:"ILE, IEI, ILI, IEE, EII, EIE, ESI, ESE"},
+            {src:"Jungian Aspects",name:"2nd Abstracted / 2nd Embodied",p1:"2nd Abstracted (NT)",p2:"2nd Embodied (SF)",types:"LII, EIE, LIE, EII, ILE, SLE, ILI, SLI"},
+            {src:"Jungian Aspects",name:"2nd Implicit / 2nd Explicit",p1:"2nd Implicit (NF)",p2:"2nd Explicit (ST)",types:"LII, EIE, LIE, EII, SEI, IEI, SEE, IEE"},
+            {src:"Jungian Axes",name:"1st Generative / 1st Optimizing",p1:"1st Generative (Α)",p2:"1st Optimizing (Γ)",types:"ILE, SEI, IEE, SLI, LII, ESE, LSI, EIE"},
+            {src:"Jungian Axes",name:"1st Stewarding / 1st Mobilizing",p1:"1st Stewarding (Δ)",p2:"1st Mobilizing (Β)",types:"ILE, SEI, IEE, SLI, ESI, LIE, EII, LSE"},
+            {src:"Jungian Axes",name:"2nd Generative / 2nd Optimizing",p1:"2nd Generative (Α)",p2:"2nd Optimizing (Γ)",types:"LII, ESE, EII, LSE, ILE, SEI, SLE, IEI"},
+            {src:"Jungian Axes",name:"2nd Mobilizing / 2nd Stewarding",p1:"2nd Mobilizing (Β)",p2:"2nd Stewarding (Δ)",types:"LII, ESE, EII, LSE, SEE, ILI, IEE, SLI"},
+          ].map((r,i)=>(
+            <tr key={i}>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:10,color:C.tencer,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{r.src}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:12,color:C.text,fontWeight:500}}>{r.name}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textMuted}}>{r.p1}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textMuted}}>{r.p2}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:9,color:C.textDim,fontFamily:"'JetBrains Mono',monospace"}}>{r.types}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <SmallProse style={{marginTop:12}}>
+      The Minaiev dichotomies' primary theoretical role is in generating intertype relations that Reinin space cannot: Kindred, Lookalike, Semi-dual, and Illusionary. Their semantic labels (Abstracted/Embodied mapping to the NT/SF club axis, Implicit/Explicit to NF/ST, and the quadra-axis labels reflecting each quadra's societal orientation) are proposed descriptors intended to make the poles more intuitive than purely positional notation. These labels remain an active area of refinement.
+    </SmallProse>
+  </Card>
+
+  <Divider label="Connections to Modern Personality Science" color={C.dich}/>
+  <Card>
+    <SectionTitle color={C.dich}>Socionics Dichotomies and the Big Five</SectionTitle>
+    <Prose>
+      The four Jungian basis dichotomies show well-documented correlations with Big Five personality dimensions, providing a bridge between socionics' information-processing framework and mainstream trait psychology. These are not identity mappings but structural correspondences confirmed by Talanov's factor analyses and consistent with decades of MBTI-Big Five correlation research.
+    </Prose>
+    <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+        <thead>
+          <tr>
+            {["Socionics Axis","Big Five Correlate","Direction","Variance","Notes"].map((h,i)=>(
+              <th key={i} style={{padding:"10px 6px",textAlign:"left",borderBottom:`1px solid ${C.border}`,color:C.text,fontSize:9,letterSpacing:1,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            {axis:"E/I",bf:"Extraversion",dir:"E = +Extraversion",var:"17-20%",note:"Strongest single axis. Loads on Assertiveness and Enthusiasm aspects."},
+            {axis:"N/S",bf:"Openness to Experience",dir:"N = +Openness",var:"8-10%",note:"Loads primarily on Intellect and Imagination facets. Second-strongest."},
+            {axis:"T/F",bf:"Agreeableness (inverse)",dir:"T = -Agreeableness",var:"6-8%",note:"Logic correlates with low Compassion. Ethics with high Compassion."},
+            {axis:"P/J",bf:"Conscientiousness (inverse)",dir:"J = +Conscientiousness",var:"10-12%",note:"Strongest loading on Orderliness facet. Links to frontal executive control."},
+          ].map((r,i)=>(
+            <tr key={i}>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:12,color:C.dich,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>{r.axis}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:12,color:C.text,fontWeight:500}}>{r.bf}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textMuted}}>{r.dir}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace"}}>{r.var}</td>
+              <td style={{padding:"8px 6px",borderBottom:`1px solid ${C.border}20`,fontSize:11,color:C.textDim,minWidth:180}}>{r.note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <SmallProse style={{marginTop:12}}>
+      Neuroticism, the remaining Big Five factor, has no clean socionics correlate, though it shows partial associations with Static/Dynamic and certain quadra value combinations. This is consistent with socionics' design: it models information-processing architecture, not emotional stability per se.
+    </SmallProse>
+  </Card>
+
+  <Card>
+    <SectionTitle color={C.dich}>Beyond the Big Five: HEXACO and the Remaining Variance</SectionTitle>
+    <Prose>
+      The HEXACO model extends the Big Five with a sixth factor, Honesty-Humility (H), and redefines Neuroticism as the narrower Emotionality (E). These two factors capture personality variance that the four Jungian axes miss entirely, but several extended socionics dichotomies show suggestive overlap. The mappings below are theoretical proposals, not validated correlations, but they indicate where the socionics dichotomy space may encode information about temperamental and moral dimensions that the basis axes do not.
+    </Prose>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+      <div style={{background:`${C.dich}06`,border:`1px solid ${C.dich}18`,borderRadius:10,padding:16}}>
+        <div style={{fontSize:14,fontWeight:700,color:C.dich,marginBottom:4,fontFamily:"'Playfair Display',Georgia,serif"}}>Emotionality</div>
+        <div style={{fontSize:10,color:C.textDim,marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>HEXACO E · sentimentality, fearfulness, anxiety, dependence</div>
+        <SmallProse style={{color:C.textMuted,marginBottom:8}}>
+          Unlike Big Five Neuroticism (which bundles anxiety with anger and impulsiveness), HEXACO Emotionality isolates the vulnerability-attachment cluster. Several extended dichotomies may carry partial signal:
+        </SmallProse>
+        <div style={{fontSize:12,color:C.text,lineHeight:1.7}}>
+          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Static / Dynamic (ABC)</span> — Static types show emotional fixation (digital processing), Dynamic types show labile affect (analog processing). High Emotionality may correlate with the Static pole's tendency to hold emotional states rigidly.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Negativist / Positivist (XAB)</span> — Negativists attend to what is absent, threatening, or deficient, a cognitive orientation that overlaps with the hypervigilant threat-detection characteristic of high Emotionality.</div>
+          <div><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span> — The Judicious (peaceful) pole's conflict avoidance and preference for safe, harmonious environments may partially index the fearfulness and dependence facets of Emotionality.</div>
+        </div>
+      </div>
+      <div style={{background:`${C.teal}06`,border:`1px solid ${C.teal}18`,borderRadius:10,padding:16}}>
+        <div style={{fontSize:14,fontWeight:700,color:C.teal,marginBottom:4,fontFamily:"'Playfair Display',Georgia,serif"}}>Honesty-Humility</div>
+        <div style={{fontSize:10,color:C.textDim,marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>HEXACO H · sincerity, fairness, greed-avoidance, modesty</div>
+        <SmallProse style={{color:C.textMuted,marginBottom:8}}>
+          The HEXACO factor most absent from standard socionics, Honesty-Humility inversely predicts Dark Triad traits (Machiavellianism, narcissism, psychopathy). Several extended dichotomies carry suggestive content:
+        </SmallProse>
+        <div style={{fontSize:12,color:C.text,lineHeight:1.7}}>
+          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span> — Talanov's redefinition as Peacefulness/Rivalness explicitly correlates the Decisive pole with Dark Triad features, making this the strongest single candidate for inverse H-H.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Democratic / Aristocratic (AB)</span> — The Democratic pole's egalitarian-individualistic orientation aligns with the fairness and modesty facets, while Aristocratic hierarchy-endorsement may correlate with reduced greed-avoidance.</div>
+          <div><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Asking / Declaring (C)</span> — Questim (separation/divergence) types maintain narrower boundaries of the personally permissible and show moral fastidiousness, potentially overlapping with the sincerity facet of H-H.</div>
+        </div>
+      </div>
+    </div>
+    <SmallProse style={{marginTop:12}}>
+      These mappings are exploratory. The key insight is that the extended Reinin dichotomies, especially the Quadra-value triad (Judicious/Decisive, Merry/Serious, Democratic/Aristocratic), may encode moral-temperamental variation that the four Jungian basis axes do not capture. This is precisely the domain where HEXACO improves on the Big Five, suggesting that socionics' full 15-dichotomy system is informationally richer than its four-axis subset, even if the additional dichotomies carry lower variance individually.
+    </SmallProse>
+  </Card>
+</>}
+
+        {/* ═══ FOOTER ═══ */}
+        <Divider label="What Comes Next" color={C.teal}/>
+        <Card>
+          <SectionTitle>Document Series Roadmap</SectionTitle>
+          <Prose>
+            This document has established the foundations: the intellectual lineage from philosophical archetypes to cybernetic information metabolism, the three major models (A, G, and the empirical Talanov framework), and the 15+ dichotomy architecture that structures the entire system. The remaining four documents build on this foundation:
+          </Prose>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
+            {[
+              {n:"II",title:"Key Small Groups",color:C.modelA,desc:"Clubs, Temperaments, Quadras, and the full taxonomy of tetrachotomies, explored through the 3x3 triadic architecture and cross-system correspondences."},
+              {n:"III",title:"IMEs and their Dichotomies",color:C.modelG,desc:"Deep-dive into all 8 information elements across multiple descriptive layers, from neurobiological substrate to semiotic patterns, with interactive Model A visualization."},
+              {n:"IV",title:"Models, Blocks, and Slots",color:C.empirical,desc:"Comprehensive type profiles organized by temperament, covering Model A stacks, DCNH variations, the Threefold Path (Ego, Priority, Social Mission, Disconnect), and cross-system notes."},
+              {n:"V",title:"Types, Subtypes, & ITRs",color:C.dich,desc:"DCNH subtype dynamics, the 16 intertype relations derived from functional overlap, Benefit and Supervision rings, and practical guidance for leveraging type knowledge in relationships and teams."},
+            ].map((d,i)=>(
+              <div key={i} style={{background:`${d.color}06`,border:`1px solid ${d.color}18`,borderRadius:10,padding:16}}>
+                <div style={{fontSize:22,fontWeight:800,color:d.color,fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>{d.n}</div>
+                <div style={{fontSize:13,fontWeight:700,color:d.color,marginBottom:8}}>{d.title}</div>
+                <SmallProse style={{color:C.textMuted}}>{d.desc}</SmallProse>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <div style={{textAlign:"center",marginTop:48,paddingTop:24,borderTop:`1px solid ${C.border}`}}>
+          <p style={{fontSize:10,color:C.textDim,letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace"}}>
+            SOURCES: Augusta AA (Model A, 1978-1985) · Reinin G (Dichotomy proofs, 1984) · Gulenko VV (Model G, DCNH, SHS) · Talanov VL (Questionnaire data, variance analyses) · Romanov I (socionavigator.com) · Tencer I / Minaiev Y (Second dichotomy space) · Bukalov AV / Ermak VD (Dimensionality) · sociotype.xyz · OpenSocionics · WikiSocion · BestSocionics · Jung CG (Psychological Types, 1921) · Kepinski A (Information Metabolism, 1966) · Freud S (The Ego and the Id, 1923) · Vincent V (Presence Cube, Dichotomy Spaces, Mandalas)
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<FoundationsReport/>,document.getElementById('root'));
+</script>
+</body>
+</html>

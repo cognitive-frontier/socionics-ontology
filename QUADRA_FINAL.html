@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quadra Values, Dynamics & the Clock of the Socion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  button { font-family: inherit; }
+  table { border-spacing: 0; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #12121a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#0a0a0f", card: "#12121a", cardHover: "#1a1a25", border: "#2a2a3a",
+  text: "#e4e4e7", textMuted: "#9ca3af", textDim: "#6b7280",
+  alpha: "#06b6d4", beta: "#ef4444", gamma: "#f59e0b", delta: "#10b981",
+  alphaFade: "#0891b2", betaFade: "#dc2626", gammaFade: "#d97706", deltaFade: "#059669",
+  accent1: "#f59e0b", accent2: "#06b6d4", accent3: "#8b5cf6", accent4: "#ef4444",
+  rose: "#ec4899", teal: "#14b8a6", lime: "#84cc16", amber: "#d97706",
+  ne: "#8b5cf6", si: "#06b6d4", ti: "#6366f1", fe: "#f59e0b",
+  ni: "#a855f7", se: "#ef4444", fi: "#ec4899", te: "#10b981",
+};
+
+const Divider = ({ label, color }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
+    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
+  </div>
+);
+
+const Card = ({ children, color = C.border, style = {} }) => (
+  <div style={{ background: C.card, border: `1px solid ${color}30`, borderRadius: 14, padding: 24, marginBottom: 8, ...style }}>{children}</div>
+);
+
+const Tag = ({ label, color }) => (
+  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+);
+
+const Prose = ({ children, style = {} }) => (
+  <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.7, margin: "0 0 16px", ...style }}>{children}</p>
+);
+
+const SmallProse = ({ children, style = {} }) => (
+  <p style={{ fontSize: 12, color: C.textDim, lineHeight: 1.65, margin: 0, ...style }}>{children}</p>
+);
+
+const SectionTitle = ({ children, color = C.text }) => (
+  <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color, margin: "0 0 14px" }}>{children}</h3>
+);
+
+const Mono = ({ children, color = C.textDim }) => (
+  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color }}>{children}</span>
+);
+
+const TabBtn = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} style={{ padding: "8px 18px", borderRadius: 8, border: active ? `1px solid ${color}50` : `1px solid ${C.border}`, background: active ? `${color}15` : "transparent", color: active ? color : C.textMuted, fontSize: 12, fontWeight: 600, cursor: "pointer", letterSpacing: 0.5, fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}>{label}</button>
+);
+
+const LensCard = ({ lens, color, content }) => (
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 10, padding: "16px 14px" }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>{lens}</div>
+    <SmallProse style={{ color: C.textMuted }}>{content}</SmallProse>
+  </div>
+);
+
+const PoleCard = ({ title, subtitle, color, items, icon }) => (
+  <div style={{ flex: 1, minWidth: 280, background: `linear-gradient(135deg, ${color}08, ${color}04)`, border: `1px solid ${color}25`, borderRadius: 12, padding: "24px 20px", position: "relative", overflow: "hidden" }}>
+    <div style={{ position: "absolute", top: -30, right: -20, fontSize: 80, opacity: 0.04, fontWeight: 900, color, lineHeight: 1 }}>{icon}</div>
+    <div style={{ fontSize: 18, fontWeight: 700, color, marginBottom: 4, fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</div>
+    <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>{subtitle}</div>
+    {items.map((item, i) => (
+      <div key={i} style={{ fontSize: 13, color: C.text, lineHeight: 1.65, marginBottom: 8, paddingLeft: 14, position: "relative" }}>
+        <span style={{ position: "absolute", left: 0, top: 6, width: 5, height: 5, borderRadius: "50%", background: color, opacity: 0.7 }} />
+        {item}
+      </div>
+    ))}
+  </div>
+);
+
+const IMEBadge = ({ name, color }) => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: `${color}15`, color, border: `1px solid ${color}30`, fontFamily: "'JetBrains Mono', monospace" }}>{name}</span>
+);
+
+// ─── QUADRA DATA ───────────────────────────────────────────────────
+
+const Q = {
+  alpha: {
+    name: "Alpha", greek: "Α", num: "1st", color: C.alpha,
+    types: "ILE · SEI · ESE · LII",
+    typesFull: ["ILE (Seeker)", "SEI (Mediator)", "ESE (Enthusiast)", "LII (Analyst)"],
+    valued: ["Ne", "Si", "Fe", "Ti"], subdued: ["Ni", "Se", "Fi", "Te"],
+    valuedColors: [C.ne, C.si, C.fe, C.ti], subduedColors: [C.ni, C.se, C.fi, C.te],
+    label: "Authentic-Generative", orient: "Horizontal Collectivism",
+    motto: "Curiosity before power, comfort before conquest",
+    socialOrg: "Commune / Holacracy",
+    desc: "Alpha is the quadra of open inquiry, communal warmth, and intellectual play. It values the free exploration of ideas (Ne) grounded in shared physical comfort (Si), communicated through inclusive emotional atmosphere (Fe) and organized by structural clarity (Ti). Alpha environments feel like a lively seminar that segues into a potluck, the emphasis is on generating novelty, sharing it generously, and ensuring everyone is physically comfortable and emotionally included.",
+    communication: "Universalist. Alpha quadra expands communication to include anyone (Fe) and integrates factual information into common frameworks (Ti). Discourse is open-ended, bringing multiple perspectives together. Humor is intellectual and absurdist, wordplay, puns, reductio ad absurdum. Emotional expressiveness is high but non-aggressive; debates are animated but rarely personal.",
+    political: "Family-cognitive. Oriented toward small-group egalitarianism, direct democracy, voluntary association. Authority is situational and earned through knowledge, not force. State institutions are minimal or absent. Resembles pre-state communal societies, academic communes, open-source communities.",
+    thermo: "High potential energy, low kinetic energy. Alpha is the genesis phase, maximum stored novelty, minimal organized force. Information is generated faster than it can be structured. The system is rich in possibility but poor in implementation. Thermodynamically: low entropy, high free energy, the most ordered informational state, but also the most fragile to external perturbation.",
+    clock: "The Inventor opens (ILE), the Enthusiast disseminates (ESE), the Mediator stabilizes (SEI), the Analyst perfects (LII). Alpha dies by its own curiosity, new tools and techniques penetrate the commune and awaken instincts of power and possession, seeding the conditions for Beta.",
+    civilizations: "Al-Andalus (711–1492), Classic Maya (250–900), Joseon Korea (1392–1897), Contemporary: Sweden, Japan, South Korea",
+    antiQuadra: "Gamma",
+    dichotomies: ["Democratic", "Merry", "Judicious"],
+  },
+  beta: {
+    name: "Beta", greek: "Β", num: "2nd", color: C.beta,
+    types: "IEI · SLE · EIE · LSI",
+    typesFull: ["IEI (Lyricist)", "SLE (Marshal)", "EIE (Mentor)", "LSI (Inspector)"],
+    valued: ["Ni", "Se", "Fe", "Ti"], subdued: ["Ne", "Si", "Fi", "Te"],
+    valuedColors: [C.ni, C.se, C.fe, C.ti], subduedColors: [C.ne, C.si, C.fi, C.te],
+    label: "Heroic-Authoritarian", orient: "Vertical Collectivism",
+    motto: "Unite under vision, enforce through structure",
+    socialOrg: "State / Hierarchy",
+    desc: "Beta is the quadra of collective mobilization, hierarchical order, and visionary purpose. It values deep temporal foresight (Ni) backed by volitional force (Se), communicated through passionate collective emotion (Fe) and organized by systemic structural logic (Ti). Beta environments feel like a rally, a military formation, or a cathedral service, the emphasis is on shared purpose, clear rank, emotional intensity, and the subordination of individual comfort to collective destiny.",
+    communication: "Universalist but vertically stratified. Beta shares Alpha's Ti+Fe axis, integrating people into common emotional and logical frameworks, but adds hierarchical structure. Communication is dramatic, oratorical, and ideologically charged. Humor is dark, ironic, and often aggressive, satire, gallows humor, in-group mockery. Emotional expression is intense and public; debates are confrontational and can escalate.",
+    political: "Ideological-statist. Oriented toward centralized authority, caste-based social structure, cultural uniformity. Authority is legitimized through ideology, charisma, or conquest. The state is the primary organizing institution. Resembles empires, revolutionary movements, theocracies, military states.",
+    thermo: "Maximum kinetic energy. Beta is the mobilization phase, stored potential is converted into organized force. The system is mobilized, hierarchical, and expanding. Thermodynamically: rapid energy expenditure, increasing entropy through forced expansion. The most powerful but also the most volatile state, the system burns hot and eventually exhausts itself.",
+    clock: "The Mentor ignites (EIE), the Marshal resources (SLE), the Inspector codifies (LSI), the Lyricist dissolves (IEI). Beta dies by over-bureaucratization and dogma, LSI's system petrifies, IEI dreams of a freer life, and the rigid structure collapses into Gamma's market liberalization.",
+    civilizations: "Akkadian Empire, Sparta, Roman Dominate, Vikings, Aztec Empire (1428–1521), Ottoman Empire, Sasanian Empire, Holy Roman Empire",
+    antiQuadra: "Delta",
+    dichotomies: ["Aristocratic", "Merry", "Decisive"],
+  },
+  gamma: {
+    name: "Gamma", greek: "Γ", num: "3rd", color: C.gamma,
+    types: "ILI · SEE · ESI · LIE",
+    typesFull: ["ILI (Critic)", "SEE (Politician)", "ESI (Guardian)", "LIE (Entrepreneur)"],
+    valued: ["Ni", "Se", "Fi", "Te"], subdued: ["Ne", "Si", "Fe", "Ti"],
+    valuedColors: [C.ni, C.se, C.fi, C.te], subduedColors: [C.ne, C.si, C.fe, C.ti],
+    label: "Liberal-Pragmatic", orient: "Vertical Individualism",
+    motto: "Compete freely, profit honestly, trust selectively",
+    socialOrg: "Market / Polyarchy",
+    desc: "Gamma is the quadra of competitive individualism, pragmatic efficiency, and moral selectivity. It values deep strategic foresight (Ni) backed by decisive action (Se), evaluated through personal moral judgment (Fi) and measured by practical results (Te). Gamma environments feel like a trading floor, a startup pitch, or a courtroom, the emphasis is on individual merit, efficient resource allocation, selective trust, and the primacy of results over rhetoric.",
+    communication: "Particularist. Gamma differentiates social interactions by personal attitude (Fi) and factual information by practical usefulness (Te). Communication is direct, denotative, and low on embellishment. Humor is sardonic and observational, cutting wit, understated irony. Emotional expression is private and selective; debates are pragmatic and focused on outcomes rather than principles.",
+    political: "Competitive-meritocratic. Oriented toward decentralized power determined through private competition. Authority derives from achievement, wealth, or strategic cunning. The market is the primary organizing institution. Resembles republics, merchant states, liberal democracies, entrepreneurial societies.",
+    thermo: "Declining kinetic energy, rising informational complexity. Gamma is the optimization phase, the system harvests what was built and optimizes returns. Thermodynamically: entropy increases through differentiation and specialization. Resources are allocated efficiently but the system fragments. Maximum informational sophistication but declining collective cohesion.",
+    clock: "The Politician reorients (SEE), the Entrepreneur monetizes (LIE), the Critic optimizes (ILI), the Guardian moralizes (ESI). Gamma dies when capitalism without ethics breeds anarchy, ESI's moral key either locks Gamma and opens Delta's humanistic order, or the system collapses back into Beta's authoritarian response.",
+    civilizations: "Achaemenid Empire, Roman Republic/Principate, Phoenicia, Republic of Venice, Dutch Republic, Classical Athens, Contemporary: USA, Czech Republic",
+    antiQuadra: "Alpha",
+    dichotomies: ["Democratic", "Serious", "Decisive"],
+  },
+  delta: {
+    name: "Delta", greek: "Δ", num: "4th", color: C.delta,
+    types: "IEE · SLI · EII · LSE",
+    typesFull: ["IEE (Advisor)", "SLI (Craftsman)", "EII (Humanist)", "LSE (Administrator)"],
+    valued: ["Ne", "Si", "Fi", "Te"], subdued: ["Ni", "Se", "Fe", "Ti"],
+    valuedColors: [C.ne, C.si, C.fi, C.te], subduedColors: [C.ni, C.se, C.fe, C.ti],
+    label: "Humane-Stewardly", orient: "Horizontal Individualism",
+    motto: "Work well, live simply, develop character",
+    socialOrg: "Community / Stewardship",
+    desc: "Delta is the quadra of industrious self-reliance, ecological balance, and humanistic values. It values open-ended possibility (Ne) grounded in sustainable physical practice (Si), evaluated through deep personal ethics (Fi) and measured by productive craftsmanship (Te). Delta environments feel like a well-run workshop, a farmers' market, or a neighborhood community center, the emphasis is on practical skill, moral character, individual development, and sustainable coexistence.",
+    communication: "Particularist but horizontally egalitarian. Delta shares Gamma's Fi+Te axis, differentiating by personal attitude and practical utility, but replaces hierarchical competition with cooperative stewardship. Communication is warm but understated, pragmatic but values-driven. Humor is dry, gentle, and self-deprecating. Emotional expression is sincere but reserved; debates are practical and solutions-oriented.",
+    political: "Decentralized-humanistic. Oriented toward checks and balances between networks of self-reliant individuals. Authority derives from character, competence, and community contribution. Resembles distributed democracies, craft guilds, cooperative movements, Scandinavian-style social contracts.",
+    thermo: "Low kinetic energy, high informational order. Delta is the conservation phase, the system conserves, maintains, and passes on accumulated wisdom. Thermodynamically: minimum entropy production, maximum sustainable equilibrium. The most stable state but also the most resistant to change, the system can stagnate if it fails to generate new Alpha-style novelty.",
+    clock: "The Administrator decentralizes (LSE), the Humanist ethicizes (EII), the Advisor liberates (IEE), the Craftsman sustains (SLI). Delta eventually stagnates into over-conservation, SLI's self-sufficiency becomes isolation, and the system needs Alpha's injection of curiosity and communal energy to restart the cycle.",
+    civilizations: "Parthian Empire, Contemporary: England (holistic), Netherlands, Denmark, Canada, Norway, Finland, Australia, Belgium",
+    antiQuadra: "Beta",
+    dichotomies: ["Aristocratic", "Serious", "Judicious"],
+  },
+};
+
+const quadraOrder = ["alpha", "beta", "gamma", "delta"];
+
+// ─── SOCION CLOCK SVG ─────────────────────────────────────────────
+
+const SocionClock = ({ highlight }) => {
+  const cx = 200, cy = 200, r = 160, ir = 100;
+  const quadras = [
+    { key: "alpha", label: "Α", angle: -90, color: C.alpha },
+    { key: "beta", label: "Β", angle: 0, color: C.beta },
+    { key: "gamma", label: "Γ", angle: 90, color: C.gamma },
+    { key: "delta", label: "Δ", angle: 180, color: C.delta },
+  ];
+  const toRad = d => d * Math.PI / 180;
+  return (
+    <svg viewBox="-60 -40 520 480" style={{ width: "100%", maxWidth: 360 }}>
+      {/* outer ring */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.border} strokeWidth={1} />
+      <circle cx={cx} cy={cy} r={ir} fill="none" stroke={C.border} strokeWidth={0.5} strokeDasharray="4 4" />
+      {/* quadrant arcs */}
+      {quadras.map((q, i) => {
+        const startA = toRad(q.angle - 45);
+        const endA = toRad(q.angle + 45);
+        const mr = (r + ir) / 2;
+        const sx = cx + r * Math.cos(startA), sy = cy + r * Math.sin(startA);
+        const ex = cx + r * Math.cos(endA), ey = cy + r * Math.sin(endA);
+        const isx = cx + ir * Math.cos(endA), isy = cy + ir * Math.sin(endA);
+        const iex = cx + ir * Math.cos(startA), iey = cy + ir * Math.sin(startA);
+        const opacity = highlight === q.key ? 0.25 : 0.08;
+        return (
+          <g key={q.key}>
+            <path d={`M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 0 0 ${iex} ${iey} Z`} fill={q.color} opacity={opacity} />
+            <text x={cx + mr * Math.cos(toRad(q.angle))} y={cy + mr * Math.sin(toRad(q.angle)) + 6} textAnchor="middle" fontSize="28" fontWeight="800" fill={q.color} opacity={highlight === q.key ? 1 : 0.5} fontFamily="'Playfair Display', Georgia, serif">{q.label}</text>
+          </g>
+        );
+      })}
+      {/* arrows between quadras */}
+      {quadras.map((q, i) => {
+        const next = quadras[(i + 1) % 4];
+        const midA = toRad((q.angle + next.angle) / 2 + (i === 3 ? 180 : 0));
+        const ax = cx + (r - 20) * Math.cos(midA), ay = cy + (r - 20) * Math.sin(midA);
+        return <text key={`arr${i}`} x={ax} y={ay + 4} textAnchor="middle" fontSize="16" fill={C.textDim} opacity={0.5}>→</text>;
+      })}
+      {/* center label */}
+      <text x={cx} y={cy - 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">SOCION</text>
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">CLOCK</text>
+      {/* season labels */}
+      {[{a:-90,l:"GENESIS",s:"spring",c:C.alpha},{a:0,l:"MOBILIZE",s:"summer",c:C.beta},{a:90,l:"OPTIMIZE",s:"autumn",c:C.gamma},{a:180,l:"CONSERVE",s:"winter",c:C.delta}].map((s,i)=>(
+        <g key={i}><text x={cx+(r+18)*Math.cos(toRad(s.a))} y={cy+(r+18)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="7" fill={s.c} letterSpacing="2" fontFamily="'JetBrains Mono', monospace" opacity={0.7} fontWeight="700">{s.l}</text><text x={cx+(r+28)*Math.cos(toRad(s.a))} y={cy+(r+28)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="5.5" fill={s.c} fontFamily="'JetBrains Mono', monospace" opacity={0.35} fontStyle="italic">{s.s}</text></g>
+      ))}
+    </svg>
+  );
+};
+
+// ─── ENERGY FLOW DIAGRAM ──────────────────────────────────────────
+
+const EnergyDiagram = () => {
+  const w = 600, h = 120, pad = 40;
+  const pw = w - 2 * pad;
+  const phases = [
+    { x: 0, label: "Α", sub: "Potential", color: C.alpha, eH: 95, iH: 20 },
+    { x: 0.25, label: "Β", sub: "Kinetic", color: C.beta, eH: 75, iH: 55 },
+    { x: 0.5, label: "Γ", sub: "Harvest", color: C.gamma, eH: 40, iH: 80 },
+    { x: 0.75, label: "Δ", sub: "Conserve", color: C.delta, eH: 20, iH: 95 },
+  ];
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", maxWidth: 560 }}>
+      {/* energy line */}
+      <polyline points={phases.map(p => `${pad + p.x * pw},${h - 10 - p.eH * 0.9}`).join(" ")} fill="none" stroke={C.accent4} strokeWidth={2} opacity={0.7} />
+      {/* info line */}
+      <polyline points={phases.map(p => `${pad + p.x * pw},${h - 10 - p.iH * 0.9}`).join(" ")} fill="none" stroke={C.accent2} strokeWidth={2} opacity={0.7} />
+      {phases.map((p, i) => (
+        <g key={i}>
+          <circle cx={pad + p.x * pw} cy={h - 10 - p.eH * 0.9} r={4} fill={C.accent4} />
+          <circle cx={pad + p.x * pw} cy={h - 10 - p.iH * 0.9} r={4} fill={C.accent2} />
+          <text x={pad + p.x * pw} y={h - 2} textAnchor="middle" fontSize="12" fontWeight="800" fill={p.color} fontFamily="'JetBrains Mono', monospace">{p.label}</text>
+        </g>
+      ))}
+      <text x={w - 10} y={15} textAnchor="end" fontSize="8" fill={C.accent4} fontFamily="'JetBrains Mono', monospace">ENERGY</text>
+      <text x={w - 10} y={25} textAnchor="end" fontSize="8" fill={C.accent2} fontFamily="'JetBrains Mono', monospace">INFORMATION</text>
+    </svg>
+  );
+};
+
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────
+
+function QuadraReport() {
+  const [activeSection, setActiveSection] = useState("core");
+  const [activeQuadra, setActiveQuadra] = useState("alpha");
+
+  const sections = [
+    { id: "core", label: "Core Theory", color: C.accent3 },
+    { id: "profiles", label: "Quadra Profiles", color: C.accent1 },
+    { id: "clock", label: "Socion Clock", color: C.accent4 },
+    { id: "political", label: "Sociological", color: C.teal },
+    { id: "thermo", label: "Thermodynamics", color: C.rose },
+  ];
+
+  const q = Q[activeQuadra];
+
+  return (
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px" }}>
+      {/* HEADER */}
+      <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <div style={{ fontSize: 11, letterSpacing: 6, textTransform: "uppercase", color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>Socionics Primer · Section IV</div>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, background: `linear-gradient(135deg, ${C.alpha}, ${C.beta}, ${C.gamma}, ${C.delta})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 16 }}>the Clock of the Socion</h1>
+        <p style={{ fontSize: 13, color: C.textMuted, maxWidth: 640, margin: "0 auto", lineHeight: 1.7 }}>
+          Quadras are groups of four types sharing the same valued information elements, the psychological "wavelength" that determines what a group naturally gravitates toward in discourse, governance, and civilization-building. They are the temporal engine of the Socion: each quadra represents a phase in the life-cycle of any complex system.
+        </p>
+      </div>
+
+      {/* NAV */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 32 }}>
+        {sections.map(s => (
+          <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
+        ))}
+      </div>
+
+      {/* ═══════════════ CORE THEORY ═══════════════ */}
+      {activeSection === "core" && <>
+        <Divider label="What Makes a Quadra" color={C.accent3} />
+        <Card>
+          <SectionTitle color={C.accent3}>Valued Elements & Model A</SectionTitle>
+          <Prose>Each quadra is defined by which four of the eight IMEs its members place in <strong>valued</strong> positions (Ego + Super-Id). Valued elements are those a person is either consciously strong in (Ego functions 1 & 2) or unconsciously drawn to and grateful to receive (Super-Id functions 5 & 6). The remaining four elements occupy <strong>subdued</strong> positions (Super-Ego + Id), areas of conscious weakness or deliberate non-engagement.</Prose>
+          <Prose>Quadra values are about <em>preference</em>, not strength. An ILE and a SEI both value Ne over Ni, even though ILE is consciously strong in Ne (1st function) while SEI merely welcomes it (5th function). This shared preference creates the unspoken alignment that makes quadra-mates feel like they're "on the same page."</Prose>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, margin: "16px 0" }}>
+            {quadraOrder.map(k => {
+              const qd = Q[k];
+              return (
+                <div key={k} style={{ background: `${qd.color}08`, border: `1px solid ${qd.color}25`, borderRadius: 10, padding: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontSize: 22, fontWeight: 800, color: qd.color, fontFamily: "'Playfair Display', Georgia, serif" }}>{qd.greek}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: qd.color }}>{qd.name}</span>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>
+                    {qd.valued.map((v, i) => <IMEBadge key={v} name={v} color={qd.valuedColors[i]} />)}
+                  </div>
+                  <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1, fontFamily: "'JetBrains Mono', monospace" }}>{qd.types}</div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Divider label="The Three Quadra Dichotomies" color={C.accent3} />
+        <Card>
+          <SectionTitle>Differentiating Traits of Quadra</SectionTitle>
+          <Prose>Three Reinin dichotomies jointly distinguish the four quadras. In Vincent's framework, the Quadra Mandala is formed by intersecting the function dichotomies of <strong>Valued/Subdued</strong> with <strong>Evaluatory/Situational</strong> to form the four Quadra Axes. These three differentiating traits, as elaborated by Gulenko, capture the deep structural character of each quadra's worldview.</Prose>
+        </Card>
+
+        {/* DICHOTOMY 1: Democratic / Aristocratic */}
+        <Card color={C.accent2}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <Tag label="Reinin Dichotomy" color={C.accent2} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Democratic / Aristocratic</span>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <PoleCard title="Democratic" subtitle="Α Alpha · Γ Gamma" color={C.accent2} icon="D" items={[
+              "Horizontal communication predominates, partners on equal footing, no inherent rank",
+              "Hierarchical authority grants no special privileges; coordination replaces command",
+              "Cyclic time perception, events recur, stagnation alternates with reform",
+              "Alpha's democracy is natural/organic (family); Gamma's is competitive/meritocratic (market)",
+            ]} />
+            <PoleCard title="Aristocratic" subtitle="Β Beta · Δ Delta" color={C.accent4} icon="A" items={[
+              "Vertical communication predominates, boss/subordinate, senior/junior, in-group/out-group",
+              "People evaluated by communicative status relative to the evaluator before other criteria",
+              "Linear time perception, past clearly separated from future, no recurrence or standing still",
+              "Beta's aristocracy is harsh/caste-based; Delta's is gentler/tradition-based ('civilized vs. not')",
+            ]} />
+          </div>
+        </Card>
+
+        {/* DICHOTOMY 2: Merry / Serious */}
+        <Card color={C.lime}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <Tag label="Reinin Dichotomy" color={C.lime} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Merry / Serious</span>
+            <Mono>(Universalization / Specialization)</Mono>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <PoleCard title="Merry" subtitle="Universalization · Α Alpha · Β Beta" color={C.lime} icon="☀" items={[
+              "Ti+Fe axis valued, universal frameworks, open emotional expression, inclusive discourse",
+              "Energy trajectory moves from lower to higher organization, building complexity",
+              "Subjectification: transforms objects into subjects, things into people, categories into communities",
+              "Communication style: synergistic, merging, including, expanding the circle of participation",
+            ]} />
+            <PoleCard title="Serious" subtitle="Specialization · Γ Gamma · Δ Delta" color={C.rose} icon="☾" items={[
+              "Te+Fi axis valued, practical efficiency, personal moral judgment, selective trust",
+              "Energy trajectory moves from higher to lower organization, differentiating, distributing",
+              "Objectification: transforms subjects into objects, relationships into transactions, values into metrics",
+              "Communication style: optimizing, separating, filtering, narrowing to what works and who to trust",
+            ]} />
+          </div>
+        </Card>
+
+        {/* DICHOTOMY 3: Judicious / Decisive */}
+        <Card color={C.amber}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <Tag label="Reinin Dichotomy" color={C.amber} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Judicious / Decisive</span>
+            <Mono>(Cooperation / Competition)</Mono>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <PoleCard title="Judicious" subtitle="Cooperation · Α Alpha · Δ Delta" color={C.amber} icon="◇" items={[
+              "Ne+Si axis valued, possibility-seeking grounded in bodily comfort, divergent perception",
+              "Processes diffuse, scattered resources (low-grade ore), broad but shallow resource engagement",
+              "Conflict-averse: prefers harmonious coexistence, sees force as unnecessary in civilized life",
+              "Cooperative orientation, coordination over coercion, shared benefit over zero-sum struggle",
+            ]} />
+            <PoleCard title="Decisive" subtitle="Competition · Β Beta · Γ Gamma" color={C.accent4} icon="◆" items={[
+              "Ni+Se axis valued, focused foresight backed by volitional force, convergent perception",
+              "Processes concentrated, high-value resources (refined material), narrow but deep resource engagement",
+              "Confrontation-ready: sees force as a natural tool, power struggles as inevitable",
+              "Competitive orientation, dominance hierarchies, zero-sum contests, survival of the fittest",
+            ]} />
+          </div>
+        </Card>
+
+        {/* Quadra × Dichotomy Matrix */}
+        <Card>
+          <SectionTitle>Quadra Signature Matrix</SectionTitle>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  {["", "Dem/Ari", "Jud/Dec", "Mer/Ser", "IME Axis 1", "IME Axis 2", "Time"].map((h, i) => (
+                    <th key={i} style={{ padding: "10px 8px", fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase", borderBottom: `1px solid ${C.border}`, textAlign: "left", fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {quadraOrder.map(k => {
+                  const qd = Q[k];
+                  const rows = {
+                    alpha: ["Democratic", "Judicious", "Merry", "Ne + Si", "Ti + Fe", "Cyclic/Frozen"],
+                    beta: ["Aristocratic", "Decisive", "Merry", "Ni + Se", "Ti + Fe", "Linear→Future"],
+                    gamma: ["Democratic", "Decisive", "Serious", "Ni + Se", "Te + Fi", "Cyclic/Undulating"],
+                    delta: ["Aristocratic", "Judicious", "Serious", "Ne + Si", "Te + Fi", "Linear→Past"],
+                  };
+                  return (
+                    <tr key={k}>
+                      <td style={{ padding: "10px 8px", borderBottom: `1px solid ${C.border}20` }}>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: qd.color, fontFamily: "'JetBrains Mono', monospace" }}>{qd.greek} {qd.name}</span>
+                      </td>
+                      {rows[k].map((v, i) => (
+                        <td key={i} style={{ padding: "10px 8px", fontSize: 12, color: C.textMuted, borderBottom: `1px solid ${C.border}20` }}>{v}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </>}
+
+      {/* ═══════════════ QUADRA PROFILES ═══════════════ */}
+      {activeSection === "profiles" && <>
+        <Divider label="Select a Quadra" color={C.accent1} />
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+          {quadraOrder.map(k => (
+            <TabBtn key={k} label={`${Q[k].greek} ${Q[k].name}`} active={activeQuadra === k} onClick={() => setActiveQuadra(k)} color={Q[k].color} />
+          ))}
+        </div>
+
+        {/* Profile Header */}
+        <Card color={q.color}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+            <div style={{ width: 56, height: 56, borderRadius: 12, background: `${q.color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, color: q.color, fontFamily: "'Playfair Display', Georgia, serif" }}>{q.greek}</div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: q.color, fontFamily: "'Playfair Display', Georgia, serif" }}>{q.name} Quadra</div>
+              <div style={{ fontSize: 11, color: C.textDim, letterSpacing: 2, fontFamily: "'JetBrains Mono', monospace" }}>{q.num} · {q.label} · {q.orient}</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {q.valued.map((v, i) => <IMEBadge key={v} name={`${v} ✓`} color={q.valuedColors[i]} />)}
+            {q.subdued.map((v, i) => <span key={v} style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, color: C.textDim, border: `1px solid ${C.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{v} ✗</span>)}
+          </div>
+          <div style={{ fontSize: 14, color: q.color, fontStyle: "italic", marginBottom: 14, fontFamily: "'Playfair Display', Georgia, serif" }}>"{q.motto}"</div>
+          <Prose>{q.desc}</Prose>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {q.dichotomies.map(d => <Tag key={d} label={d} color={q.color} />)}
+            <Tag label={q.socialOrg} color={C.textDim} />
+          </div>
+          <div style={{ fontSize: 11, color: C.textDim }}><strong>Types:</strong> {q.typesFull.join(" · ")}</div>
+        </Card>
+
+        {/* Multi-lens analysis */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <LensCard lens="Communication & Discourse" color={q.color} content={q.communication} />
+          <LensCard lens="Political Organization" color={q.color} content={q.political} />
+          <LensCard lens="Generational Cycle Role" color={q.color} content={q.clock} />
+          <LensCard lens="Role-Model Civilizations" color={q.color} content={q.civilizations} />
+        </div>
+      </>}
+
+      {/* ═══════════════ SOCION CLOCK ═══════════════ */}
+      {activeSection === "clock" && <>
+        <Divider label="The Clock of the Socion" color={C.accent4} />
+        <Card>
+          <SectionTitle color={C.accent4}>Gulenko's Energy-Informational Cycle</SectionTitle>
+          <Prose>Victor Gulenko's "Clock of the Socion" models how quadras succeed each other in the developmental progression of any complex system, civilizations, organizations, projects, relationships. The key insight: <strong>energy and information are inversely correlated over the cycle</strong>. Young systems (Alpha) are energy-rich but information-poor; mature systems (Delta) are information-rich but energy-poor. The four quadras represent discrete phases in this thermodynamic unwinding.</Prose>
+        </Card>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+          <SocionClock highlight={null} />
+          <div style={{ maxWidth: 360 }}>
+            <Card>
+              <SectionTitle>The Four-Phase Cycle</SectionTitle>
+              {[
+                { q: "Α", label: "Genesis", season: "spring", color: C.alpha, desc: "Discovery, communal curiosity, prototype creation. High potential, low organization." },
+                { q: "Β", label: "Mobilization", season: "summer", color: C.beta, desc: "Revolutionary energy, hierarchical structuring, ideological expansion. Maximum force." },
+                { q: "Γ", label: "Optimization", season: "autumn", color: C.gamma, desc: "Market liberalization, individual competition, pragmatic harvesting. Peak efficiency." },
+                { q: "Δ", label: "Conservation", season: "winter", color: C.delta, desc: "Decentralized stewardship, sustainable practice, moral refinement. Maximum stability." },
+              ].map((p, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 6, background: `${p.color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: p.color, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace" }}>{p.q}</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: p.color, marginBottom: 2 }}>{p.label} <span style={{ fontSize: 10, fontWeight: 400, fontStyle: "italic", color: C.textDim }}>({p.season})</span></div>
+                    <SmallProse style={{ color: C.textMuted }}>{p.desc}</SmallProse>
+                  </div>
+                </div>
+              ))}
+            </Card>
+          </div>
+        </div>
+
+        <Card>
+          <SectionTitle color={C.accent4}>Quadra Transitions</SectionTitle>
+          <Prose>Transitions between quadras are not smooth handoffs. Each involves the exhaustion of one organizing principle and the emergence of a fundamentally different one. The system reaches a critical point where the current quadra's core strength becomes its fatal weakness, creating the vacuum that the next quadra fills.</Prose>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+            {[
+              { from: "Α → Β", color: C.alpha, title: "Prototype → Power", desc: "Alpha generates brilliant ideas and prototypes but lacks the organized force to implement them at scale. Curiosity, the quadra's greatest gift, also makes it porous to infiltration. New tools and techniques awaken instincts of power and possession, and the commune can no longer hold. The system needs hierarchy, mobilization, and a collective will to act." },
+              { from: "Β → Γ", color: C.beta, title: "Order → Freedom", desc: "Beta builds formidable structures but inevitably over-bureaucratizes. The hierarchy petrifies into dogma, reputation replaces function, and the system loses its capacity to adapt. Yearning for individual freedom and material reward grows beneath the rigid surface until the centralized structure can no longer contain it, collapsing into Gamma's open competition." },
+              { from: "Γ → Δ", color: C.gamma, title: "Profit → Principle", desc: "Gamma's market liberalization generates wealth but fragments collective cohesion. Without ethical grounding, competition devolves into predation and anarchy. The system either develops moral constraints that channel market energy into sustainable community (entering Delta), or the chaos triggers a crisis severe enough to demand Beta-style authoritarian restoration." },
+              { from: "Δ → Α", color: C.delta, title: "Stability → Novelty", desc: "Delta achieves maximum sustainability but at the cost of dynamism. Over-conservation leads to stagnation, insularity, and resistance to change. The system becomes so stable it cannot adapt to genuinely new conditions. Eventually, accumulated pressure for renewal breaks through, and the injection of Alpha-style curiosity and communal energy restarts the cycle." },
+            ].map((t, i) => (
+              <div key={i} style={{ background: `${t.color}08`, border: `1px solid ${t.color}20`, borderRadius: 10, padding: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: t.color, fontFamily: "'JetBrains Mono', monospace" }}>{t.from}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: t.color }}>{t.title}</span>
+                </div>
+                <SmallProse style={{ color: C.textMuted }}>{t.desc}</SmallProse>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </>}
+
+      {/* ═══════════════ SOCIOLOGICAL ═══════════════ */}
+      {activeSection === "political" && <>
+        <Divider label="Sociological & Political Values" color={C.teal} />
+        <Card>
+          <SectionTitle color={C.teal}>Quadra as Civilizational Archetype</SectionTitle>
+          <Prose>Vladimir Vincent's Quadra Sociology maps each quadra to a form of social organization, a cultural orientation (following Triandis' horizontal/vertical × individualism/collectivism matrix), and a set of historical exemplars. Gulenko and Talanov independently validate many of these mappings through their political-values research at socionavigator.com.</Prose>
+        </Card>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          {quadraOrder.map(k => {
+            const qd = Q[k];
+            const socData = {
+              alpha: { org: "Commune / Holacracy", cult: "Horizontal Collectivism", values: "Family-cognitive", traits: ["Shared resource distribution", "Situational leadership by knowledge", "No formal state apparatus", "Ecological harmony with environment", "Education-centered, curiosity-driven", "Vulnerable to external aggression"] },
+              beta: { org: "State / Hierarchy", cult: "Vertical Collectivism", values: "Ideological-statist", traits: ["Centralized authority structure", "Cultural uniformity & legitimation", "Conquest and territorial integration", "Devotion to collective mission", "Revolutionary energy, propaganda", "Vulnerable to over-bureaucratization"] },
+              gamma: { org: "Market / Polyarchy", cult: "Vertical Individualism", values: "Competitive-meritocratic", traits: ["Power divided by merit/competition", "Private enterprise & trade routes", "Elections, coalitions, lobbying", "Pragmatic law enforcement", "Entrepreneurial culture", "Vulnerable to amoral anarchy"] },
+              delta: { org: "Community / Stewardship", cult: "Horizontal Individualism", values: "Decentralized-humanistic", traits: ["Checks & balances between networks", "Industrious self-reliance", "Moral character development expected", "Integration of support networks", "Tolerance and humanistic ideals", "Vulnerable to stagnation & isolation"] },
+            };
+            const sd = socData[k];
+            return (
+              <div key={k} style={{ background: `${qd.color}06`, border: `1px solid ${qd.color}20`, borderRadius: 12, padding: 18 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: qd.color, marginBottom: 4, fontFamily: "'Playfair Display', Georgia, serif" }}>{qd.greek} {qd.name}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.textDim, marginBottom: 6 }}>{sd.org} · {sd.cult}</div>
+                <Tag label={sd.values} color={qd.color} />
+                <div style={{ marginTop: 12 }}>
+                  {sd.traits.map((t, i) => (
+                    <div key={i} style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, paddingLeft: 12, position: "relative", marginBottom: 4 }}>
+                      <span style={{ position: "absolute", left: 0, top: 5, width: 4, height: 4, borderRadius: "50%", background: qd.color, opacity: 0.5 }} />
+                      {t}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <Divider label="Quadra Roles & The Benefit Ring" color={C.teal} />
+        <Card>
+          <SectionTitle color={C.teal}>The Four Intra-Quadra Roles</SectionTitle>
+          <Prose>Within each quadra, the four types are not interchangeable. Each occupies a distinct functional role in the quadra's internal lifecycle, determined by the <strong>Benefit Ring</strong> (zakaz), the asymmetric energy-transfer chain that connects all 16 types in a single directed cycle. The Benefit Ring is the engine of quadra succession: it determines who energizes whom, who initiates, who implements, who stabilizes, and who corrects. Gulenko identifies four universal roles that recur across every quadra.</Prose>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+            {[
+              { role: "Leader / Initiator", desc: "Opens the quadra's cycle. Discovers or articulates the core idea, sets the direction, and generates initial momentum. Translates the quadra's values into a concrete agenda that others can rally around. In Alpha: ILE (the Seeker). In Beta: EIE (the Mentor). In Gamma: SEE (the Politician). In Delta: LSE (the Administrator).", color: C.accent4, types: "ILE · EIE · SEE · LSE" },
+              { role: "Implementer / Disseminator", desc: "Takes the leader's vision and gives it material force. Mobilizes people and resources, builds networks, spreads the message. Converts abstract direction into tangible activity. In Alpha: ESE (the Enthusiast). In Beta: SLE (the Marshal). In Gamma: LIE (the Entrepreneur). In Delta: EII (the Humanist).", color: C.accent1, types: "ESE · SLE · LIE · EII" },
+              { role: "Stabilizer / Equilibrator", desc: "Smooths out the excesses of the leader and implementer. Finds the golden mean, prevents overextension, provides the comfort and consistency that sustains the group. The most evolutionary, even-keeled role. In Alpha: SEI (the Mediator). In Beta: LSI (the Inspector). In Gamma: ILI (the Critic). In Delta: IEE (the Advisor).", color: C.accent2, types: "SEI · LSI · ILI · IEE" },
+              { role: "Corrector / Finalizer", desc: "Perfects what the stabilizer has consolidated, but in doing so exhausts the quadra's potential and inadvertently creates the conditions for the next quadra's emergence. Holds the 'key' that locks one quadra and unlocks the next. In Alpha: LII (the Analyst). In Beta: IEI (the Lyricist). In Gamma: ESI (the Guardian). In Delta: SLI (the Craftsman).", color: C.accent3, types: "LII · IEI · ESI · SLI" },
+            ].map((r, i) => (
+              <div key={i} style={{ background: `${r.color}06`, border: `1px solid ${r.color}18`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: r.color, marginBottom: 4 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: C.textDim, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>{r.types}</div>
+                <SmallProse style={{ color: C.textMuted }}>{r.desc}</SmallProse>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Divider label="Cooperation vs. Competition" color={C.teal} />
+        <Card>
+          <SectionTitle color={C.teal}>Judicious / Decisive as a Quadra-Value Dichotomy</SectionTitle>
+          <Prose>Talanov's empirical research identifies the Judicious/Decisive dichotomy (Reinin code: ENT) as one of the three dichotomies differentiating the quadras. Sociotype.xyz labels this axis <strong>Cooperation vs. Competition</strong> at ~9% population-average trait dispersion, making it the highest-variance of the three quadra-value dichotomies. The Judicious pole (Alpha and Delta, the "peripheral" quadras) is characterized by cooperative orientation, conflict avoidance, and preference for harmonious coexistence. The Decisive pole (Beta and Gamma, the "central" quadras) is characterized by competitive orientation, confrontation-readiness, and acceptance of zero-sum dynamics as natural.</Prose>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            <PoleCard title="Cooperation" subtitle="Α Alpha · Δ Delta (Judicious)" color={C.accent2} icon="◎" items={[
+              "Ne+Si valued: possibility-seeking grounded in bodily comfort, divergent and open-ended perception",
+              "Conflict-averse: prefers peaceful coexistence, sees force as unnecessary in civilized life",
+              "Cooperative social dynamics: coordination over coercion, shared benefit over zero-sum struggle",
+              "Talanov correlates: loads positively on Big Five Agreeableness (particularly Cooperation facet) and HEXACO Honesty-Humility",
+              "Cloninger parallel: high Cooperativeness, associated with empathy, tolerance, and social integration",
+            ]} />
+            <PoleCard title="Competition" subtitle="Β Beta · Γ Gamma (Decisive)" color={C.accent4} icon="◉" items={[
+              "Ni+Se valued: focused foresight backed by volitional force, convergent and commitment-oriented perception",
+              "Confrontation-ready: sees force as a natural tool, power struggles as inevitable and clarifying",
+              "Competitive social dynamics: dominance hierarchies, zero-sum contests, survival of the strongest or shrewdest",
+              "Talanov correlates: loads negatively on Agreeableness, positively on traits associated with assertiveness and antagonism",
+              "Cloninger parallel: lower Cooperativeness, associated with self-interest, strategic calculation, and willingness to impose",
+            ]} />
+          </div>
+          <Card style={{ marginTop: 12, background: `${C.accent3}06`, border: `1px solid ${C.accent3}18` }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.accent3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>Cross-System Convergence</div>
+            <SmallProse style={{ color: C.textMuted }}>The Cooperation/Competition axis converges across multiple independent personality frameworks. Talanov's Judicious pole correlates with Big Five Agreeableness (both the Compassion and Politeness facets of DeYoung's model), HEXACO Honesty-Humility and Agreeableness (vs. Anger), and Cloninger's Cooperativeness dimension from his Temperament and Character Inventory (TCI). The Decisive pole inversely correlates with these same traits and additionally loads on facets associated with HEXACO low Emotionality (fearlessness, toughness) and Big Five low Neuroticism (stress tolerance under confrontation). This convergence suggests the Cooperation/Competition axis taps a deep biological dimension of social-positioning strategy, one that independently shapes quadra values, vocational fit, and political orientation.</SmallProse>
+          </Card>
+          <Prose style={{ marginTop: 12 }}>Ti/Fe vs. Te/Fi (the Ascending/Descending axis) adds the second dimension: the ascending quadras (Alpha, Beta) share <strong>universalist communication</strong>, integrating people into common emotional spaces (Fe) and common logical frameworks (Ti). The descending quadras (Gamma, Delta) share <strong>particularist communication</strong>, differentiating people by personal attitude (Fi) and information by practical utility (Te). Together, Cooperation/Competition and Universalism/Particularism form the two independent axes of the quadra-value space.</Prose>
+        </Card>
+      </>}
+
+      {/* ═══════════════ THERMODYNAMICS ═══════════════ */}
+      {activeSection === "thermo" && <>
+        <Divider label="Thermodynamic & Entropic Analysis" color={C.rose} />
+        <Card>
+          <SectionTitle color={C.rose}>The Quadra Cycle as Energy Metabolism</SectionTitle>
+          <Prose>Gulenko's deepest insight is that the socion-clock models a <strong>thermodynamic cycle</strong>: energy and information are inversely traded as a system matures. The extraverted (energetic) constituent declines while the introverted (informational) constituent rises. This maps onto the fundamental physics of dissipative structures: order is created by consuming energy, and when energy runs out, the structure must either be renewed from outside or collapse.</Prose>
+        </Card>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          {[
+            { q: Q.alpha, phase: "Genesis", season: "Spring", icon: "", energy: "Maximum Potential", entropy: "Minimum", desc: "Stored novelty, unexploited possibility. Like a wound spring or a charged battery. The system is informationally rich but structurally undifferentiated, a soup of ideas without hierarchy. Fragile to perturbation but infinitely renewable.", analog: "Seed germination, Big Bang nucleosynthesis, brainstorming session, startup ideation" },
+            { q: Q.beta, phase: "Mobilization", season: "Summer", icon: "", energy: "Maximum Kinetic", entropy: "Rising Fast", desc: "Potential converted to organized force. The system burns hot, rapid expansion, hierarchy formation, ideological crystallization. Maximum power output but thermodynamically unsustainable. Energy expenditure exceeds input.", analog: "Explosive growth, imperial expansion, rocket launch, revolutionary movement" },
+            { q: Q.gamma, phase: "Optimization", season: "Autumn", icon: "", energy: "Declining Kinetic", entropy: "Near Maximum", desc: "Energy output declining, informational complexity peaking. The system optimizes returns on remaining energy through market mechanisms. Differentiation and specialization increase. Cohesion fragments as individual units optimize locally.", analog: "Mature capitalism, ecological succession, portfolio optimization, diplomatic realpolitik" },
+            { q: Q.delta, phase: "Conservation", season: "Winter", icon: "", energy: "Minimum Kinetic", entropy: "Controlled", desc: "Energy nearly spent, information maximally ordered. The system enters maintenance mode, sustaining accumulated wisdom, repairing degradation, conserving resources. Stable but static. Renewal requires external injection of Alpha-type novelty.", analog: "Climax ecosystem, cultural golden age, established tradition, well-run infrastructure" },
+          ].map((p, i) => (
+            <div key={i} style={{ background: `${p.q.color}06`, border: `1px solid ${p.q.color}20`, borderRadius: 12, padding: 16 }}>
+              {p.icon && <div style={{ fontSize: 24, marginBottom: 6 }}>{p.icon}</div>}
+              <div style={{ fontSize: 14, fontWeight: 700, color: p.q.color, marginBottom: 2, fontFamily: "'Playfair Display', Georgia, serif" }}>{p.q.greek} {p.phase} <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: C.textDim }}>({p.season})</span></div>
+              <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                <Tag label={p.energy} color={p.q.color} />
+              </div>
+              <SmallProse style={{ color: C.textMuted, marginBottom: 10 }}>{p.desc}</SmallProse>
+              <div style={{ fontSize: 10, color: C.textDim, fontStyle: "italic" }}><strong>Analogs:</strong> {p.analog}</div>
+            </div>
+          ))}
+        </div>
+
+        <Card style={{ marginTop: 16 }}>
+          <SectionTitle color={C.rose}>The Lemniscate: Why the Cycle Doesn't Simply Repeat</SectionTitle>
+          <Prose>The quadra cycle is not a simple circle but a <strong>spiral</strong> (or, in its fullest geometric expression, a lemniscate, a figure-eight). Each pass through the four phases occurs at a <em>higher level of complexity</em> than the last. Alpha₂ is not Alpha₁, the second round of genesis inherits the informational legacy of the entire preceding cycle. This is why civilizations don't simply repeat: Rome's Alpha (the mythical founding) is categorically different from Renaissance Italy's Alpha (the Florentine revival), even though both exhibit the characteristic curiosity, communalism, and structural fragility of the first quadra.</Prose>
+          <Prose>The two benefit rings (Process/Right and Result/Left) represent the two halves of this figure-eight. The Process ring (Α→Β→Γ→Δ) follows the large-scale civilizational arc. The Result ring reverses certain local dynamics. Gulenko notes that on a large scale, Process types tend to lead and set tempo; on a small scale, Result types do. This dual-ring structure prevents the socion from being a simple one-directional clock, it oscillates between expansion and contraction, between macro-historical epochs and micro-historical corrections.</Prose>
+        </Card>
+
+        <Divider label="Benefit Rings as Energy-Information Metabolism" color={C.rose} />
+        <Card>
+          <SectionTitle color={C.rose}>Four Thermodynamic Roles in the Socion</SectionTitle>
+          <Prose>The Benefit Ring does not merely connect types in a social-order chain. Gulenko identifies it as the socion's primary <strong>energy-information metabolism system</strong>. The 16 types divide into four groups of four based on their role in converting between energy and information. These groups cut across quadra boundaries, revealing the deeper thermodynamic substrate on which quadra succession operates.</Prose>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+            {[
+              { name: "Energy Generators", types: "ILE · EIE · LSE · SEE", color: C.accent4, desc: "Translate information into energy. They ignite energy processes in their environment, uniting small groups into larger ones and starting chain reactions in society. ILE and EIE are innovators and fighters for ideas; SEE and LSE draw people in for collective effects. They specialize in the energetics of large groups and are the most 'inflationary' types.", thermo: "Information → Energy" },
+              { name: "Energy Carriers", types: "LIE · IEE · SLE · ESE", color: C.accent1, desc: "The most saturated with energy in the socion. They suffer from lack of fundamentally new information. Energizers of small groups who must break up large groups into smaller units to manage effectively. SLE and ESE solve concrete, immediate problems; IEE and LIE unite on the basis of romanticism, captivated by daring ideas.", thermo: "Energy storage + distribution" },
+              { name: "Info Accumulators", types: "ILI · EII · LSI · SEI", color: C.accent2, desc: "Specialize in informatics of large groups but suffer from lack of energy. ILI accumulates scientific or philosophical information, LSI accumulates operational or managerial information (both make excellent collectors), EII accumulates humanitarian information, SEI accumulates social information.", thermo: "Energy → Information (absorbing)" },
+              { name: "Info Generators", types: "LII · IEI · SLI · ESI", color: C.accent3, desc: "Translate energy into information. They function as stabilizers in the socion, specializing in informatics of small groups of similar-minded individuals. IEI and LII can unite a small group on the basis of novel interesting information; SLI and ESI engage in solving problems of survival and well-being.", thermo: "Energy → Information (crystallizing)" },
+            ].map((g, i) => (
+              <div key={i} style={{ background: `${g.color}06`, border: `1px solid ${g.color}18`, borderRadius: 10, padding: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: g.color, marginBottom: 2 }}>{g.name}</div>
+                <div style={{ fontSize: 10, color: C.textDim, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>{g.types}</div>
+                <Tag label={g.thermo} color={g.color} />
+                <SmallProse style={{ color: C.textMuted, marginTop: 10 }}>{g.desc}</SmallProse>
+              </div>
+            ))}
+          </div>
+          <SmallProse style={{ marginTop: 12, color: C.textMuted }}>Notice the asymmetry: Energy Generators and Carriers are extraverted-leading groups (high-energy), while Info Accumulators and Generators are introverted-leading groups (high-information). This maps directly onto Gulenko's core insight: extraversion is the energetic constituent, introversion is the informational constituent, and the quadra cycle converts between these two currencies. Each quadra contains one type from each of the four benefit-ring roles, ensuring every phase has access to all four metabolic functions.</SmallProse>
+        </Card>
+
+        <Card>
+          <SectionTitle>Anti-Quadras: The Shadow Dynamics</SectionTitle>
+          <Prose>Each quadra has an anti-quadra whose valued elements are precisely its subdued elements. Alpha's anti-quadra is Gamma; Beta's is Delta. Anti-quadras represent the <strong>maximum value tension</strong> in the socion, the civilizational orientations most difficult to reconcile. Alpha's open curiosity clashes with Gamma's selective pragmatism; Beta's hierarchical collectivism clashes with Delta's decentralized individualism. Yet each anti-quadra pair also contains the <em>complementary resources</em> the other most desperately needs: Alpha needs Gamma's ability to monetize; Gamma needs Alpha's ability to innovate without profit motive. Beta needs Delta's moral sustainability; Delta needs Beta's mobilization capacity.</Prose>
+        </Card>
+      </>}
+
+      {/* FOOTER */}
+      <div style={{ textAlign: "center", marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
+        <p style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+          SOURCES: Gulenko VV (Clock of the Socion, Quadral Estafette, Benefit Rings, Quadra Roles, SHS quadra articles) · Vincent V (Quadra Sociology, Model A, Dichotomy Spaces, Mandalas) · Talanov VL (socionavigator.com political values, axes, Cooperation/Competition statistics) · sociotype.xyz (dichotomy intercorrelations) · OpenSocionics · Wikisocion · Stratiyevskaya · Danidin · Beat (Tetrachotomy Compendium) · Cloninger CR (TCI) · DeYoung CG (Big Five Aspects) · HEXACO model
+        </p>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<QuadraReport />, document.getElementById('root'));
+</script>
+</body>
+</html>
