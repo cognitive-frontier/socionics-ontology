@@ -45,7 +45,25 @@
   };
 
   const App = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    // Initial sidebar state: stored preference wins; otherwise responsive default
+    // (expanded ≥768px, collapsed below). This matches Tailwind's md breakpoint and
+    // mirrors how production tools like Notion/Linear behave on first visit.
+    const getInitialSidebar = () => {
+      if (typeof window === 'undefined') return true;
+      try {
+        const stored = window.localStorage.getItem('ontology-sidebar-open');
+        if (stored !== null) return stored === 'true';
+      } catch (e) { /* localStorage disabled (private mode, etc.) */ }
+      return window.innerWidth >= 768;
+    };
+    const [sidebarOpen, setSidebarOpen] = useState(getInitialSidebar);
+    const toggleSidebar = () => {
+      setSidebarOpen(prev => {
+        const next = !prev;
+        try { window.localStorage.setItem('ontology-sidebar-open', String(next)); } catch (e) {}
+        return next;
+      });
+    };
     
     // Map your 10 articles here. 
     // The `file` property MUST match the exact filename in your folder.
@@ -78,7 +96,7 @@
               </span>
             )}
             <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              onClick={toggleSidebar}
               className="p-1.5 rounded-lg hover:bg-[#252538] text-gray-400 hover:text-white transition-colors"
             >
               <Icons.Menu />

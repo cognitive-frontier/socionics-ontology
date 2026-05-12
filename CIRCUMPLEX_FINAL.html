@@ -50,6 +50,12 @@
     position: relative;
   }
   .diagram-wrap svg { overflow: visible; display: block; width: 100%; height: auto; }
+  @media (max-width: 540px) {
+    .diagram-wrap {
+      max-width: 86vw;
+      padding: 7% 4% 9%;
+    }
+  }
   #tooltip {
     position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
     background: rgba(20,20,32,0.92); backdrop-filter: blur(12px);

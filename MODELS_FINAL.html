@@ -312,20 +312,20 @@ const SG_TABLES={
   club:{
     label:"Club", labelXyz:"Activity Disposition",
     members:{
-      "Researchers (NT)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
-      "Pragmatists (ST)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
-      "Socialites (SF)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
-      "Humanitarians (NF)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
+      "Researchers (xNTx)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
+      "Pragmatists (xSTx)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
+      "Socialites (xSFx)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
+      "Humanitarians (xNFx)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
     }
   },
   // 3. Temperament
   temperament:{
     label:"Temperament", labelXyz:"Temperament",
     members:{
-      "Flexible-Maneuvering (EP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
-      "Linear-Assertive (EJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
-      "Receptive-Adaptive (IP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
-      "Rigid-Stable (IJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
+      "Flexible-Maneuvering (ExxP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
+      "Linear-Assertive (ExxJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
+      "Receptive-Adaptive (IxxP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
+      "Rigid-Stable (IxxJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
     }
   },
   // 1. Stimulus / Immersed in
@@ -352,20 +352,20 @@ const SG_TABLES={
   perceptual:{
     label:"Perceptual Group", labelXyz:"Perceptual Orientation",
     members:{
-      "Associative (NP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
-      "Dissociative (NJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
-      "Commutative (SP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
-      "Distributive (SJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
+      "Associative (xNxP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
+      "Dissociative (xNxJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
+      "Commutative (xSxP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
+      "Distributive (xSxJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
     }
   },
   // 14. Argumentation Group
   argumentation:{
     label:"Argumentation Group", labelXyz:"Argumentation Style",
     members:{
-      "Restructors (TP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
-      "Constructors (TJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
-      "Diplomats (FP)":   {xyz:"Diplomat",    types:["IEE","SEE","IEI","SEI"], detail:"Descriptive, conciliatory, fills the gap with breadth"},
-      "Guardians (FJ)":   {xyz:"Guardian",    types:["EIE","ESE","EII","ESI"], detail:"Interprets through authority and moral consensus"},
+      "Restructors (xxTP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
+      "Constructors (xxTJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
+      "Diplomats (xxFP)":   {xyz:"Diplomat",    types:["IEE","SEE","IEI","SEI"], detail:"Descriptive, conciliatory, fills the gap with breadth"},
+      "Guardians (xxFJ)":   {xyz:"Guardian",    types:["EIE","ESE","EII","ESI"], detail:"Interprets through authority and moral consensus"},
     }
   },
   // 11. Romance Style / Primal Social Role
@@ -474,7 +474,7 @@ const Badge=({label,color,filled})=>(
 const SectionDivider=({label,color=C.accent})=>(
   <div style={{display:"flex",alignItems:"center",gap:14,margin:"36px 0 20px"}}>
     <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,${color}30)`}}/>
-    <span style={{fontFamily:"'Inter',sans-serif",fontSize:14,letterSpacing:3,textTransform:"uppercase",color,fontWeight:800}}>{label}</span>
+    <span style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:13,letterSpacing:4,textTransform:"uppercase",color,fontWeight:600}}>{label}</span>
     <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,${color}30)`}}/>
   </div>
 );

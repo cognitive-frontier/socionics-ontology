@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The 24-Dichotomy Socion &amp; the 16-Element Framework</title>
+<title>The 24-Dichotomy &amp; the 16-Element Socion</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;--text:#e8e6e3;--textMuted:#9a96a0;--textDim:#6a6670;--accent1:#c8a0ff;--accent2:#70d4a8;--accent3:#ff9070;--accent4:#70b8ff;--tencer:#ffd166;--reinin:#70d4a8;--conjunct:#ff6b9d;--hybrid:#c8a0ff;--conventional:#70b8ff;--pos:#a8d8a0;--neg:#d8a0a0;--asking:#a0c8d8;--declaring:#d8c8a0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+@media (max-width:540px){body{overflow-x:hidden}body img,body svg,body canvas{max-width:100%;height:auto}}
 .mono{font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px;letter-spacing:.5px;color:var(--textDim)}
 .display{font-family:'Playfair Display',Georgia,serif}
 .card{background:var(--card);border:1px solid #2a2a3a30;border-radius:12px;padding:20px 18px;margin-bottom:16px}
@@ -55,7 +56,7 @@ td{padding:8px 10px;border-bottom:1px solid #2a2a3a20;color:var(--textMuted)}
 <body>
 <div class="hero">
   <span class="mono" style="color:var(--accent1)">Socionics · Structural Theory</span>
-  <h1>The 24-Dichotomy Socion &amp; the 16-Element Framework</h1>
+  <h1>The 24-Dichotomy &amp; the 16-Element Socion</h1>
   <p class="body" style="max-width:580px;margin:0 auto;text-align:center;font-size:13px">How Reinin Space, Minaiev Space, Hybrid Elements, and the Presence Cube connect to form a unified algebraic model of personality.</p>
 </div>
 <div class="content">
@@ -73,7 +74,7 @@ const mono=(t,c)=>`<span class="mono" style="color:${c||C.textDim}">${t}</span>`
 const dicrow=(name,code,color,poles)=>`<div class="dicrow"><span class="code" style="color:${color}">${code}</span><span class="name">${name}</span><span class="poles">${poles}</span></div>`;
 const elCard=(sym,name,dics,isH)=>{const c=isH?C.hybrid:C.conventional;const row1=dics.slice(0,3).map(d=>badge(d.l,d.c,true)).join('');const row2=dics.slice(3).map(d=>badge(d.l,d.c,true)).join('');return`<div class="el-card" style="background:${c}08;border:1px solid ${c}20"><div class="sym" style="color:${c}">${sym}</div><div class="lbl">${name}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${row1}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px">${row2}</div></div>`;};
 
-function vennSVG(){return`<svg viewBox="0 0 580 290" style="width:100%;max-width:560;display:block;margin:18px auto">
+function vennSVG(){return`<svg viewBox="0 0 580 290" style="width:100%;max-width:560px;display:block;margin:18px auto">
 <ellipse cx="200" cy="140" rx="170" ry="110" fill="${C.reinin}10" stroke="${C.reinin}" stroke-width="1.8"/>
 <ellipse cx="380" cy="140" rx="170" ry="110" fill="${C.tencer}10" stroke="${C.tencer}" stroke-width="1.8"/>
 <text x="290" y="92" text-anchor="middle" fill="${C.conjunct}" font-family="'JetBrains Mono',monospace" font-size="10.5" font-weight="700">CONJUNCT PLANE</text>
@@ -96,7 +97,7 @@ const el={f1:"Ne",f2:"Fe",f3:"Si",f4:"Fi",f5:"Se",f6:"Ti",f7:"Ni",f8:"Te"};
 const edges=[["f1","f2"],["f1","f6"],["f1","f8"],["f2","f3"],["f2","f5"],["f6","f3"],["f6","f7"],["f8","f5"],["f8","f7"],["f3","f4"],["f5","f4"],["f7","f4"]];
 const dim=[["f1","f8"],["f6","f7"],["f5","f2"],["f4","f3"]];
 const pri=[["f1","f2"],["f6","f3"],["f5","f8"],["f4","f7"]];
-let s=`<svg viewBox="0 0 400 330" style="width:100%;max-width:400;display:block;margin:0 auto">`;
+let s=`<svg viewBox="0 0 400 330" style="width:100%;max-width:400px;display:block;margin:0 auto">`;
 edges.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.border}" stroke-width="1"/>`;});
 dim.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent3}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
 pri.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent4}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
@@ -111,7 +112,7 @@ const y1=42,y2=97,leftLabelX=24,axisStartX=78;
 // Columns: Intuition (was N, now leftmost), Irrational (was P/J), Pos/Neg or E/I, Ask/Dec or St/Dy, Mer/Ser or Jud/Dec
 const cols=[axisStartX+50,axisStartX+150,axisStartX+250,axisStartX+350,axisStartX+450];
 const svgW=axisStartX+520;
-let s=`<svg viewBox="0 0 ${svgW} 140" style="width:100%;max-width:${svgW};display:block;margin:12px auto">`;
+let s=`<svg viewBox="0 0 ${svgW} 140" style="width:100%;max-width:${svgW}px;display:block;margin:12px auto">`;
 // Left-side example labels (Ne above, N+ below) showing the worked examples being tracked
 s+=`<text x="${leftLabelX}" y="${y1+4}" fill="${C.conventional}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">Ne</text>`;
 s+=`<text x="${leftLabelX}" y="${y2+4}" fill="${C.hybrid}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">N+</text>`;
@@ -405,9 +406,9 @@ card(h3("The Resolution: The Dual-Cube Structure",C.hybrid)+p('The hybrid elemen
 card(h3("From Cube to Torus: The Unified Architecture",C.accent4)+`<div class="callout" style="background:linear-gradient(135deg,${C.accent4}10,${C.hybrid}10);border:1px solid ${C.accent4}30">`+p('The dual-cube resolution is itself a stepping stone. Where two interlocking cubes need an external scaffold to relate them, the <strong>Torus Model</strong> dissolves the scaffold entirely: every relationship the Presence Cube can express, including the Dem/Ari toggle of Model A and the Pro/Res toggle of Model G, lives natively on a single toroidal surface. The torus represents what both cubes do <em>simultaneously</em>, with no model-switching needed.','margin-bottom:8px;color:'+C.text)+p('More importantly, the torus reveals "elements" that the cube literally cannot show. The 8 hybrid elements (N+, N\u2212, T+, T\u2212, S+, S\u2212, F+, F\u2212) appear naturally as antipodal nodes on the inner ring of the torus, structurally indistinguishable from the conventional 8 except by which sublattice they occupy. The cube has 8 vertices and runs out of room; the torus has 16 nodes arranged as 8 rings, with each cardinal cross-section housing all four elements of one Aspect simultaneously. The hidden half of the Socion was always there; it just needed the right surface to land on. The next section makes that surface concrete.','margin-bottom:0')+`</div>`,C.accent4)},
 
 {label:"16 Element Torus",color:C.hybrid,html:()=>
-card(h2("The Toroidal Architecture",C.accent4)+p('Picking up where the Presence Cube left off: when the Reinin and Minaiev dichotomy spaces are unified on a single surface, the 16 information elements organize into a toroidal lattice with <strong>8 rings</strong> and <strong>32 nodes</strong> total. The 8 rings are parameterized by both poles of four addressing dichotomies: '+badge("E/I",C.conventional)+' '+badge("St/Dy",C.conventional)+' '+badge("Ask/Dec",C.hybrid)+' '+badge("Pos/Neg",C.hybrid)+'. Half of the 32 nodes lie in the hemisphere where the 4 Aspects (N, T, S, F) intersect with the 4 Axes (Judicious, Merry, Decisive, Serious). The other half occupy the dual hemisphere where the 4 Clubs intersect with the 4 Quadras.')+p('This section focuses on the <strong>Aspect \u00d7 Axis hemisphere</strong>, which produces the 16 information elements at the heart of Model A and Model G. Each cell in the matrix below is the intersection of one Aspect (column) with one Axis (row). Conventional and hybrid elements interleave in a checkerboard pattern: where an irrational Aspect meets an irrational Axis (or rational meets rational) a conventional element emerges; where the parities cross, a hybrid element appears.')+aspectAxisMatrix(),C.accent4)+
+card(h2("The Unified Torus Model (The Brain Bagel)",C.accent4)+p('All 16 elements lie on a single toroidal surface. The conventional 8 form an outer ring, the hybrid 8 form an inner ring, and antipodal pairs across the torus correspond to the Jungian counterparts (Ne\u2194Se, Ti\u2194Fi, etc.) that compete for the same processing channel. The dashed diagonal lines represent the two interlocking sublattice rings, one parameterized by Reinin-unique addressing dichotomies (E/I, St/Dy) and the other by Minaiev-unique ones (Pos/Neg, Ask/Dec).')+torusSVG()+p('Antipodal positioning encodes the fundamental opposition: when the Base function activates, its counterpart is suppressed to the Ignoring position because both demand the same energetic-informational channel. The ring structure also makes visible why Model A and Model G feel like different theories: they are projections of the same toroidal lattice onto different sublattice rings.','margin-top:14px;font-size:12px'),C.accent4)+
 
-card(h3("The Unified Torus Model (The Brain Bagel)",C.accent4)+p('All 16 elements lie on a single toroidal surface. The conventional 8 form an outer ring, the hybrid 8 form an inner ring, and antipodal pairs across the torus correspond to the Jungian counterparts (Ne\u2194Se, Ti\u2194Fi, etc.) that compete for the same processing channel. The dashed diagonal lines represent the two interlocking sublattice rings, one parameterized by Reinin-unique addressing dichotomies (E/I, St/Dy) and the other by Minaiev-unique ones (Pos/Neg, Ask/Dec).')+torusSVG()+p('Antipodal positioning encodes the fundamental opposition: when the Base function activates, its counterpart is suppressed to the Ignoring position because both demand the same energetic-informational channel. The ring structure also makes visible why Model A and Model G feel like different theories: they are projections of the same toroidal lattice onto different sublattice rings.','margin-top:14px;font-size:12px'),C.accent4)+
+card(h3("The Toroidal Architecture",C.accent4)+p('Picking up where the Presence Cube left off: when the Reinin and Minaiev dichotomy spaces are unified on a single surface, the 16 information elements organize into a toroidal lattice with <strong>8 rings</strong> and <strong>32 nodes</strong> total. The 8 rings are parameterized by both poles of four addressing dichotomies: '+badge("E/I",C.conventional)+' '+badge("St/Dy",C.conventional)+' '+badge("Ask/Dec",C.hybrid)+' '+badge("Pos/Neg",C.hybrid)+'. Half of the 32 nodes lie in the hemisphere where the 4 Aspects (N, T, S, F) intersect with the 4 Axes (Judicious, Merry, Decisive, Serious). The other half occupy the dual hemisphere where the 4 Clubs intersect with the 4 Quadras.')+p('This section focuses on the <strong>Aspect \u00d7 Axis hemisphere</strong>, which produces the 16 information elements at the heart of Model A and Model G. Each cell in the matrix below is the intersection of one Aspect (column) with one Axis (row). Conventional and hybrid elements interleave in a checkerboard pattern: where an irrational Aspect meets an irrational Axis (or rational meets rational) a conventional element emerges; where the parities cross, a hybrid element appears.')+aspectAxisMatrix(),C.accent4)+
 
 card(h2("The 8 Conventional Elements",C.conventional)+p('Each conventional IME is defined by 7 dichotomies. Three come from temperament (P/J, E/I, Static/Dynamic), one is the base aspect (N/S or T/F), and the remaining three are "cross-dichotomies" that natively match the element\'s rational/irrational domain.')+p('The addressing dichotomies, '+badge("E/I",C.conventional)+' and '+badge("St/Dy",C.conventional)+', are <em>Reinin-unique</em>. These elements live on the Reinin sublattice.')+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:14px auto 0">${convEls.map(e=>elCard(e.s,"Conventional",e.d,false)).join('')}</div>`+`<div style="margin-top:12px;text-align:center">${mono("Top row: Extraverted (Ne, Se) \u00b7 Bottom row: Introverted (Ti, Fi) \u00b7 Showing 4 of 8")}</div>`,C.conventional)+
 
