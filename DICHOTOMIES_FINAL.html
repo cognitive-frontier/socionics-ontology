@@ -9,7 +9,8 @@
 :root{--bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;--text:#e8e6e3;--textMuted:#9a96a0;--textDim:#6a6670;--accent1:#c8a0ff;--accent2:#70d4a8;--accent3:#ff9070;--accent4:#70b8ff;--tencer:#ffd166;--reinin:#70d4a8;--conjunct:#ff6b9d;--hybrid:#c8a0ff;--conventional:#70b8ff;--pos:#a8d8a0;--neg:#d8a0a0;--asking:#a0c8d8;--declaring:#d8c8a0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
-@media (max-width:540px){body{overflow-x:hidden}body img,body svg,body canvas{max-width:100%;height:auto}}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:540px){body img,body svg,body canvas{max-width:100%;height:auto}}
 .mono{font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px;letter-spacing:.5px;color:var(--textDim)}
 .display{font-family:'Playfair Display',Georgia,serif}
 .card{background:var(--card);border:1px solid #2a2a3a30;border-radius:12px;padding:20px 18px;margin-bottom:16px}
@@ -18,13 +19,17 @@ h3.sec{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:6
 p.body{font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:var(--textMuted);margin:0 0 12px}
 .badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;font-family:'JetBrains Mono','Fira Code',monospace;letter-spacing:.5px}
 .badge-sm{padding:2px 7px;font-size:9px}
-.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:28px;padding:12px 0;border-bottom:1px solid var(--border)}
-.nav button{padding:7px 16px;border-radius:8px;font-size:12px;font-family:-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-weight:600;letter-spacing:-.2px;background:transparent;color:var(--textDim);border:1px solid transparent;cursor:pointer;transition:all .2s}
+.nav{display:flex;gap:4px;overflow-x:auto;overflow-y:hidden;margin-bottom:28px;padding:0 4px;border-bottom:1px solid var(--border);scrollbar-width:thin;scrollbar-color:#3a3a4a transparent;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{height:6px}
+.nav::-webkit-scrollbar-track{background:transparent}
+.nav::-webkit-scrollbar-thumb{background:#3a3a4a;border-radius:3px}
+.nav::-webkit-scrollbar-thumb:hover{background:#4a4a5a}
+.nav button{padding:12px 16px;border:none;background:transparent;color:var(--textDim);font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.3px;font-family:'Inter',-apple-system,sans-serif;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .nav button.active{font-weight:700}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .grid-el{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
-.grid-conj{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.grid-conj{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-top:10px;min-width:0}
 .dicrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #2a2a3a20}
 .dicrow .code{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;width:62px;flex-shrink:0}
 .dicrow .name{font-family:'Source Serif 4',Georgia,serif;font-size:13px;color:var(--text);flex:1}
@@ -454,7 +459,7 @@ card(`${mono("Sources",C.textDim)}${p('Presence Cube: Minaiev, Vincent (2020)','
 let active=0;
 function render(){
   const nav=document.getElementById('nav');
-  nav.innerHTML=sections.map((s,i)=>`<button class="${i===active?'active':''}" style="${i===active?`background:${s.color}20;color:${s.color};border-color:${s.color}40`:''}" onclick="setActive(${i})">${s.label}</button>`).join('');
+  nav.innerHTML=sections.map((s,i)=>`<button class="${i===active?'active':''}" style="${i===active?`color:${s.color};border-bottom-color:${s.color}`:''}" onclick="setActive(${i})">${s.label}</button>`).join('');
   document.getElementById('sections').innerHTML=sections[active].html();
   // Init any animated canvases in the freshly-rendered section
   document.querySelectorAll('canvas[data-torus]').forEach(initTorus);
