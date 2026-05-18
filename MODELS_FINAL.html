@@ -682,7 +682,7 @@ function ModelGVisualizer({type}){
       </div>
       <div style={{textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▼ PRIVATE: Close Distance (Territory)</div>
     </div>
-    <div style={{display:"flex",gap:3,marginTop:8,justifyContent:"center",flexWrap:"wrap"}}>
+    <div style={{display:"grid",gridTemplateColumns:"auto auto",gap:6,marginTop:8,justifyContent:"center"}}>
       {[{l:"E-Maximum",p:"G1+G5",c:EC.Maximum},{l:"E-Optimum",p:"G2+G6",c:EC.Optimum},{l:"E-Minimum",p:"G3+G7",c:EC.Minimum},{l:"E-Pessimum",p:"G4+G8",c:EC.Pessimum}].map(e=>(
         <div key={e.l} style={{fontSize:8,color:e.c,padding:"2px 8px",borderRadius:4,border:`1px solid ${e.c}33`,background:e.c+"0a"}}>
           <span style={{fontWeight:700}}>{e.l}</span> <span style={{color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>[{e.p}]</span>
@@ -1094,6 +1094,7 @@ function App(){
 
   return(<div style={{minHeight:"100vh",background:C.bg,paddingBottom:60}}>
     <div style={{background:`linear-gradient(180deg,${ac}08 0%,transparent 100%)`,borderBottom:`1px solid ${C.border}`,padding:"38px 24px 24px",textAlign:"center"}}>
+      <div style={{fontFamily:"'JetBrains Mono', monospace",fontSize:11,color:C.textDim,marginBottom:10}}>Section VII · Models Primer</div>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:34,fontWeight:700,margin:0,color:"#ffffff",letterSpacing:0.3}}>Socionics Model Architecture</h1>
       <div style={{fontFamily:"'Crimson Text','Playfair Display',Georgia,serif",fontSize:15,fontStyle:"italic",color:C.textMuted,marginTop:8,letterSpacing:0.2}}>Information Metabolism (Model A) & Energy Metabolism (Model G)</div>
     </div>

@@ -108,9 +108,9 @@ const RelationCard = ({ name, subtitle, color, mechanics, examples, signature, q
     <p style={{ fontSize: 12.5, color: C.text, lineHeight: 1.65, margin: "0 0 12px" }}>{mechanics}</p>
     {quality && <div style={{ fontSize: 11, color: `${color}cc`, fontStyle: "italic", marginBottom: 10, lineHeight: 1.5 }}>{quality}</div>}
     {examples && (
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(78px, 1fr))", gap: 4, marginTop: 10 }}>
         {examples.map((e, i) => (
-          <span key={i} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: `${color}14`, color: `${color}dd`, border: `1px solid ${color}22`, fontFamily: "'JetBrains Mono', monospace" }}>{e}</span>
+          <span key={i} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: `${color}14`, color: `${color}dd`, border: `1px solid ${color}22`, fontFamily: "'JetBrains Mono', monospace", textAlign: "center" }}>{e}</span>
         ))}
       </div>
     )}
@@ -287,7 +287,7 @@ function IntertypeReport() {
       {/* HEADER */}
       <div style={{ borderBottom: `1px solid ${C.border}`, padding: "64px 20px 32px", textAlign: "center", background: `radial-gradient(ellipse at top, ${C.asymmetric}08, transparent 60%)` }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, letterSpacing: 4, color: C.textDim, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>COMPLETE SOCIONICS ONTOLOGY · VOL. V</div>
+          <div style={{ fontSize: 11, letterSpacing: 0.3, color: C.textDim, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>Section IX · ITR Primer</div>
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 44, color: C.text, fontWeight: 700, letterSpacing: -0.5, marginBottom: 14, lineHeight: 1.1 }}>
             Intertype Relations
           </h1>

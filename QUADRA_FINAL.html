@@ -286,8 +286,8 @@ function QuadraReport() {
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px" }}>
       {/* HEADER */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <div style={{ fontSize: 11, letterSpacing: 6, textTransform: "uppercase", color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>Socionics Primer · Section IV</div>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
+        <Mono color={C.accent1}>Section V · Axes/Quadras Primer</Mono>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginTop: 14, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
         <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, background: `linear-gradient(135deg, ${C.alpha}, ${C.beta}, ${C.gamma}, ${C.delta})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 16 }}>the Clock of the Socion</h1>
         <p style={{ fontSize: 13, color: C.textMuted, maxWidth: 640, margin: "0 auto", lineHeight: 1.7 }}>
           Quadras are groups of four types sharing the same valued information elements, the psychological "wavelength" that determines what a group naturally gravitates toward in discourse, governance, and civilization-building. They are the temporal engine of the Socion: each quadra represents a phase in the life-cycle of any complex system.
@@ -308,7 +308,7 @@ function QuadraReport() {
           <SectionTitle color={C.accent3}>Valued Elements & Model A</SectionTitle>
           <Prose>Each quadra is defined by which four of the eight IMEs its members place in <strong>valued</strong> positions (Ego + Super-Id). Valued elements are those a person is either consciously strong in (Ego functions 1 & 2) or unconsciously drawn to and grateful to receive (Super-Id functions 5 & 6). The remaining four elements occupy <strong>subdued</strong> positions (Super-Ego + Id), areas of conscious weakness or deliberate non-engagement.</Prose>
           <Prose>Quadra values are about <em>preference</em>, not strength. An ILE and a SEI both value Ne over Ni, even though ILE is consciously strong in Ne (1st function) while SEI merely welcomes it (5th function). This shared preference creates the unspoken alignment that makes quadra-mates feel like they're "on the same page."</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, margin: "16px 0" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10, margin: "16px 0" }}>
             {quadraOrder.map(k => {
               const qd = Q[k];
               return (
@@ -442,7 +442,7 @@ function QuadraReport() {
       {/* ═══════════════ QUADRA PROFILES ═══════════════ */}
       {activeSection === "profiles" && <>
         <Divider label="Select a Quadra" color={C.accent1} />
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: 8, justifyContent: "center", marginBottom: 24 }}>
           {quadraOrder.map(k => (
             <TabBtn key={k} label={`${Q[k].greek} ${Q[k].name}`} active={activeQuadra === k} onClick={() => setActiveQuadra(k)} color={Q[k].color} />
           ))}
@@ -471,7 +471,7 @@ function QuadraReport() {
         </Card>
 
         {/* Multi-lens analysis */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
           <LensCard lens="Communication & Discourse" color={q.color} content={q.communication} />
           <LensCard lens="Political Organization" color={q.color} content={q.political} />
           <LensCard lens="Generational Cycle Role" color={q.color} content={q.clock} />
@@ -513,7 +513,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.accent4}>Quadra Transitions</SectionTitle>
           <Prose>Transitions between quadras are not smooth handoffs. Each involves the exhaustion of one organizing principle and the emergence of a fundamentally different one. The system reaches a critical point where the current quadra's core strength becomes its fatal weakness, creating the vacuum that the next quadra fills.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
             {[
               { from: "Α → Β", color: C.alpha, title: "Prototype → Power", desc: "Alpha generates brilliant ideas and prototypes but lacks the organized force to implement them at scale. Curiosity, the quadra's greatest gift, also makes it porous to infiltration. New tools and techniques awaken instincts of power and possession, and the commune can no longer hold. The system needs hierarchy, mobilization, and a collective will to act." },
               { from: "Β → Γ", color: C.beta, title: "Order → Freedom", desc: "Beta builds formidable structures but inevitably over-bureaucratizes. The hierarchy petrifies into dogma, reputation replaces function, and the system loses its capacity to adapt. Yearning for individual freedom and material reward grows beneath the rigid surface until the centralized structure can no longer contain it, collapsing into Gamma's open competition." },
@@ -540,7 +540,7 @@ function QuadraReport() {
           <Prose>Vladimir Vincent's Quadra Sociology maps each quadra to a form of social organization, a cultural orientation (following Triandis' horizontal/vertical × individualism/collectivism matrix), and a set of historical exemplars. Gulenko and Talanov independently validate many of these mappings through their political-values research at socionavigator.com.</Prose>
         </Card>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
           {quadraOrder.map(k => {
             const qd = Q[k];
             const socData = {
@@ -572,7 +572,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.teal}>The Four Intra-Quadra Roles</SectionTitle>
           <Prose>Within each quadra, the four types are not interchangeable. Each occupies a distinct functional role in the quadra's internal lifecycle, determined by the <strong>Benefit Ring</strong> (zakaz), the asymmetric energy-transfer chain that connects all 16 types in a single directed cycle. The Benefit Ring is the engine of quadra succession: it determines who energizes whom, who initiates, who implements, who stabilizes, and who corrects. Gulenko identifies four universal roles that recur across every quadra.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
             {[
               { role: "Leader / Initiator", desc: "Opens the quadra's cycle. Discovers or articulates the core idea, sets the direction, and generates initial momentum. Translates the quadra's values into a concrete agenda that others can rally around. In Alpha: ILE (the Seeker). In Beta: EIE (the Mentor). In Gamma: SEE (the Politician). In Delta: LSE (the Administrator).", color: C.accent4, types: "ILE · EIE · SEE · LSE" },
               { role: "Implementer / Disseminator", desc: "Takes the leader's vision and gives it material force. Mobilizes people and resources, builds networks, spreads the message. Converts abstract direction into tangible activity. In Alpha: ESE (the Enthusiast). In Beta: SLE (the Marshal). In Gamma: LIE (the Entrepreneur). In Delta: EII (the Humanist).", color: C.accent1, types: "ESE · SLE · LIE · EII" },
@@ -624,7 +624,7 @@ function QuadraReport() {
           <Prose>Gulenko's deepest insight is that the socion-clock models a <strong>thermodynamic cycle</strong>: energy and information are inversely traded as a system matures. The extraverted (energetic) constituent declines while the introverted (informational) constituent rises. This maps onto the fundamental physics of dissipative structures: order is created by consuming energy, and when energy runs out, the structure must either be renewed from outside or collapse.</Prose>
         </Card>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
           {[
             { q: Q.alpha, phase: "Genesis", season: "Spring", icon: "", energy: "Maximum Potential", entropy: "Minimum", desc: "Stored novelty, unexploited possibility. Like a wound spring or a charged battery. The system is informationally rich but structurally undifferentiated, a soup of ideas without hierarchy. Fragile to perturbation but infinitely renewable.", analog: "Seed germination, Big Bang nucleosynthesis, brainstorming session, startup ideation" },
             { q: Q.beta, phase: "Mobilization", season: "Summer", icon: "", energy: "Maximum Kinetic", entropy: "Rising Fast", desc: "Potential converted to organized force. The system burns hot, rapid expansion, hierarchy formation, ideological crystallization. Maximum power output but thermodynamically unsustainable. Energy expenditure exceeds input.", analog: "Explosive growth, imperial expansion, rocket launch, revolutionary movement" },
@@ -653,7 +653,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.rose}>Four Thermodynamic Roles in the Socion</SectionTitle>
           <Prose>The Benefit Ring does not merely connect types in a social-order chain. Gulenko identifies it as the socion's primary <strong>energy-information metabolism system</strong>. The 16 types divide into four groups of four based on their role in converting between energy and information. These groups cut across quadra boundaries, revealing the deeper thermodynamic substrate on which quadra succession operates.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
             {[
               { name: "Energy Generators", types: "ILE · EIE · LSE · SEE", color: C.accent4, desc: "Translate information into energy. They ignite energy processes in their environment, uniting small groups into larger ones and starting chain reactions in society. ILE and EIE are innovators and fighters for ideas; SEE and LSE draw people in for collective effects. They specialize in the energetics of large groups and are the most 'inflationary' types.", thermo: "Information → Energy" },
               { name: "Energy Carriers", types: "LIE · IEE · SLE · ESE", color: C.accent1, desc: "The most saturated with energy in the socion. They suffer from lack of fundamentally new information. Energizers of small groups who must break up large groups into smaller units to manage effectively. SLE and ESE solve concrete, immediate problems; IEE and LIE unite on the basis of romanticism, captivated by daring ideas.", thermo: "Energy storage + distribution" },

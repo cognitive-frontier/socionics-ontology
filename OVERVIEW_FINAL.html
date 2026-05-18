@@ -143,7 +143,7 @@ function FoundationsReport(){
     <div style={{fontFamily:"'Inter',-apple-system,sans-serif",background:C.bg,color:C.text,minHeight:"100vh",padding:"0 0 60px"}}>
       {/* ═══ HERO ═══ */}
       <div style={{background:`radial-gradient(ellipse at 20% 0%,${C.origins}06,transparent 55%),radial-gradient(ellipse at 80% 0%,${C.empirical}05,transparent 55%),radial-gradient(ellipse at 50% 100%,${C.dich}04,transparent 50%)`,padding:"48px 28px 36px",borderBottom:`1px solid ${C.border}`,textAlign:"center"}}>
-        <Mono color={C.teal}>The Complete Socionics Ontology</Mono>
+        <Mono color={C.teal}>Section I · Foundations Primer</Mono>
         <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"clamp(26px,5vw,40px)",fontWeight:700,lineHeight:1.15,margin:"14px 0",background:`linear-gradient(135deg,${C.text},${C.textMuted})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
           Foundations & Dichotomies
         </h1>
@@ -659,8 +659,8 @@ function FoundationsReport(){
     <Prose>
       Talanov's factor analyses (5,600+ respondents) and sociotype.xyz's independent factor-analytic work converge on a clear hierarchy of dichotomy signal strength. The two sources align closely on the top tier and diverge primarily in naming conventions for the lower tiers. The table below ranks all 15 Reinin dichotomies by their population-average contribution to the overall diversity of personality traits, with Talanov's data as the primary source and sociotype.xyz percentages noted where available.
     </Prose>
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+      <table style={{width:"100%",minWidth:580,borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
         <thead>
           <tr>
             {["#","Dichotomy","Pop. Avg.","Subj. Max","XYZ %","Tier"].map((h,i)=>(
@@ -852,8 +852,8 @@ function FoundationsReport(){
     <Prose>
       The 15 dichotomies naturally organize into a <em>3x3 triadic architecture</em> that maps directly onto the three fundamental small group types in socionics. Three dichotomies determine Temperament (how you process), three determine Club/Strength (what you process), and three determine Quadra Values (what you prioritize). The remaining six dichotomies act as products bridging these triads.
     </Prose>
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+      <table style={{width:"100%",minWidth:580,borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
         <thead>
           <tr>
             {["Code","Name","Pole (+)","Pole (-)","Order","Semantic Core"].map((h,i)=>(
@@ -913,8 +913,8 @@ function FoundationsReport(){
     <Prose>
       The 8 Minaiev-exclusive dichotomies arise from decomposing two fundamental tetrachotomies. The <em>Jungian Aspects mandala</em> (leading function aspect) decomposes into Abstracted/Embodied and Implicit/Explicit for both leading and creative functions. The <em>Jungian Axes mandala</em> decomposes into Generative/Optimizing and Stewarding/Mobilizing for both leading and creative functions. These dichotomies are less widely tested and their semantic content is still being refined.
     </Prose>
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+      <table style={{width:"100%",minWidth:580,borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
         <thead>
           <tr>
             {["Source","Name","Pole (+)","Pole (-)","Types (+)"].map((h,i)=>(
@@ -955,8 +955,8 @@ function FoundationsReport(){
     <Prose>
       The four Jungian basis dichotomies show well-documented correlations with Big Five personality dimensions, providing a bridge between socionics' information-processing framework and mainstream trait psychology. These are not identity mappings but structural correspondences confirmed by Talanov's factor analyses and consistent with decades of MBTI-Big Five correlation research.
     </Prose>
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
+    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+      <table style={{width:"100%",minWidth:580,borderCollapse:"collapse",fontSize:11,color:C.textMuted}}>
         <thead>
           <tr>
             {["Socionics Axis","Big Five Correlate","Direction","Variance","Notes"].map((h,i)=>(
