@@ -567,7 +567,7 @@ function synthesisWheelSVG(){
     const pos=p2c(R_label,midA);
     const pc=COL[s.primary], sc=COL[s.secondary];
     svg+=`<g data-code="${s.code}" class="synth-label" style="pointer-events:none">
-      <text x="${pos.x}" y="${pos.y+5}" text-anchor="middle" font-family="Inter,sans-serif" font-size="17" font-weight="800" stroke="#0a0a0f" stroke-width="2" stroke-linejoin="round" paint-order="stroke"><tspan fill="${pc}">${s.primary}</tspan><tspan fill="${sc}" font-size="14">(${s.secondary})</tspan></text>
+      <text x="${pos.x}" y="${pos.y+5}" text-anchor="middle" font-family="Inter,sans-serif" font-size="21" font-weight="800" stroke="#0a0a0f" stroke-width="2" stroke-linejoin="round" paint-order="stroke"><tspan fill="${pc}">${s.primary}</tspan><tspan fill="${sc}" font-size="17">(${s.secondary})</tspan></text>
     </g>`;
   });
 

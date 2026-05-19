@@ -15,6 +15,11 @@
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
   .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
   .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
+  .grid-4-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-4-2x2 { grid-template-columns: 1fr; } }
+  .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
 { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
@@ -340,7 +345,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginTop: 8 }}>
+          <div className="grid-4-2x2" style={{ marginTop: 8 }}>
             <DyadCard name="Extraverted Judging" code="Je" elements="Te+Fe (Orchestration)" color={C.Je}
               desc="The Differential mode: expands evaluative scope by broadcasting judgments outward. Both Te and Fe are extraverted rational elements: they actively project evaluative standards onto the external world, seeking to organize it according to their respective criteria."
               reinin="E + J + Dynamic"
@@ -448,7 +453,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+          <div className="grid-4-2x2">
             <DyadCard name="Intuition (Conceptualization)" code="N" elements="Ne + Ni" color={C.N}
               desc="The faculty of the non-present: processing information about what is not directly available to the senses. Ne expands possibility-space (divergent); Ni narrows it to essential trajectory (convergent). Together they span the full range of abstract-temporal cognition."
               reinin="Spontaneity · Abstracted · Implicit"
@@ -515,7 +520,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginTop: 8 }}>
+          <div className="grid-4-2x2" style={{ marginTop: 8 }}>
             <DyadCard name="Decisive" code="Se/Ni" elements="Competition" color={C.decisive}
               desc="Convergent perception: volitional force backed by focused foresight. Se grasps the present moment with intensity while Ni envisions the single necessary trajectory. Together: narrow but deep resource engagement, commitment to a specific path, confrontation-readiness."
               reinin="Decisive (Competition)"
@@ -834,7 +839,7 @@ function FunctionsReport() {
               The 16 blocks split into two thermodynamic categories based on the attitudes of the elements involved. <em>Information blocks</em> pair elements of <em>opposite</em> attitude (Pe+Ji or Pi+Je); these are the blocks most formally captured by Model A, which foregrounds the structural topology of information flow through the psyche. <em>Energy blocks</em> pair elements of <em>same</em> attitude (Pe+Je or Pi+Ji); these are the blocks most directly captured by Model G, Gulenko's reformulation that foregrounds how psychic energy is budgeted, expended, and replenished through behavioral output. Both kinds of blocks are present in every type. The difference is which model's formalism makes them most legible.
             </Prose>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginTop: 18 }}>
+            <div className="grid-4-2x2" style={{ marginTop: 18, gap: 16 }}>
               {/* Information Blocks - opposite attitudes */}
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: C.accent2, marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", textAlign: "center", paddingBottom: 6, borderBottom: `1px solid ${C.accent2}30` }}>Information Blocks (Model A)</div>

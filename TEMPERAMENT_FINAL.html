@@ -15,6 +15,11 @@
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
   .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
   .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
+  .grid-4-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-4-2x2 { grid-template-columns: 1fr; } }
+  .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
 { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
@@ -347,7 +352,7 @@ function TemperamentReport() {
           </div>
 
           <Divider label="The Four Temperaments" color={C.accent2} />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="grid-4-2x2" style={{ gap: 12 }}>
             <TempCard name="Flexible-Turning" code="EP" types="SLE · ILE · SEE · IEE" color={C.ep} desc="High energy + low frontal control + static processing. The explosive, novelty-seeking pattern, with broad environmental scanning with minimal self-censorship." traits={["Impulsive","Initiating","Broad","Sanguine"]} />
             <TempCard name="Balanced-Stable" code="IJ" types="LSI · EII · ESI · LII" color={C.ij} desc="Low energy + high frontal control + static processing. The methodical, principle-driven pattern, featuring deep analysis within controlled parameters." traits={["Deliberate","Systematic","Deep","Melancholic"]} />
             <TempCard name="Linear-Assertive" code="EJ" types="ESE · LIE · EIE · LSE" color={C.ej} desc="High energy + high frontal control + dynamic processing. The sustained, directed-action pattern, with organized drive toward external goals." traits={["Driven","Organized","Persistent","Choleric"]} />
@@ -407,13 +412,13 @@ function TemperamentReport() {
             <Prose>
               Each temperament exhibits a characteristic EF signature. Crucially, the three EF components relate to the temperaments in different ways, with each group showing optimal functioning in all but one domain, except for EJ, which is optimal across all three. This asymmetry has profound implications for each temperament's cognitive strengths and developmental edges.
             </Prose>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 20 }}>
+            <div className="grid-4-row" style={{ justifyItems: "center", marginBottom: 20, gap: 16 }}>
               <EFRadial name="Linear-Assertive" code="EJ" color={C.ej} wm={95} ic={95} cf={90} />
               <EFRadial name="Receptive-Adaptive" code="IP" color={C.ip} wm={35} ic={85} cf={90} />
               <EFRadial name="Flexible-Turning" code="EP" color={C.ep} wm={90} ic={35} cf={95} />
               <EFRadial name="Balanced-Stable" code="IJ" color={C.ij} wm={85} ic={90} cf={35} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
+            <div className="grid-4-2x2" style={{ gap: 10 }}>
               {[
                 { code: "EJ", name: "Linear-Assertive", color: C.ej, status: "Optimal across all three", detail: "High cortical excitation (E) provides robust working memory; strong frontal control (J) yields excellent inhibitory control; the combination of adequate energy and organized but outward-directed processing enables flexible set-shifting. This is the executive function 'gold standard': sustained, regulated, and adaptive.", icon: "☆" },
                 { code: "IP", name: "Receptive-Adaptive", color: C.ip, status: "Optimal except Working Memory", detail: "Low excitation (I) limits the energy available for active information maintenance, making working memory the developmental edge. However, low frontal rigidity (P) preserves cognitive flexibility, and the inhibition-dominance of introversion provides a different kind of impulse control, not frontal suppression but passive decay of unnecessary activation.", icon: "◇" },
@@ -516,7 +521,7 @@ function TemperamentReport() {
             <Prose>
               The Lead (position 1) and Role (position 3) functions in Model A have a unique structural relationship: they share the same domain (both judge or both perceive) but are inverted on all other dichotomies. The Role function sits in the Super-Ego block, normatively accessible but energetically expensive. This makes the Lead–Role axis fundamentally a <em>temperament-level</em> phenomenon: the Role asks you to simulate the opposite temperament.
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div className="grid-4-2x2" style={{ gap: 12 }}>
               {[
                 { lens: "Cognitive", color: C.accent3, content: "Role is Lead's 'opposite within same domain': both judge or both perceive, but inverted on all other dichotomies. Creates oscillation: when Lead is active, Role is suppressed. Role in Super-Ego block = normatively accessible but energetically expensive. The system cannot run both simultaneously at full capacity." },
                 { lens: "Behavioral", color: C.accent1, content: "Produces visible 'mask-switching': Lead = natural tempo, Role = performative social conformity. Temperament determines switching rhythm: Static types switch abruptly (discrete state change), Dynamic types transition fluidly (gradient blend). The Role 'mask' is always detectable by its slightly off-tempo quality." },
