@@ -15,6 +15,8 @@
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
   .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
   .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
+  .grid-4-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-4-2x2 { grid-template-columns: 1fr; } }
 { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
@@ -134,14 +136,14 @@ const ClubCard = ({ name, code, types, color, desc, traits, tissue }) => (
 
 // Quadrant diagram for RIASEC / HBDI style visualizations
 const QuadrantDiagram = ({ title, topLabel, bottomLabel, leftLabel, rightLabel, quadrants, color }) => (
-  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 12, padding: 20, marginBottom: 12 }}>
+  <div style={{ background: `${color}06`, border: `1px solid ${color}18`, borderRadius: 12, padding: 20, marginBottom: 12, overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
     {title && <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 14, textAlign: "center", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>{title}</div>}
-    <div style={{ maxWidth: 440, margin: "0 auto" }}>
+    <div style={{ width: 480, margin: "0 auto" }}>
       {/* top axis label */}
-      {topLabel && <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{topLabel}</div>}
+      {topLabel && <div style={{ textAlign: "center", fontSize: 13, color: C.textDim, marginBottom: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{topLabel}</div>}
       {/* center row: leftLabel | grid | rightLabel */}
       <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", gap: 10 }}>
-        {leftLabel && <div style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", transform: "rotate(180deg)", textAlign: "center" }}>{leftLabel}</div>}
+        {leftLabel && <div style={{ fontSize: 13, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", transform: "rotate(180deg)", textAlign: "center" }}>{leftLabel}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: C.border, borderRadius: 8, overflow: "hidden" }}>
           {quadrants.map((q, i) => (
             <div key={i} style={{ background: `${q.color}0a`, padding: "16px 12px", textAlign: "center", borderLeft: i % 2 === 1 ? `1px solid ${C.border}` : "none", borderTop: i >= 2 ? `1px solid ${C.border}` : "none", minHeight: 82 }}>
@@ -150,10 +152,10 @@ const QuadrantDiagram = ({ title, topLabel, bottomLabel, leftLabel, rightLabel, 
             </div>
           ))}
         </div>
-        {rightLabel && <div style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", textAlign: "center" }}>{rightLabel}</div>}
+        {rightLabel && <div style={{ fontSize: 13, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600, writingMode: "vertical-rl", textAlign: "center" }}>{rightLabel}</div>}
       </div>
       {/* bottom axis label */}
-      {bottomLabel && <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{bottomLabel}</div>}
+      {bottomLabel && <div style={{ textAlign: "center", fontSize: 13, color: C.textDim, marginTop: 8, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, fontWeight: 600 }}>{bottomLabel}</div>}
     </div>
   </div>
 );
@@ -341,7 +343,7 @@ function ClubReport() {
           </div>
 
           <Divider label="The Four Clubs" color={C.teal} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+          <div className="grid-4-2x2" style={{ gap: 12 }}>
             <ClubCard name="Researchers" code="NT" types="ILE · LII · LIE · ILI" color={C.nt} desc="Imagination + Calculation = Abstract-symbolic thinking. Orientation toward changing the objective world by developing and implementing new ideas and technologies." tissue='"Nervous tissue" of society, which processes and preserves information about objective world properties.' traits={["Analytical","Inventive","Abstract","Systematic"]} />
             <ClubCard name="Humanitarians" code="NF" types="EIE · IEI · IEE · EII" color={C.nf} desc="Imagination + Suggestion = Abstract-figurative thinking. Orientation toward changing the internal states, moods, and attitudes of people through inspiring artistic images." tissue='"Covering tissue" of society, which stratifies society using humanitarian images of culture and art.' traits={["Imaginative","Empathic","Expressive","Idealistic"]} />
             <ClubCard name="Pragmatists" code="ST" types="SLE · LSI · LSE · SLI" color={C.st} desc="Sense + Calculation = Subject-instrumental thinking. Orientation toward changing the objective world by performing mechanical work: constructing and deconstructing material objects." tissue='"Muscular tissue" of society, which maintains vitality through production and management of material goods.' traits={["Practical","Decisive","Concrete","Disciplined"]} />
@@ -379,7 +381,7 @@ function ClubReport() {
             <Prose>
               The NT Club: ILE, LII, LIE, ILI: combines imagination (N) with calculation (T) to produce abstract-symbolic cognition. These types orient their information metabolism toward understanding and transforming the objective world through the development and implementation of new technologies, theories, and logical frameworks. Their perceptual filters are wide enough to detect novel patterns (N) while their processing is precise and object-focused enough to formalize those patterns into reproducible knowledge (T).
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+            <div className="grid-4-2x2" style={{ gap: 14 }}>
               {[
                 { name: "Cognitive Signature", color: C.nt, icon: "◇", content: "Abstract-symbolic: thinking in terms of logical models, mathematical structures, systems architectures, and causal chains. Information is processed as formal symbols manipulated according to rules. Strong at pattern recognition in complex data, weak at reading interpersonal dynamics and aesthetic nuance." },
                 { name: "Learning Style", color: C.nt, icon: "△", content: "Learn best through theoretical frameworks, logical deduction, and systematic exploration. Prefer to understand principles before applying them. Thrive in environments that reward independent intellectual inquiry and tolerate unconventional approaches. Struggle with rote memorization and socially-mediated learning." },
@@ -401,7 +403,7 @@ function ClubReport() {
             <Prose>
               The NF Club: EIE, IEI, IEE, EII: combines imagination (N) with suggestion (F) to produce implicit-figurative cognition. These types orient their information metabolism toward influencing the internal states, moods, and attitudes of people by inspiring them with artistic images, philosophical visions, and empathic understanding. Their wide perceptual filters (N) combine with diffuse, socially-resonant processing (F) to create the most psychologically penetrating and culturally generative cognitive style.
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+            <div className="grid-4-2x2" style={{ gap: 14 }}>
               {[
                 { name: "Cognitive Signature", color: C.nf, icon: "◇", content: "Abstract-figurative: thinking in terms of images, metaphors, narratives, and emotional landscapes. Information is processed as symbolic meaning embedded in relational context. Strong at insight into human character, cultural pattern-recognition, and creative expression. Weak at systematic quantitative analysis and impersonal evaluation." },
                 { name: "Learning Style", color: C.nf, icon: "△", content: "Learn best through narrative, analogy, personal mentorship, and emotional engagement with material. Prefer learning that connects to existential questions and human meaning. Thrive in environments that allow creative self-expression and interpersonal exploration. Struggle with purely technical, impersonal instruction." },
@@ -423,7 +425,7 @@ function ClubReport() {
             <Prose>
               The ST Club: SLE, LSI, LSE, SLI: combines sense (S) with calculation (T) to produce explicit-technical cognition. These types orient their information metabolism toward transforming the objective world through direct physical and administrative work, including constructing, organizing, maintaining, and protecting material structures. Their narrow perceptual filters (S) give them precise environmental control, while their localized processing (T) enables systematic, rule-governed action.
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+            <div className="grid-4-2x2" style={{ gap: 14 }}>
               {[
                 { name: "Cognitive Signature", color: C.st, icon: "◇", content: "Subject-instrumental: thinking in terms of procedures, mechanisms, power structures, and material properties. Information is processed as actionable data about objects, forces, and organizational flows. Strong at implementing structures, maintaining discipline, and solving concrete problems. Weak at abstract theorizing and emotional nuance." },
                 { name: "Learning Style", color: C.st, icon: "△", content: "Learn best through hands-on practice, concrete examples, and structured instruction with clear practical outcomes. Prefer learning that demonstrates immediate utility. Thrive in environments with clear rules, hierarchies, and measurable results. Struggle with abstract theorizing divorced from application and 'book knowledge' without practical grounding." },
@@ -445,7 +447,7 @@ function ClubReport() {
             <Prose>
               The SF Club: ESE, SEI, SEE, ESI: combines sense (S) with suggestion (F) to produce visceral-impressionist cognition. These types orient their information metabolism toward changing people's bodily condition, emotional states, and social standing by providing material resources, aesthetic experiences, and direct interpersonal care. Their precise sensory processing (S) combined with socially-resonant activation (F) makes them the most attuned to the concrete, embodied dimensions of human well-being.
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+            <div className="grid-4-2x2" style={{ gap: 14 }}>
               {[
                 { name: "Cognitive Signature", color: C.sf, icon: "◇", content: "Visceral-impressionist: thinking in terms of appearances, social dynamics, material needs, and interpersonal strategies. Information is processed as sensory-emotional gestalts about people's states and needs. Strong at reading social situations, creating comfort, and managing interpersonal relations. Weak at abstract analysis and impersonal systemic thinking." },
                 { name: "Learning Style", color: C.sf, icon: "△", content: "Learn best through social interaction, concrete demonstrations, and experiential engagement. Prefer learning embedded in relational contexts with emotional stakes. Thrive in environments with warm interpersonal dynamics and tangible, people-oriented outcomes. Struggle with purely abstract or impersonal instruction disconnected from human application." },
@@ -680,7 +682,7 @@ function ClubReport() {
             <Prose>
               The Herrmann Brain Dominance Instrument divides thinking preferences into four quadrants: A (Analytical/blue), B (Practical/green), C (Relational/red), D (Experimental/yellow). The two axes are Cerebral–Limbic (top–bottom) and Left–Right (rational–intuitive). Each Socionics Club maps to the intersection of two adjacent HBDI quadrants, because each Club combines one "thinking domain" axis (N/S ≈ Cerebral/Limbic) with one "orientation" axis (T/F ≈ Left/Right).
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+            <div className="grid-4-2x2" style={{ gap: 12 }}>
               {[
                 { club: "NT", hbdi: "A + D", color: C.nt, desc: "Upper half (cerebral): combines Analytical precision (A, left-brain logic) with Experimental vision (D, right-brain innovation). The full cerebral span, with analytical rigor meeting creative hypothesis." },
                 { club: "NF", hbdi: "C + D", color: C.nf, desc: "Right side (intuitive): combines Relational warmth (C, limbic empathy) with Experimental imagination (D, cerebral vision). The intuitive-feeling span, with empathic insight meeting creative expression." },
