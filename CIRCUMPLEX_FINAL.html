@@ -58,7 +58,7 @@
     }
   }
   #tooltip {
-    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
     background: rgba(20,20,32,0.92); backdrop-filter: blur(12px);
     border: 1px solid rgba(232,228,223,0.12); border-radius: 10px;
     padding: 10px 18px; display: flex; gap: 20px; align-items: center;
@@ -66,8 +66,8 @@
     max-width: 95vw;
   }
   #tooltip.visible { opacity: 1; }
-  #tooltip .tt-types { color: #e8e4df; font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; letter-spacing: 1px; }
-  #tooltip .tt-sign { color: rgba(232,228,223,0.6); font-size: 13.5px; font-weight: 500; font-family: 'Familjen Grotesk', sans-serif; }
+  #tooltip .tt-types { color: #e8e4df; font-size: 14px; font-weight: 700; font-family: 'Fira Code', monospace; letter-spacing: 1px; }
+  #tooltip .tt-sign { color: rgba(232,228,223,0.6); font-size: 11.5px; font-weight: 500; font-family: 'Familjen Grotesk', sans-serif; }
   .legend {
     margin-top: 10px;
     display: grid;
@@ -215,13 +215,13 @@
 <div class="legend">
   <span class="cell left"><b>?</b> Separation <span class="par">(Questim)</span></span>
   <span class="dot">·</span>
-  <span class="cell right"><b>%</b> Individualism <span class="par">(Democratic)</span></span>
-  <span class="cell left"><b>!</b> Acceptance <span class="par">(Declaring)</span></span>
+  <span class="cell right"><b>%</b> Democratic <span class="par">(Individualism)</span></span>
+  <span class="cell left"><b>!</b> Acceptance <span class="par">(Declatim)</span></span>
   <span class="dot">·</span>
-  <span class="cell right"><b>#</b> Collectivism <span class="par">(Aristocratic)</span></span>
+  <span class="cell right"><b>#</b> Aristocratic <span class="par">(Collectivism)</span></span>
 </div>
 <div class="eyebrow">Circumplex of Personality Metatraits (CPM) · Interpersonal Circumplex (IPC)</div>
-<p class="attribution">Based on Romanov (2018) · Socion Value Ring of R-Dual Pairs</p>
+<p class="attribution">Based on Romanov (2018) · Value Ring of R-Dual Pairs · Ryan Petrello (2026)</p>
 
 <script>
 (() => {
@@ -330,7 +330,7 @@
     "?": new Set(["ILE","LII","EIE","IEI","SEE","ESI","LSE","SLI"]),
     "!": new Set(["ESE","SEI","SLE","LSI","LIE","ILI","IEE","EII"]),
   };
-  const DICH_NAME = { "%":"Individualism (Democratic)", "#":"Collectivism (Aristocratic)", "?":"Separation (Asking)", "!":"Acceptance (Declaring)" };
+  const DICH_NAME = { "%":"Democratic", "#":"Aristocratic", "?":"Separation", "!":"Acceptance" };
 
   /* ================================================================
      RENDER
