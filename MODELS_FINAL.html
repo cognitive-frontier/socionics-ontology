@@ -84,28 +84,28 @@ const MA=[
 const G2A=[0,7,2,5,1,4,3,6];
 const MG=[
   {n:"Program",num:1,aka:"Management / Leading",aPos:1,energy:"Maximum",block:"Social Mission",half:"Energetic",
-   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",accel:"Accelerate",lead:"Leader",valtools:"Values",aware:"Automatic"},
+   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",energetic:"Energetic",excitable:"Excitable",impr:"Impressionable",tensioned:"Tensioned"},
    desc:"Decision-making and resource allocation: the psyche's captain. Sets the strategic direction of the type's social contribution. Maximum energy, highest activation."},
   {n:"Creative",num:2,aka:"Flexible Tool",aPos:8,energy:"Optimum",block:"Social Mission",half:"Energetic",
-   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",accel:"Decelerate",lead:"Leader",valtools:"Tools",aware:"Automatic"},
+   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",energetic:"Energetic",excitable:"Inhibitable",impr:"Unimpressionable",tensioned:"Tensioned"},
    desc:"Implements the social mission flexibly. The main instrument for solving complex problems at societal distance. Optimal energy expenditure, efficient and adaptive."},
   {n:"Role",num:3,aka:"Normative / Trained",aPos:3,energy:"Minimum",block:"Social Adaptation",half:"Passive",
-   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",accel:"Decelerate",lead:"Follower",valtools:"Tools",aware:"Conscious"},
+   d7:{kinetic:"Kinetic",stable:"Stable",scope:"Public",energetic:"Passive",excitable:"Inhibitable",impr:"Unimpressionable",tensioned:"Relaxed"},
    desc:"Trained according to social norms. Maintains adequate performance through conscious effort, but decays without external reinforcement. The survival function."},
   {n:"Launcher",num:4,aka:"Trigger / Accelerator",aPos:6,energy:"Pessimum",block:"Social Adaptation",half:"Passive",
-   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",accel:"Accelerate",lead:"Follower",valtools:"Values",aware:"Conscious"},
+   d7:{kinetic:"Potential",stable:"Unstable",scope:"Public",energetic:"Passive",excitable:"Excitable",impr:"Impressionable",tensioned:"Relaxed"},
    desc:"Initiates new rounds of mental activity: the psyche's ignition key. Dormant until triggered, then fires abruptly. Energetically expensive and unstable."},
   {n:"Demonstrative",num:5,aka:"Provocative / Close-range",aPos:2,energy:"Maximum",block:"Self-Realization",half:"Energetic",
-   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",accel:"Accelerate",lead:"Leader",valtools:"Tools",aware:"Conscious"},
+   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",energetic:"Energetic",excitable:"Excitable",impr:"Unimpressionable",tensioned:"Relaxed"},
    desc:"Spontaneous self-expression at close distance. Provocative and uninhibited with intimates. Maximum energy directed inward toward personal territory and creative assertion."},
   {n:"Manipulative",num:6,aka:"Habitual / Smooth Control",aPos:5,energy:"Optimum",block:"Self-Realization",half:"Energetic",
-   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",accel:"Accelerate",lead:"Follower",valtools:"Tools",aware:"Automatic"},
+   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",energetic:"Energetic",excitable:"Inhibitable",impr:"Impressionable",tensioned:"Relaxed"},
    desc:"Long-term habit formation and energy reserves. Smooth, automatic control in the intimate sphere. The function that enables sustained self-development over time."},
   {n:"Brake",num:7,aka:"Inhibitor / Drain",aPos:4,energy:"Minimum",block:"Inflation",half:"Passive",
-   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",accel:"Decelerate",lead:"Follower",valtools:"Values",aware:"Automatic"},
+   d7:{kinetic:"Kinetic",stable:"Unstable",scope:"Private",energetic:"Passive",excitable:"Inhibitable",impr:"Impressionable",tensioned:"Tensioned"},
    desc:"Perception here leads to inhibition: the point of greatest energy loss. Saps psychic resources. The function that brakes momentum and creates internal friction."},
   {n:"Control",num:8,aka:"Verbal Dominance",aPos:7,energy:"Pessimum",block:"Inflation",half:"Passive",
-   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",accel:"Decelerate",lead:"Leader",valtools:"Values",aware:"Conscious"},
+   d7:{kinetic:"Potential",stable:"Stable",scope:"Private",energetic:"Passive",excitable:"Excitable",impr:"Unimpressionable",tensioned:"Tensioned"},
    desc:"Dominates verbally but cannot act. \u201CI know, but I can\u2019t.\u201D The psyche\u2019s emergency verbal override: strong opinion with weak execution in the intimate sphere."},
 ];
 
@@ -649,7 +649,7 @@ function ModelGVisualizer({type}){
       <div style={{textAlign:"center"}}>
         <div style={{fontSize:10,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.6)"}}>{gp.n}</div>
         <div style={{fontSize:7,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>G{gp.num} · A{gp.aPos}</div>
-        <div style={{fontSize:8,fontWeight:700,color:ec,marginTop:2}}>{gp.energy}</div>
+        <div style={{fontSize:10,fontWeight:700,color:ec,marginTop:2}}>{gp.energy}</div>
       </div>
       <div style={{display:"flex",justifyContent:"center",gap:2,marginTop:3}}><Badge label={gp.half} color={HALF_COLORS[gp.half]} filled/></div>
     </div>);
@@ -663,22 +663,22 @@ function ModelGVisualizer({type}){
     <div style={{display:"flex",flexDirection:"column",gap:3}}>
       <div style={{display:"flex",gap:3}}>
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Mission"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Mission"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Social Mission"],letterSpacing:1,opacity:0.6}}>SOCIAL MISSION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Mission"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SOCIAL MISSION</div>
           {topRow.slice(0,2).map(renderCell)}
         </div>
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Adaptation"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Adaptation"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Social Adaptation"],letterSpacing:1,opacity:0.6}}>SOCIAL ADAPTATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Adaptation"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SOCIAL ADAPTATION</div>
           {topRow.slice(2,4).map(renderCell)}
         </div>
       </div>
       <div style={{flex:1,textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▲ PUBLIC: Far Distance (Society)</div>
       <div style={{display:"flex",gap:3}}>
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Self-Realization"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Self-Realization"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC["Self-Realization"],letterSpacing:1,opacity:0.6}}>SELF-REALIZATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Self-Realization"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SELF-REALIZATION</div>
           {botRow.slice(0,2).map(renderCell)}
         </div>
         <div style={{flex:1,display:"flex",gap:3,background:GBC.Inflation+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC.Inflation}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:2,left:6,fontSize:6,fontWeight:700,color:GBC.Inflation,letterSpacing:1,opacity:0.6}}>INFLATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC.Inflation,letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>INFLATION</div>
           {botRow.slice(2,4).map(renderCell)}
         </div>
       </div>
@@ -686,7 +686,7 @@ function ModelGVisualizer({type}){
     </div>
     <div style={{display:"grid",gridTemplateColumns:"auto auto",gap:6,marginTop:8,justifyContent:"center"}}>
       {[{l:"E-Maximum",p:"G1+G5",c:EC.Maximum},{l:"E-Optimum",p:"G2+G6",c:EC.Optimum},{l:"E-Minimum",p:"G3+G7",c:EC.Minimum},{l:"E-Pessimum",p:"G4+G8",c:EC.Pessimum}].map(e=>(
-        <div key={e.l} style={{fontSize:8,color:e.c,padding:"2px 8px",borderRadius:4,border:`1px solid ${e.c}33`,background:e.c+"0a"}}>
+        <div key={e.l} style={{fontSize:10,color:e.c,padding:"4px 10px",borderRadius:5,border:`1px solid ${e.c}33`,background:e.c+"0a"}}>
           <span style={{fontWeight:700}}>{e.l}</span> <span style={{color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>[{e.p}]</span>
         </div>
       ))}
@@ -704,10 +704,10 @@ function ModelGVisualizer({type}){
       <DichRow label="Kinetic/Potential" pole={MG[sel].d7.kinetic} colorA="#3b82f6" colorB="#ff6f00"/>
       <DichRow label="Stable/Unstable" pole={MG[sel].d7.stable} colorA="#3b82f6" colorB="#ff6f00"/>
       <DichRow label="Public/Private" pole={MG[sel].d7.scope} colorA="#3b82f6" colorB="#ff6f00"/>
-      <DichRow label="Accelerate/Decelerate" pole={MG[sel].d7.accel} colorA="#3b82f6" colorB="#ff6f00"/>
-      <DichRow label="Leader/Follower" pole={MG[sel].d7.lead} colorA="#3b82f6" colorB="#ff6f00"/>
-      <DichRow label="Values/Tools" pole={MG[sel].d7.valtools} colorA="#3b82f6" colorB="#ff6f00"/>
-      <DichRow label="Automatic/Conscious" pole={MG[sel].d7.aware} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Energetic/Passive" pole={MG[sel].d7.energetic} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Excitable/Inhibitable" pole={MG[sel].d7.excitable} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Impressionable/Unimpressionable" pole={MG[sel].d7.impr} colorA="#3b82f6" colorB="#ff6f00"/>
+      <DichRow label="Tensioned/Relaxed" pole={MG[sel].d7.tensioned} colorA="#3b82f6" colorB="#ff6f00"/>
     </div>)}
   </div>);
 }
@@ -742,7 +742,7 @@ function OverviewSection(){
         <div style={{fontSize:12,color:C.textDim,lineHeight:1.75}}>
           <strong style={{color:C.accentG}}>Horizontal Blocks:</strong> Social Mission, Social Adaptation, Self-Realization, Inflation<br/>
           <strong style={{color:C.accentG}}>Vertical Blocks:</strong> Energo-Maximum, Energo-Optimum, Energo-Minimum, Energo-Pessimum<br/>
-          <strong style={{color:C.accentG}}>7 Functional Dichotomies:</strong> Kinetic/Potential, Stable/Unstable, Public/Private, Accelerate/Decelerate, Leader/Follower, Values/Tools, Automatic/Conscious<br/>
+          <strong style={{color:C.accentG}}>7 Functional Dichotomies (Gulenko-Newman):</strong> Kinetic/Potential, Stable/Unstable, Public/Private, Energetic/Passive, Excitable/Inhibitable, Impressionable/Unimpressionable, Tensioned/Relaxed<br/>
           <strong style={{color:C.accentG}}>Scope Halves:</strong> Public (Far Distance, Society) vs. Private (Close Distance, Territory)
         </div>
       </Card>
@@ -1026,11 +1026,11 @@ function PortraitSection({type}){
           {p.aka&&<div style={{fontFamily:"'Crimson Text',Georgia,serif",fontSize:13,fontStyle:"italic",color:C.textDim}}>Also known as {p.aka}.</div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"auto auto auto auto",alignItems:"center",columnGap:8,rowGap:8}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9.5,fontWeight:700,color:C.accentA,letterSpacing:1.2,textTransform:"uppercase",textAlign:"right"}}>Model A · Ego:</span>
+          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentA,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model A · Ego:</span>
           <Chip fn={t.b} size={30} glow/>
           <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
           <Chip fn={t.c} size={30} glow/>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9.5,fontWeight:700,color:C.accentG,letterSpacing:1.2,textTransform:"uppercase",textAlign:"right"}}>Model G · Soc. Mission:</span>
+          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentG,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model G · Soc. Mission:</span>
           <Chip fn={t.b} size={30} glow/>
           <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
           <Chip fn={t.d} size={30} glow/>

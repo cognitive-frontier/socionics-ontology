@@ -201,7 +201,7 @@ const SocionClock = ({ highlight }) => {
   ];
   const toRad = d => d * Math.PI / 180;
   return (
-    <svg viewBox="-25 -25 450 450" style={{ width: "100%", maxWidth: 360 }}>
+    <svg viewBox="-40 -25 480 450" style={{ width: "100%", maxWidth: 360 }}>
       {/* outer ring */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.border} strokeWidth={1} />
       <circle cx={cx} cy={cy} r={ir} fill="none" stroke={C.border} strokeWidth={0.5} strokeDasharray="4 4" />
@@ -232,8 +232,8 @@ const SocionClock = ({ highlight }) => {
         return <text key={`arr${i}`} x={ax} y={ay} textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="700" fill={C.textDim} opacity={0.8} transform={`rotate(${rot} ${ax} ${ay})`}>→</text>;
       })}
       {/* center label */}
-      <text x={cx} y={cy - 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">SOCION</text>
-      <text x={cx} y={cy + 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">CLOCK</text>
+      <text x={cx} y={cy - 7} textAnchor="middle" fontSize="14" fontWeight="700" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">SOCION</text>
+      <text x={cx} y={cy + 13} textAnchor="middle" fontSize="14" fontWeight="700" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">CLOCK</text>
       {/* season labels — TOP/BOTTOM stack radially, LEFT/RIGHT stack vertically (sub above main) to clear the Greek letters at mr */}
       {[
         {a:-90,l:"GENESIS",s:"spring",c:C.alpha,vertical:false},
@@ -242,8 +242,10 @@ const SocionClock = ({ highlight }) => {
         {a:180,l:"CONSERVE",s:"winter",c:C.delta,vertical:true},
       ].map((s,i)=>{
         const ang = toRad(s.a);
-        const mainX = cx + (r+22)*Math.cos(ang);
-        const mainY = cy + (r+22)*Math.sin(ang) + 4;
+        // Horizontal cardinals (LEFT/RIGHT) get pushed further out so CONSERVE/MOBILIZE clear the donut entirely
+        const mainOffset = s.vertical ? 38 : 22;
+        const mainX = cx + (r+mainOffset)*Math.cos(ang);
+        const mainY = cy + (r+mainOffset)*Math.sin(ang) + 4;
         // sub: radial offset for top/bottom, vertical (above) for left/right
         const subX = s.vertical ? mainX : cx + (r+38)*Math.cos(ang);
         const subY = s.vertical ? mainY - 14 : cy + (r+38)*Math.sin(ang) + 4;
@@ -310,8 +312,8 @@ function QuadraReport() {
       {/* HEADER */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <Mono color={C.accent1}>Section V · Axes/Quadras Primer</Mono>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginTop: 14, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, background: `linear-gradient(135deg, ${C.alpha}, ${C.beta}, ${C.gamma}, ${C.delta})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 16 }}>the Clock of the Socion</h1>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, lineHeight: 1.15, color: C.text, marginTop: 14, marginBottom: 0 }}>Quadra Values, Dynamics &</h1>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, lineHeight: 1.15, background: `linear-gradient(135deg, ${C.alpha}, ${C.beta}, ${C.gamma}, ${C.delta})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 0, marginBottom: 16 }}>the Clock of the Socion</h1>
         <p style={{ fontSize: 13, color: C.textMuted, maxWidth: 640, margin: "0 auto", lineHeight: 1.7 }}>
           Quadras are groups of four types sharing the same valued information elements, the psychological "wavelength" that determines what a group naturally gravitates toward in discourse, governance, and civilization-building. They are the temporal engine of the Socion: each quadra represents a phase in the life-cycle of any complex system.
         </p>

@@ -137,6 +137,13 @@
               );
             })}
           </div>
+
+          {/* Credit footnote — only rendered when sidebar is expanded */}
+          {sidebarOpen && (
+            <div className="px-4 py-3 border-t border-[#252538] text-[10px] leading-snug text-gray-500 font-['Inter'] italic select-none whitespace-nowrap overflow-hidden">
+              {'by Ryan "Lamb Sauce" Petrello (March 2026).'}
+            </div>
+          )}
         </div>
 
         {/* Floating Toggle Button (visible only when sidebar is closed to match Gemini UI) */}
