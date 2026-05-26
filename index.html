@@ -45,7 +45,25 @@
   };
 
   const App = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    // Initial sidebar state: stored preference wins; otherwise responsive default
+    // (expanded ≥768px, collapsed below). This matches Tailwind's md breakpoint and
+    // mirrors how production tools like Notion/Linear behave on first visit.
+    const getInitialSidebar = () => {
+      if (typeof window === 'undefined') return true;
+      try {
+        const stored = window.localStorage.getItem('ontology-sidebar-open');
+        if (stored !== null) return stored === 'true';
+      } catch (e) { /* localStorage disabled (private mode, etc.) */ }
+      return window.innerWidth >= 768;
+    };
+    const [sidebarOpen, setSidebarOpen] = useState(getInitialSidebar);
+    const toggleSidebar = () => {
+      setSidebarOpen(prev => {
+        const next = !prev;
+        try { window.localStorage.setItem('ontology-sidebar-open', String(next)); } catch (e) {}
+        return next;
+      });
+    };
     
     // Map your 10 articles here. 
     // The `file` property MUST match the exact filename in your folder.
@@ -56,7 +74,7 @@
       { id: 'clubs', title: '4. Clubs (Jungian Aspects)', icon: <Icons.Settings />, file: 'CLUB_FINAL.html', available: true },
       { id: 'quadras', title: '5. Quadra Values (Axes)', icon: <Icons.Heart />, file: 'QUADRA_FINAL.html', available: true },
       { id: 'elements', title: '6. Elements (Functions)', icon: <Icons.Atom />, file: 'ELEMENTS_FINAL.html', available: true },
-      { id: 'models', title: '7. Models (Slots & Blocks)', icon: <Icons.Landmark />, file: 'MODELS_FINAL.html', available: true },
+      { id: 'models', title: '7. Models and Type Descriptions', icon: <Icons.Landmark />, file: 'MODELS_FINAL.html', available: true },
       { id: 'socion', title: '8. The Socion (Circumplex)', icon: <Icons.Globe />, file: 'CIRCUMPLEX_FINAL.html', available: true },
       { id: 'relations', title: '9. Relations (ITRs)', icon: <Icons.YinYang />, file: 'ITR_FINAL.html', available: true },
       { id: 'subtypes', title: '10. Subtypes (DCNH)', icon: <Icons.Network />, file: 'DCNH_FINAL.html', available: true },
@@ -78,7 +96,7 @@
               </span>
             )}
             <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              onClick={toggleSidebar}
               className="p-1.5 rounded-lg hover:bg-[#252538] text-gray-400 hover:text-white transition-colors"
             >
               <Icons.Menu />
@@ -87,7 +105,7 @@
 
           {/* Navigation Links */}
           <div className="flex-1 overflow-y-auto py-4 px-2 flex flex-col gap-1">
-            {sidebarOpen && <div className="px-3 pb-2 text-[10px] font-['JetBrains_Mono'] tracking-[0.15em] text-gray-500 uppercase select-none">Documents</div>}
+            {sidebarOpen && <div className="px-3 pb-2 text-[10px] font-['JetBrains_Mono'] tracking-[0.15em] text-gray-500 uppercase select-none">Modules</div>}
             
             {articles.map((item) => {
               const isActive = activeArticle.id === item.id;
@@ -119,13 +137,6 @@
               );
             })}
           </div>
-
-          {/* Footer credit (bottom-left of sidebar) */}
-          {sidebarOpen && (
-            <div className="px-4 py-3 border-t border-[#252538] text-[10px] font-['JetBrains_Mono'] text-gray-600 select-none leading-snug">
-              Ryan &ldquo;Lamb Sauce&rdquo; Petrello (Feb. 2026)
-            </div>
-          )}
         </div>
 
         {/* Floating Toggle Button (visible only when sidebar is closed to match Gemini UI) */}

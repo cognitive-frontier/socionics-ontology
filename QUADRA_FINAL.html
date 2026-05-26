@@ -9,8 +9,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * 
+  .tab-strip { display: flex; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
+  .tab-strip::-webkit-scrollbar { height: 6px; }
+  .tab-strip::-webkit-scrollbar-track { background: transparent; }
+  .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
+  .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
+  .grid-4-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-4-2x2 { grid-template-columns: 1fr; } }
+  .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
+{ margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
+  @media (max-width: 540px) {
+    html, body { overflow-x: hidden; max-width: 100%; }
+    body img, body svg { max-width: 100%; height: auto; }
+  }
   button { font-family: inherit; }
   table { border-spacing: 0; }
   ::-webkit-scrollbar { height: 6px; width: 6px; }
@@ -37,7 +52,7 @@ const C = {
 const Divider = ({ label, color }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
     <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
-    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 13, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
     <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
   </div>
 );
@@ -67,7 +82,7 @@ const Mono = ({ children, color = C.textDim }) => (
 );
 
 const TabBtn = ({ label, active, onClick, color }) => (
-  <button onClick={onClick} style={{ padding: "8px 18px", borderRadius: 8, border: active ? `1px solid ${color}50` : `1px solid ${C.border}`, background: active ? `${color}15` : "transparent", color: active ? color : C.textMuted, fontSize: 12, fontWeight: 600, cursor: "pointer", letterSpacing: 0.5, fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s", flexShrink: 0, whiteSpace: "nowrap" }}>{label}</button>
+  <button onClick={onClick} style={{ padding: "12px 16px", border: "none", background: "transparent", color: active ? color : C.textMuted, fontSize: 13, fontWeight: active ? 700 : 500, cursor: "pointer", letterSpacing: 0.3, fontFamily: "'Inter', -apple-system, sans-serif", borderBottom: active ? `2px solid ${color}` : "2px solid transparent", transition: "all 0.15s", whiteSpace: "nowrap", flexShrink: 0 }}>{label}</button>
 );
 
 const LensCard = ({ lens, color, content }) => (
@@ -210,19 +225,16 @@ const SocionClock = ({ highlight }) => {
       {/* arrows between quadras */}
       {quadras.map((q, i) => {
         const next = quadras[(i + 1) % 4];
-        const midAngleDeg = (q.angle + next.angle) / 2 + (i === 3 ? 180 : 0);
-        const midA = toRad(midAngleDeg);
+        const midA = toRad((q.angle + next.angle) / 2 + (i === 3 ? 180 : 0));
         const ax = cx + (r - 20) * Math.cos(midA), ay = cy + (r - 20) * Math.sin(midA);
-        // Rotate arrow so it points along the tangent (clockwise direction)
-        const rot = midAngleDeg + 90;
-        return <text key={`arr${i}`} x={ax} y={ay + 4} textAnchor="middle" fontSize="18" fill={C.textDim} opacity={0.7} transform={`rotate(${rot} ${ax} ${ay})`}>→</text>;
+        return <text key={`arr${i}`} x={ax} y={ay + 4} textAnchor="middle" fontSize="16" fill={C.textDim} opacity={0.5}>→</text>;
       })}
       {/* center label */}
       <text x={cx} y={cy - 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">SOCION</text>
       <text x={cx} y={cy + 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">CLOCK</text>
       {/* season labels */}
       {[{a:-90,l:"GENESIS",s:"spring",c:C.alpha},{a:0,l:"MOBILIZE",s:"summer",c:C.beta},{a:90,l:"OPTIMIZE",s:"autumn",c:C.gamma},{a:180,l:"CONSERVE",s:"winter",c:C.delta}].map((s,i)=>(
-        <g key={i}><text x={cx+(r+18)*Math.cos(toRad(s.a))} y={cy+(r+18)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="11" fill={s.c} letterSpacing="2" fontFamily="'JetBrains Mono', monospace" opacity={0.85} fontWeight="700">{s.l}</text><text x={cx+(r+32)*Math.cos(toRad(s.a))} y={cy+(r+32)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="8" fill={s.c} fontFamily="'JetBrains Mono', monospace" opacity={0.55} fontStyle="italic">{s.s}</text></g>
+        <g key={i}><text x={cx+(r+18)*Math.cos(toRad(s.a))} y={cy+(r+18)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="7" fill={s.c} letterSpacing="2" fontFamily="'JetBrains Mono', monospace" opacity={0.7} fontWeight="700">{s.l}</text><text x={cx+(r+28)*Math.cos(toRad(s.a))} y={cy+(r+28)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="5.5" fill={s.c} fontFamily="'JetBrains Mono', monospace" opacity={0.35} fontStyle="italic">{s.s}</text></g>
       ))}
     </svg>
   );
@@ -279,8 +291,8 @@ function QuadraReport() {
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px" }}>
       {/* HEADER */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <div style={{ fontSize: 11, letterSpacing: 6, textTransform: "uppercase", color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>Socionics Primer · Section IV</div>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
+        <Mono color={C.accent1}>Section V · Axes/Quadras Primer</Mono>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, color: C.text, marginTop: 14, marginBottom: 8 }}>Quadra Values, Dynamics &</h1>
         <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, fontWeight: 700, background: `linear-gradient(135deg, ${C.alpha}, ${C.beta}, ${C.gamma}, ${C.delta})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 16 }}>the Clock of the Socion</h1>
         <p style={{ fontSize: 13, color: C.textMuted, maxWidth: 640, margin: "0 auto", lineHeight: 1.7 }}>
           Quadras are groups of four types sharing the same valued information elements, the psychological "wavelength" that determines what a group naturally gravitates toward in discourse, governance, and civilization-building. They are the temporal engine of the Socion: each quadra represents a phase in the life-cycle of any complex system.
@@ -288,7 +300,7 @@ function QuadraReport() {
       </div>
 
       {/* NAV */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 32 }}>
+      <div className="tab-strip" style={{ marginBottom: 32 }}>
         {sections.map(s => (
           <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
         ))}
@@ -301,7 +313,7 @@ function QuadraReport() {
           <SectionTitle color={C.accent3}>Valued Elements & Model A</SectionTitle>
           <Prose>Each quadra is defined by which four of the eight IMEs its members place in <strong>valued</strong> positions (Ego + Super-Id). Valued elements are those a person is either consciously strong in (Ego functions 1 & 2) or unconsciously drawn to and grateful to receive (Super-Id functions 5 & 6). The remaining four elements occupy <strong>subdued</strong> positions (Super-Ego + Id), areas of conscious weakness or deliberate non-engagement.</Prose>
           <Prose>Quadra values are about <em>preference</em>, not strength. An ILE and a SEI both value Ne over Ni, even though ILE is consciously strong in Ne (1st function) while SEI merely welcomes it (5th function). This shared preference creates the unspoken alignment that makes quadra-mates feel like they're "on the same page."</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, margin: "16px 0" }}>
+          <div className="grid-4-2x2" style={{ gap: 10, margin: "16px 0" }}>
             {quadraOrder.map(k => {
               const qd = Q[k];
               return (
@@ -435,7 +447,7 @@ function QuadraReport() {
       {/* ═══════════════ QUADRA PROFILES ═══════════════ */}
       {activeSection === "profiles" && <>
         <Divider label="Select a Quadra" color={C.accent1} />
-        <div style={{ display: "flex", flexWrap: "nowrap", gap: 8, justifyContent: "center", marginBottom: 24, overflowX: "auto", paddingBottom: 4 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: 8, justifyContent: "center", marginBottom: 24 }}>
           {quadraOrder.map(k => (
             <TabBtn key={k} label={`${Q[k].greek} ${Q[k].name}`} active={activeQuadra === k} onClick={() => setActiveQuadra(k)} color={Q[k].color} />
           ))}
@@ -464,7 +476,7 @@ function QuadraReport() {
         </Card>
 
         {/* Multi-lens analysis */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div className="grid-4-2x2" style={{ gap: 10 }}>
           <LensCard lens="Communication & Discourse" color={q.color} content={q.communication} />
           <LensCard lens="Political Organization" color={q.color} content={q.political} />
           <LensCard lens="Generational Cycle Role" color={q.color} content={q.clock} />
@@ -506,7 +518,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.accent4}>Quadra Transitions</SectionTitle>
           <Prose>Transitions between quadras are not smooth handoffs. Each involves the exhaustion of one organizing principle and the emergence of a fundamentally different one. The system reaches a critical point where the current quadra's core strength becomes its fatal weakness, creating the vacuum that the next quadra fills.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div className="grid-4-2x2" style={{ gap: 10 }}>
             {[
               { from: "Α → Β", color: C.alpha, title: "Prototype → Power", desc: "Alpha generates brilliant ideas and prototypes but lacks the organized force to implement them at scale. Curiosity, the quadra's greatest gift, also makes it porous to infiltration. New tools and techniques awaken instincts of power and possession, and the commune can no longer hold. The system needs hierarchy, mobilization, and a collective will to act." },
               { from: "Β → Γ", color: C.beta, title: "Order → Freedom", desc: "Beta builds formidable structures but inevitably over-bureaucratizes. The hierarchy petrifies into dogma, reputation replaces function, and the system loses its capacity to adapt. Yearning for individual freedom and material reward grows beneath the rigid surface until the centralized structure can no longer contain it, collapsing into Gamma's open competition." },
@@ -533,7 +545,7 @@ function QuadraReport() {
           <Prose>Vladimir Vincent's Quadra Sociology maps each quadra to a form of social organization, a cultural orientation (following Triandis' horizontal/vertical × individualism/collectivism matrix), and a set of historical exemplars. Gulenko and Talanov independently validate many of these mappings through their political-values research at socionavigator.com.</Prose>
         </Card>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div className="grid-4-2x2" style={{ gap: 10 }}>
           {quadraOrder.map(k => {
             const qd = Q[k];
             const socData = {
@@ -565,7 +577,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.teal}>The Four Intra-Quadra Roles</SectionTitle>
           <Prose>Within each quadra, the four types are not interchangeable. Each occupies a distinct functional role in the quadra's internal lifecycle, determined by the <strong>Benefit Ring</strong> (zakaz), the asymmetric energy-transfer chain that connects all 16 types in a single directed cycle. The Benefit Ring is the engine of quadra succession: it determines who energizes whom, who initiates, who implements, who stabilizes, and who corrects. Gulenko identifies four universal roles that recur across every quadra.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div className="grid-4-2x2" style={{ gap: 10 }}>
             {[
               { role: "Leader / Initiator", desc: "Opens the quadra's cycle. Discovers or articulates the core idea, sets the direction, and generates initial momentum. Translates the quadra's values into a concrete agenda that others can rally around. In Alpha: ILE (the Seeker). In Beta: EIE (the Mentor). In Gamma: SEE (the Politician). In Delta: LSE (the Administrator).", color: C.accent4, types: "ILE · EIE · SEE · LSE" },
               { role: "Implementer / Disseminator", desc: "Takes the leader's vision and gives it material force. Mobilizes people and resources, builds networks, spreads the message. Converts abstract direction into tangible activity. In Alpha: ESE (the Enthusiast). In Beta: SLE (the Marshal). In Gamma: LIE (the Entrepreneur). In Delta: EII (the Humanist).", color: C.accent1, types: "ESE · SLE · LIE · EII" },
@@ -617,7 +629,7 @@ function QuadraReport() {
           <Prose>Gulenko's deepest insight is that the socion-clock models a <strong>thermodynamic cycle</strong>: energy and information are inversely traded as a system matures. The extraverted (energetic) constituent declines while the introverted (informational) constituent rises. This maps onto the fundamental physics of dissipative structures: order is created by consuming energy, and when energy runs out, the structure must either be renewed from outside or collapse.</Prose>
         </Card>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        <div className="grid-4-2x2" style={{ gap: 10 }}>
           {[
             { q: Q.alpha, phase: "Genesis", season: "Spring", icon: "", energy: "Maximum Potential", entropy: "Minimum", desc: "Stored novelty, unexploited possibility. Like a wound spring or a charged battery. The system is informationally rich but structurally undifferentiated, a soup of ideas without hierarchy. Fragile to perturbation but infinitely renewable.", analog: "Seed germination, Big Bang nucleosynthesis, brainstorming session, startup ideation" },
             { q: Q.beta, phase: "Mobilization", season: "Summer", icon: "", energy: "Maximum Kinetic", entropy: "Rising Fast", desc: "Potential converted to organized force. The system burns hot, rapid expansion, hierarchy formation, ideological crystallization. Maximum power output but thermodynamically unsustainable. Energy expenditure exceeds input.", analog: "Explosive growth, imperial expansion, rocket launch, revolutionary movement" },
@@ -646,7 +658,7 @@ function QuadraReport() {
         <Card>
           <SectionTitle color={C.rose}>Four Thermodynamic Roles in the Socion</SectionTitle>
           <Prose>The Benefit Ring does not merely connect types in a social-order chain. Gulenko identifies it as the socion's primary <strong>energy-information metabolism system</strong>. The 16 types divide into four groups of four based on their role in converting between energy and information. These groups cut across quadra boundaries, revealing the deeper thermodynamic substrate on which quadra succession operates.</Prose>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          <div className="grid-4-2x2" style={{ gap: 10 }}>
             {[
               { name: "Energy Generators", types: "ILE · EIE · LSE · SEE", color: C.accent4, desc: "Translate information into energy. They ignite energy processes in their environment, uniting small groups into larger ones and starting chain reactions in society. ILE and EIE are innovators and fighters for ideas; SEE and LSE draw people in for collective effects. They specialize in the energetics of large groups and are the most 'inflationary' types.", thermo: "Information → Energy" },
               { name: "Energy Carriers", types: "LIE · IEE · SLE · ESE", color: C.accent1, desc: "The most saturated with energy in the socion. They suffer from lack of fundamentally new information. Energizers of small groups who must break up large groups into smaller units to manage effectively. SLE and ESE solve concrete, immediate problems; IEE and LIE unite on the basis of romanticism, captivated by daring ideas.", thermo: "Energy storage + distribution" },

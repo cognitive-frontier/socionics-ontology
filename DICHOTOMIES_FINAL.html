@@ -9,6 +9,8 @@
 :root{--bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;--text:#e8e6e3;--textMuted:#9a96a0;--textDim:#6a6670;--accent1:#c8a0ff;--accent2:#70d4a8;--accent3:#ff9070;--accent4:#70b8ff;--tencer:#ffd166;--reinin:#70d4a8;--conjunct:#ff6b9d;--hybrid:#c8a0ff;--conventional:#70b8ff;--pos:#a8d8a0;--neg:#d8a0a0;--asking:#a0c8d8;--declaring:#d8c8a0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:540px){body img,body svg,body canvas{max-width:100%;height:auto}}
 .mono{font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px;letter-spacing:.5px;color:var(--textDim)}
 .display{font-family:'Playfair Display',Georgia,serif}
 .card{background:var(--card);border:1px solid #2a2a3a30;border-radius:12px;padding:20px 18px;margin-bottom:16px}
@@ -17,13 +19,17 @@ h3.sec{font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:6
 p.body{font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:var(--textMuted);margin:0 0 12px}
 .badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;font-family:'JetBrains Mono','Fira Code',monospace;letter-spacing:.5px}
 .badge-sm{padding:2px 7px;font-size:9px}
-.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:28px;padding:12px 0;border-bottom:1px solid var(--border)}
-.nav button{padding:7px 16px;border-radius:8px;font-size:12px;font-family:-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-weight:600;letter-spacing:-.2px;background:transparent;color:var(--textDim);border:1px solid transparent;cursor:pointer;transition:all .2s}
+.nav{display:flex;gap:4px;overflow-x:auto;overflow-y:hidden;margin-bottom:28px;padding:0 4px;border-bottom:1px solid var(--border);scrollbar-width:thin;scrollbar-color:#3a3a4a transparent;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{height:6px}
+.nav::-webkit-scrollbar-track{background:transparent}
+.nav::-webkit-scrollbar-thumb{background:#3a3a4a;border-radius:3px}
+.nav::-webkit-scrollbar-thumb:hover{background:#4a4a5a}
+.nav button{padding:12px 16px;border:none;background:transparent;color:var(--textDim);font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.3px;font-family:'Inter',-apple-system,sans-serif;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .nav button.active{font-weight:700}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .grid-el{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
-.grid-conj{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.grid-conj{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-top:10px;min-width:0}
 .dicrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #2a2a3a20}
 .dicrow .code{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;width:62px;flex-shrink:0}
 .dicrow .name{font-family:'Source Serif 4',Georgia,serif;font-size:13px;color:var(--text);flex:1}
@@ -54,7 +60,7 @@ td{padding:8px 10px;border-bottom:1px solid #2a2a3a20;color:var(--textMuted)}
 </head>
 <body>
 <div class="hero">
-  <span class="mono" style="color:var(--accent1)">Socionics · Structural Theory</span>
+  <span class="mono" style="color:var(--accent1)">Section II · Traits Primer</span>
   <h1>The 24-Dichotomy &amp; the 16-Element Socion</h1>
   <p class="body" style="max-width:580px;margin:0 auto;text-align:center;font-size:13px">How Reinin Space, Minaiev Space, Hybrid Elements, and the Presence Cube connect to form a unified algebraic model of personality.</p>
 </div>
@@ -73,7 +79,7 @@ const mono=(t,c)=>`<span class="mono" style="color:${c||C.textDim}">${t}</span>`
 const dicrow=(name,code,color,poles)=>`<div class="dicrow"><span class="code" style="color:${color}">${code}</span><span class="name">${name}</span><span class="poles">${poles}</span></div>`;
 const elCard=(sym,name,dics,isH)=>{const c=isH?C.hybrid:C.conventional;const row1=dics.slice(0,3).map(d=>badge(d.l,d.c,true)).join('');const row2=dics.slice(3).map(d=>badge(d.l,d.c,true)).join('');return`<div class="el-card" style="background:${c}08;border:1px solid ${c}20"><div class="sym" style="color:${c}">${sym}</div><div class="lbl">${name}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${row1}</div><div class="tags" style="display:flex;flex-wrap:wrap;gap:4px">${row2}</div></div>`;};
 
-function vennSVG(){return`<svg viewBox="0 0 580 290" style="width:100%;max-width:560;display:block;margin:18px auto">
+function vennSVG(){return`<svg viewBox="0 0 580 290" style="width:100%;max-width:560px;display:block;margin:18px auto">
 <ellipse cx="200" cy="140" rx="170" ry="110" fill="${C.reinin}10" stroke="${C.reinin}" stroke-width="1.8"/>
 <ellipse cx="380" cy="140" rx="170" ry="110" fill="${C.tencer}10" stroke="${C.tencer}" stroke-width="1.8"/>
 <text x="290" y="92" text-anchor="middle" fill="${C.conjunct}" font-family="'JetBrains Mono',monospace" font-size="10.5" font-weight="700">CONJUNCT PLANE</text>
@@ -96,7 +102,7 @@ const el={f1:"Ne",f2:"Fe",f3:"Si",f4:"Fi",f5:"Se",f6:"Ti",f7:"Ni",f8:"Te"};
 const edges=[["f1","f2"],["f1","f6"],["f1","f8"],["f2","f3"],["f2","f5"],["f6","f3"],["f6","f7"],["f8","f5"],["f8","f7"],["f3","f4"],["f5","f4"],["f7","f4"]];
 const dim=[["f1","f8"],["f6","f7"],["f5","f2"],["f4","f3"]];
 const pri=[["f1","f2"],["f6","f3"],["f5","f8"],["f4","f7"]];
-let s=`<svg viewBox="0 0 400 330" style="width:100%;max-width:400;display:block;margin:0 auto">`;
+let s=`<svg viewBox="0 0 400 330" style="width:100%;max-width:400px;display:block;margin:0 auto">`;
 edges.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.border}" stroke-width="1"/>`;});
 dim.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent3}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
 pri.forEach(([a,b])=>{s+=`<line x1="${ps[a].x}" y1="${ps[a].y}" x2="${ps[b].x}" y2="${ps[b].y}" stroke="${C.accent4}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>`;});
@@ -111,7 +117,7 @@ const y1=42,y2=97,leftLabelX=24,axisStartX=78;
 // Columns: Intuition (was N, now leftmost), Irrational (was P/J), Pos/Neg or E/I, Ask/Dec or St/Dy, Mer/Ser or Jud/Dec
 const cols=[axisStartX+50,axisStartX+150,axisStartX+250,axisStartX+350,axisStartX+450];
 const svgW=axisStartX+520;
-let s=`<svg viewBox="0 0 ${svgW} 140" style="width:100%;max-width:${svgW};display:block;margin:12px auto">`;
+let s=`<svg viewBox="0 0 ${svgW} 140" style="width:100%;max-width:${svgW}px;display:block;margin:12px auto">`;
 // Left-side example labels (Ne above, N+ below) showing the worked examples being tracked
 s+=`<text x="${leftLabelX}" y="${y1+4}" fill="${C.conventional}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">Ne</text>`;
 s+=`<text x="${leftLabelX}" y="${y2+4}" fill="${C.hybrid}" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="800" text-anchor="middle">N+</text>`;
@@ -371,17 +377,17 @@ p('Classical Socionics operates with 8 information metabolism elements (Ne, Ni, 
 p('In recent years, Socionist Yurii Minaiev discovered a <em>second</em> set of 16 dichotomies (sharing 8 with Reinin\'s), bringing the total to <strong>24 unique dichotomies</strong>. Meanwhile, Viktor Gulenko\'s Model G introduced "signed" elements (functions with + or \u2212 charges) that seemed to double the element count to 16 without clear mathematical justification.')+
 p('This report connects these two developments: the 8 additional "hybrid" elements are the element-level realization of Minaiev space, just as the conventional 8 elements realize Reinin space. Together, the 16 elements tile a toroidal structure that encodes all 24 dichotomies, completing the algebraic description of the Socion.','color:'+C.text+';font-weight:500'),C.accent1)+
 vennSVG()+
-`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin:18px auto 0">${[{n:"Reinin Space",v:"16 dichotomies",c:C.reinin,s:"8 unique + 8 shared"},{n:"Minaiev Space",v:"16 dichotomies",c:C.tencer,s:"8 unique + 8 shared"},{n:"Conjunct Plane",v:"8 shared",c:C.conjunct,s:"Where both spaces meet"},{n:"Total Unique",v:"24 dichotomies",c:C.accent1,s:"The complete Socion"}].map(i=>card(`<div class="stat-card"><span class="mono" style="color:${i.c};font-size:13px">${i.n}</span><div class="val" style="color:${i.c}">${i.v}</div>${mono(i.s)}</div>`,i.c)).join('')}</div>`},
+`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:640px;margin:18px auto 0">${[{n:"Reinin Space",v:"16 dichotomies",c:C.reinin,s:"8 unique + 8 shared"},{n:"Minaiev Space",v:"16 dichotomies",c:C.tencer,s:"8 unique + 8 shared"},{n:"Conjunct Plane",v:"8 shared",c:C.conjunct,s:"Where both spaces meet"},{n:"Total Unique",v:"24 dichotomies",c:C.accent1,s:"The complete Socion"}].map(i=>card(`<div class="stat-card"><span class="mono" style="color:${i.c};font-size:13px">${i.n}</span><div class="val" style="color:${i.c}">${i.v}</div>${mono(i.s)}</div>`,i.c)).join('')}</div>`},
 
 {label:"Two Trait Spaces",color:C.reinin,html:()=>
 card(h2("Two Independent Trait Spaces",C.accent1)+p('The full algebra of the Socion needs <em>two</em> dichotomy spaces, not one. Reinin space is generated by the four Jungian basis axes and yields 15 derived dichotomies, but eight natural type groupings cannot be produced by any combination of Reinin dichotomies. Minaiev space picks up exactly those orphans. The two spaces overlap on a shared 8-dichotomy <strong>Conjunct Plane</strong>, giving 8 Reinin-unique + 8 Minaiev-unique + 8 shared = <strong>24 meaningful dichotomies total</strong>. This section covers both spaces, their generation, and why neither alone is sufficient.'),C.accent1)+
 
 card(h2("The Reinin Space",C.reinin)+p('Reinin proved that from 4 independent "basis" dichotomies (E/I, N/S, T/F, P/J), you can algebraically generate 11 additional dichotomies through Z\u2082 multiplication, producing every possible way to split 16 types into two groups of 8 while preserving the group structure. Add the identity dichotomy (Valid/Null), and you get 16 total.')+p('The generation works like a Fano pyramid: take any two basis dichotomies, multiply them (XOR their type assignments), and you get a new dichotomy. Multiply three, or all four, and you get more. Every product is itself a valid dichotomy.'),C.reinin)+
 card(h3("The 4 Basis Dichotomies")+
-dicrow("Extraversion / Introversion","E _ _ _",C.reinin,"x")+dicrow("Intuition / Sensing","_ N _ _",C.reinin,"b")+dicrow("Logic / Ethics","_ _ T _",C.reinin,"a")+dicrow("Irrationality / Rationality","_ _ _ P",C.reinin,"abcx")+
+dicrow("Extraversion / Introversion","E _ _ _",C.conjunct,"x")+dicrow("Intuition / Sensing","_ N _ _",C.reinin,"b")+dicrow("Logic / Ethics","_ _ T _",C.reinin,"a")+dicrow("Irrationality / Rationality","_ _ _ P",C.conjunct,"abcx")+
 h3("The 11 Derived Dichotomies")+
-dicrow("Static / Dynamic","E _ _ P",C.reinin,"abc")+dicrow("Democratic / Aristocratic","_ N T _",C.reinin,"ab")+dicrow("Merry / Serious","E _ T P",C.reinin,"bc")+dicrow("Judicious / Decisive","E N _ P",C.reinin,"ac")+dicrow("Positivist / Negativist","E N T _",C.conjunct,"abx")+dicrow("Asking / Declaring","E N T P",C.conjunct,"c")+dicrow("Process / Result","_ N T P",C.conjunct,"cx")+dicrow("Constructivist / Emotivist","_ _ T P",C.reinin,"bcx")+dicrow("Yielding / Obstinate","E _ T _",C.reinin,"ax")+dicrow("Tactical / Strategic","_ N _ P",C.reinin,"acx")+dicrow("Carefree / Farsighted","E N _ _",C.reinin,"bx")+
-p('Note: Positivist/Negativist, Asking/Declaring, and Process/Result are highlighted. These sit on the '+badge("Conjunct Plane",C.conjunct)+' shared with Minaiev space.','margin-top:10px;font-size:12px'))+
+dicrow("Static / Dynamic","E _ _ P",C.conjunct,"abc")+dicrow("Democratic / Aristocratic","_ N T _",C.conjunct,"ab")+dicrow("Merry / Serious","E _ T P",C.reinin,"bc")+dicrow("Judicious / Decisive","E N _ P",C.reinin,"ac")+dicrow("Positivist / Negativist","E N T _",C.conjunct,"abx")+dicrow("Asking / Declaring","E N T P",C.conjunct,"c")+dicrow("Process / Result","_ N T P",C.conjunct,"cx")+dicrow("Constructivist / Emotivist","_ _ T P",C.reinin,"bcx")+dicrow("Yielding / Obstinate","E _ T _",C.reinin,"ax")+dicrow("Tactical / Strategic","_ N _ P",C.reinin,"acx")+dicrow("Carefree / Farsighted","E N _ _",C.reinin,"bx")+
+p('Note: The 7 highlighted dichotomies sit on the '+badge("Conjunct Plane",C.conjunct)+' shared with Minaiev space.','margin-top:10px;font-size:12px'))+
 card(h3("The 15 Reinin Dichotomies, Ranked by Variance Contribution",C.reinin)+
 p('Talanov\'s factor-analytic data, replicated and visualized by sociotype.xyz, shows that the 15 Reinin dichotomies are not equal in their contribution to overall personality variance. The four Jungian basis axes (E/I, T/F, N/S, P/J) account for the lion\'s share, and Judicious/Decisive is the only Reinin product approaching their strength. The remaining ten cluster between 5% and 2%. Each row pairs the conventional name with Romanov\'s revised label and sociotype.xyz\'s modern label, with descriptions synthesizing the psychological, behavioral, and structural attributes drawn from socionavigator\'s function and trait pages.')+
 reininRanked.map(reininRow).join(''),C.reinin)+
@@ -453,7 +459,7 @@ card(`${mono("Sources",C.textDim)}${p('Presence Cube: Minaiev, Vincent (2020)','
 let active=0;
 function render(){
   const nav=document.getElementById('nav');
-  nav.innerHTML=sections.map((s,i)=>`<button class="${i===active?'active':''}" style="${i===active?`background:${s.color}20;color:${s.color};border-color:${s.color}40`:''}" onclick="setActive(${i})">${s.label}</button>`).join('');
+  nav.innerHTML=sections.map((s,i)=>`<button class="${i===active?'active':''}" style="${i===active?`color:${s.color};border-bottom-color:${s.color}`:''}" onclick="setActive(${i})">${s.label}</button>`).join('');
   document.getElementById('sections').innerHTML=sections[active].html();
   // Init any animated canvases in the freshly-rendered section
   document.querySelectorAll('canvas[data-torus]').forEach(initTorus);
