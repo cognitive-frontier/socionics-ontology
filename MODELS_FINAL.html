@@ -11,7 +11,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#08090e;color:#e4e4e7;font-family:'Inter',-apple-system,sans-serif;overflow-x:hidden}
-html{overflow-x:hidden;max-width:100%}
 button{font-family:inherit;cursor:pointer}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#0c0d14}
@@ -19,6 +18,9 @@ button{font-family:inherit;cursor:pointer}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.35s ease-out}
 @media (max-width:820px){.portrait-grid{grid-template-columns:1fr !important}.portrait-grid aside > div{position:static !important}}
+.cube-panels{display:grid;grid-template-columns:repeat(4, 1fr);gap:6px}
+@media (max-width:900px){.cube-panels{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.cube-panels{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -313,20 +315,20 @@ const SG_TABLES={
   club:{
     label:"Club", labelXyz:"Activity Disposition",
     members:{
-      "Researchers (xNTx)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
-      "Pragmatists (xSTx)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
-      "Socialites (xSFx)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
-      "Humanitarians (xNFx)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
+      "Researchers (NT)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
+      "Pragmatists (ST)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
+      "Socialites (SF)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
+      "Humanitarians (NF)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
     }
   },
   // 3. Temperament
   temperament:{
     label:"Temperament", labelXyz:"Temperament",
     members:{
-      "Flexible-Maneuvering (ExxP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
-      "Linear-Assertive (ExxJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
-      "Receptive-Adaptive (IxxP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
-      "Rigid-Stable (IxxJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
+      "Flexible-Maneuvering (EP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
+      "Linear-Assertive (EJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
+      "Receptive-Adaptive (IP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
+      "Rigid-Stable (IJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
     }
   },
   // 1. Stimulus / Immersed in
@@ -353,20 +355,20 @@ const SG_TABLES={
   perceptual:{
     label:"Perceptual Group", labelXyz:"Perceptual Orientation",
     members:{
-      "Associative (xNxP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
-      "Dissociative (xNxJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
-      "Commutative (xSxP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
-      "Distributive (xSxJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
+      "Associative (NP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
+      "Dissociative (NJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
+      "Commutative (SP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
+      "Distributive (SJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
     }
   },
   // 14. Argumentation Group
   argumentation:{
     label:"Argumentation Group", labelXyz:"Argumentation Style",
     members:{
-      "Restructors (xxTP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
-      "Constructors (xxTJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
-      "Diplomats (xxFP)":   {xyz:"Diplomat",    types:["IEE","SEE","IEI","SEI"], detail:"Descriptive, conciliatory, fills the gap with breadth"},
-      "Guardians (xxFJ)":   {xyz:"Guardian",    types:["EIE","ESE","EII","ESI"], detail:"Interprets through authority and moral consensus"},
+      "Restructors (TP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
+      "Constructors (TJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
+      "Diplomats (FP)":   {xyz:"Diplomat",    types:["IEE","SEE","IEI","SEI"], detail:"Descriptive, conciliatory, fills the gap with breadth"},
+      "Guardians (FJ)":   {xyz:"Guardian",    types:["EIE","ESE","EII","ESI"], detail:"Interprets through authority and moral consensus"},
     }
   },
   // 11. Romance Style / Primal Social Role
@@ -475,7 +477,7 @@ const Badge=({label,color,filled})=>(
 const SectionDivider=({label,color=C.accent})=>(
   <div style={{display:"flex",alignItems:"center",gap:14,margin:"36px 0 20px"}}>
     <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,${color}30)`}}/>
-    <span style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:13,letterSpacing:4,textTransform:"uppercase",color,fontWeight:600}}>{label}</span>
+    <span style={{fontFamily:"'Inter',sans-serif",fontSize:14,letterSpacing:3,textTransform:"uppercase",color,fontWeight:800}}>{label}</span>
     <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,${color}30)`}}/>
   </div>
 );
@@ -524,7 +526,7 @@ function ModelAVisualizer({type}){
     return(<div key={ri} style={{display:"flex",gap:3,background:bgc+"0d",borderRadius:8,padding:6,
       border:`1px solid ${bgc}18`,position:"relative",transition:"opacity 0.25s",
       opacity:(activeVB&&!row.some(i=>isInVB(i)))?0.3:1}}>
-      <div style={{position:"absolute",top:3,right:8,fontSize:7,fontWeight:800,color:tc,letterSpacing:1.5,textTransform:"uppercase",opacity:0.5}}>{blockNames[ri]}</div>
+      <div style={{position:"absolute",top:3,right:8,fontSize:9,fontWeight:800,color:tc,letterSpacing:1.5,textTransform:"uppercase",opacity:0.6}}>{blockNames[ri]}</div>
       {row.map((idx,ci)=>{
         const pos=MA[idx];const fn=fns[idx];const isSel=sel===idx;
         const vHit=isInVB(idx);const dim=shouldDim(idx);
@@ -539,7 +541,7 @@ function ModelAVisualizer({type}){
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
               <Chip fn={fn} size={30} glow={isSel||vHit} bg={chipColors[idx]}/>
               <div>
-                <div style={{fontSize:11,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.5)"}}>{pos.n}</div>
+                <div style={{fontSize:13,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.5)"}}>{pos.n}</div>
                 <div style={{fontSize:8,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>Position {pos.num} · {pos.dim} · {pos.pri} · {pos.lvl}</div>
               </div>
             </div>
@@ -682,7 +684,7 @@ function ModelGVisualizer({type}){
       </div>
       <div style={{textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▼ PRIVATE: Close Distance (Territory)</div>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"auto auto",gap:6,marginTop:8,justifyContent:"center"}}>
+    <div style={{display:"flex",gap:3,marginTop:8,justifyContent:"center",flexWrap:"wrap"}}>
       {[{l:"E-Maximum",p:"G1+G5",c:EC.Maximum},{l:"E-Optimum",p:"G2+G6",c:EC.Optimum},{l:"E-Minimum",p:"G3+G7",c:EC.Minimum},{l:"E-Pessimum",p:"G4+G8",c:EC.Pessimum}].map(e=>(
         <div key={e.l} style={{fontSize:8,color:e.c,padding:"2px 8px",borderRadius:4,border:`1px solid ${e.c}33`,background:e.c+"0a"}}>
           <span style={{fontWeight:700}}>{e.l}</span> <span style={{color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>[{e.p}]</span>
@@ -976,7 +978,7 @@ function PresenceCubeSection(){
     {/* ═══ BOTTOM TABLE: ALL 8 FUNCTIONS AT A GLANCE ═══ */}
     <Card style={{marginTop:16}}>
       <div style={{fontSize:11,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>All Eight Vertices · Presence Coordinates</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:6}}>
+      <div className="cube-panels">
         {CUBE_NODES.slice().sort((a,b)=>a.num-b.num).map(n=>{
           const isActive=active===n.num;
           const color=LEVEL_COLOR[n.L];
@@ -1094,7 +1096,6 @@ function App(){
 
   return(<div style={{minHeight:"100vh",background:C.bg,paddingBottom:60}}>
     <div style={{background:`linear-gradient(180deg,${ac}08 0%,transparent 100%)`,borderBottom:`1px solid ${C.border}`,padding:"38px 24px 24px",textAlign:"center"}}>
-      <div style={{fontFamily:"'JetBrains Mono', monospace",fontSize:11,color:C.textDim,marginBottom:10}}>Section VII · Models Primer</div>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:34,fontWeight:700,margin:0,color:"#ffffff",letterSpacing:0.3}}>Socionics Model Architecture</h1>
       <div style={{fontFamily:"'Crimson Text','Playfair Display',Georgia,serif",fontSize:15,fontStyle:"italic",color:C.textMuted,marginTop:8,letterSpacing:0.2}}>Information Metabolism (Model A) & Energy Metabolism (Model G)</div>
     </div>

@@ -9,23 +9,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
-  * 
-  .tab-strip { display: flex; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
-  .tab-strip::-webkit-scrollbar { height: 6px; }
-  .tab-strip::-webkit-scrollbar-track { background: transparent; }
-  .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
-  .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
-  .grid-4-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 720px) { .grid-4-2x2 { grid-template-columns: 1fr; } }
-  .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
-  @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
-{ margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
-  @media (max-width: 540px) {
-    html, body { overflow-x: hidden; max-width: 100%; }
-    body img, body svg { max-width: 100%; height: auto; }
-  }
   button { font-family: inherit; cursor: pointer; }
   table { border-spacing: 0; }
   ::-webkit-scrollbar { height: 6px; width: 6px; }
@@ -62,7 +47,7 @@ const C = {
 const Divider = ({ label, color }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px 0 28px" }}>
     <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${color}40)` }} />
-    <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 13, letterSpacing: 4, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
+    <span style={{ fontFamily: "'Inter', -apple-system, sans-serif", fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color, fontWeight: 600 }}>{label}</span>
     <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${color}40)` }} />
   </div>
 );
@@ -92,7 +77,7 @@ const Mono = ({ children, color = C.textDim }) => (
 );
 
 const TabBtn = ({ label, active, onClick, color }) => (
-  <button onClick={onClick} style={{ padding: "12px 16px", border: "none", background: "transparent", color: active ? color : C.textMuted, fontSize: 13, fontWeight: active ? 700 : 500, cursor: "pointer", letterSpacing: 0.3, fontFamily: "'Inter', -apple-system, sans-serif", borderBottom: active ? `2px solid ${color}` : "2px solid transparent", transition: "all 0.15s", whiteSpace: "nowrap", flexShrink: 0 }}>{label}</button>
+  <button onClick={onClick} style={{ padding: "12px 12px", border: "none", fontSize: 12, fontWeight: 700, background: "transparent", color: active ? color : C.textDim, borderBottom: active ? `2px solid ${color}` : "2px solid transparent", transition: "all 0.2s", whiteSpace: "nowrap", letterSpacing: 0.3, cursor: "pointer", fontFamily: "'Inter', -apple-system, sans-serif" }}>{label}</button>
 );
 
 const LensCard = ({ lens, color, content }) => (
@@ -112,7 +97,7 @@ const ElementBadge = ({ symbol, label, color, size = 36 }) => (
 const DyadCard = ({ name, code, elements, color, desc, reinin, items }) => (
   <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20, flex: "1 1 220px", minWidth: 220 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-      <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div style={{ minWidth: 36, height: 36, padding: "0 8px", borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{code}</div>
       <div>
         <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
         <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{elements}</div>
@@ -227,7 +212,7 @@ function FunctionsReport() {
 
       {/* ═══════════ HERO ═══════════ */}
       <div style={{ background: `radial-gradient(ellipse at 20% 0%, ${C.Ne}06, transparent 55%), radial-gradient(ellipse at 80% 0%, ${C.Ti}06, transparent 55%), radial-gradient(ellipse at 50% 100%, ${C.Fe}05, transparent 50%)`, padding: "48px 28px 36px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
-        <Mono color={C.accent1}>Section VI · IME Primer</Mono>
+        <Mono color={C.accent1}>Socionics · Ausra / Gulenko / Reinin / Talanov</Mono>
         <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, margin: "14px 0", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
           Information Metabolism Elements
         </h1>
@@ -242,10 +227,12 @@ function FunctionsReport() {
         </div>
       </div>
 
-      <div className="tab-strip">
-        {sections.map(s => (
-          <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
-        ))}
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
+        <div style={{ display: "flex", gap: 0, padding: "0 8px", borderBottom: `1px solid ${C.border}55`, overflowX: "auto", justifyContent: "center", marginTop: 20 }}>
+          {sections.map(s => (
+            <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
+          ))}
+        </div>
       </div>
 
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
@@ -345,7 +332,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div className="grid-4-2x2" style={{ marginTop: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, marginTop: 8 }}>
             <DyadCard name="Extraverted Judging" code="Je" elements="Te+Fe (Orchestration)" color={C.Je}
               desc="The Differential mode: expands evaluative scope by broadcasting judgments outward. Both Te and Fe are extraverted rational elements: they actively project evaluative standards onto the external world, seeking to organize it according to their respective criteria."
               reinin="E + J + Dynamic"
@@ -453,7 +440,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div className="grid-4-2x2">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
             <DyadCard name="Intuition (Conceptualization)" code="N" elements="Ne + Ni" color={C.N}
               desc="The faculty of the non-present: processing information about what is not directly available to the senses. Ne expands possibility-space (divergent); Ni narrows it to essential trajectory (convergent). Together they span the full range of abstract-temporal cognition."
               reinin="Spontaneity · Abstracted · Implicit"
@@ -520,7 +507,7 @@ function FunctionsReport() {
             </Prose>
           </Card>
 
-          <div className="grid-4-2x2" style={{ marginTop: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, marginTop: 8 }}>
             <DyadCard name="Decisive" code="Se/Ni" elements="Competition" color={C.decisive}
               desc="Convergent perception: volitional force backed by focused foresight. Se grasps the present moment with intensity while Ni envisions the single necessary trajectory. Together: narrow but deep resource engagement, commitment to a specific path, confrontation-readiness."
               reinin="Decisive (Competition)"
@@ -839,7 +826,7 @@ function FunctionsReport() {
               The 16 blocks split into two thermodynamic categories based on the attitudes of the elements involved. <em>Information blocks</em> pair elements of <em>opposite</em> attitude (Pe+Ji or Pi+Je); these are the blocks most formally captured by Model A, which foregrounds the structural topology of information flow through the psyche. <em>Energy blocks</em> pair elements of <em>same</em> attitude (Pe+Je or Pi+Ji); these are the blocks most directly captured by Model G, Gulenko's reformulation that foregrounds how psychic energy is budgeted, expended, and replenished through behavioral output. Both kinds of blocks are present in every type. The difference is which model's formalism makes them most legible.
             </Prose>
 
-            <div className="grid-4-2x2" style={{ marginTop: 18, gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 18 }}>
               {/* Information Blocks - opposite attitudes */}
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: C.accent2, marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", textAlign: "center", paddingBottom: 6, borderBottom: `1px solid ${C.accent2}30` }}>Information Blocks (Model A)</div>

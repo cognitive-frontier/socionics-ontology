@@ -7,14 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Familjen+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html{overflow-x:hidden;max-width:100%}
   body {
     min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     background: linear-gradient(145deg, #0d0d14 0%, #141420 50%, #0d0d18 100%);
     font-family: 'Familjen Grotesk', 'DM Sans', system-ui, sans-serif;
     padding: 8px 16px 20px; overflow-x: hidden;
-  ;overflow-x:hidden;max-width:100%}
+  }
   .eyebrow {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
     font-size: 11px;
@@ -51,14 +50,8 @@
     position: relative;
   }
   .diagram-wrap svg { overflow: visible; display: block; width: 100%; height: auto; }
-  @media (max-width: 540px) {
-    .diagram-wrap {
-      max-width: 86vw;
-      padding: 7% 4% 9%;
-    }
-  }
   #tooltip {
-    position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
     background: rgba(20,20,32,0.92); backdrop-filter: blur(12px);
     border: 1px solid rgba(232,228,223,0.12); border-radius: 10px;
     padding: 10px 18px; display: flex; gap: 20px; align-items: center;
@@ -66,8 +59,8 @@
     max-width: 95vw;
   }
   #tooltip.visible { opacity: 1; }
-  #tooltip .tt-types { color: #e8e4df; font-size: 14px; font-weight: 700; font-family: 'Fira Code', monospace; letter-spacing: 1px; }
-  #tooltip .tt-sign { color: rgba(232,228,223,0.6); font-size: 11.5px; font-weight: 500; font-family: 'Familjen Grotesk', sans-serif; }
+  #tooltip .tt-types { color: #e8e4df; font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; letter-spacing: 1px; }
+  #tooltip .tt-sign { color: rgba(232,228,223,0.6); font-size: 13.5px; font-weight: 500; font-family: 'Familjen Grotesk', sans-serif; }
   .legend {
     margin-top: 10px;
     display: grid;
@@ -94,13 +87,6 @@
     color: rgba(232,228,223,0.3);
     font-size: 15px;
     justify-self: center;
-  }
-  @media (max-width: 540px) {
-    .legend { gap: 4px 10px; }
-    .legend .cell { font-size: 11px; white-space: normal; }
-    .legend .cell b { font-size: 12px; }
-    .legend .dot { font-size: 11px; }
-    .legend .par { display: block; }
   }
   .attribution {
     color: rgba(232,228,223,0.18); font-size: 10px; margin-top: 6px;
@@ -177,15 +163,6 @@
     color: rgba(232,228,223,0.15);
     font-size: 13px;
   }
-  @media (max-width: 540px) {
-    .dcnh-key {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
-      justify-items: center;
-    }
-    .dcnh-key .sep { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -213,15 +190,15 @@
 </div>
 
 <div class="legend">
-  <span class="cell left"><b>?</b> Separation <span class="par">(Questim)</span></span>
+  <span class="cell left"><b>?</b> Separation (Asking)</span>
   <span class="dot">·</span>
-  <span class="cell right"><b>%</b> Democratic <span class="par">(Individualism)</span></span>
-  <span class="cell left"><b>!</b> Acceptance <span class="par">(Declatim)</span></span>
+  <span class="cell right"><b>%</b> Individualism (Democratic)</span>
+  <span class="cell left"><b>!</b> Acceptance (Declaring)</span>
   <span class="dot">·</span>
-  <span class="cell right"><b>#</b> Aristocratic <span class="par">(Collectivism)</span></span>
+  <span class="cell right"><b>#</b> Collectivism (Aristocratic)</span>
 </div>
-<div class="eyebrow">Circumplex of Personality Metatraits (CPM) · Interpersonal Circumplex (IPC)</div>
-<p class="attribution">Based on Romanov (2018) · Value Ring of R-Dual Pairs · Ryan Petrello (2026)</p>
+<div class="eyebrow">Socionics · Big Five Metatraits (CPM) · Interpersonal Circumplex (IPC)</div>
+<p class="attribution">Based on Romanov (2018) · Socion Value Ring of R-Dual Pairs</p>
 
 <script>
 (() => {
@@ -330,13 +307,12 @@
     "?": new Set(["ILE","LII","EIE","IEI","SEE","ESI","LSE","SLI"]),
     "!": new Set(["ESE","SEI","SLE","LSI","LIE","ILI","IEE","EII"]),
   };
-  const DICH_NAME = { "%":"Democratic", "#":"Aristocratic", "?":"Separation", "!":"Acceptance" };
+  const DICH_NAME = { "%":"Individualism (Democratic)", "#":"Collectivism (Aristocratic)", "?":"Separation (Asking)", "!":"Acceptance (Declaring)" };
 
   /* ================================================================
      RENDER
   ================================================================ */
   let mode = null; // null | "slice" | "dich"
-  let stickySlice = null; // index of tap-locked slice (mobile) or null
 
   // Defs
   const defs = el("defs", {}, svg);
@@ -424,7 +400,7 @@
       let ta = ang; if (ta > 90 && ta < 270) ta += 180;
       el("text", {
         x:pos.x, y:pos.y, "text-anchor":"middle", "dominant-baseline":"central",
-        fill:"#e8e4df", "font-size":"18", "font-weight":"700",
+        fill:"#e8e4df", "font-size":"15", "font-weight":"700",
         "font-family":"'Fira Code','JetBrains Mono','SF Mono',monospace",
         "letter-spacing":"0.5", transform:`rotate(${ta},${pos.x},${pos.y})`,
         textContent:t, style:{ pointerEvents:"none" }
@@ -438,8 +414,9 @@
       textContent:s.sign, style:{ pointerEvents:"none" }
     }, g);
 
-    // Slice activation (reused by hover + click)
-    const activateThis = () => {
+    // Slice hover
+    g.addEventListener("mouseenter", () => {
+      if (mode === "dich" || mode === "dcnh") return;
       mode = "slice";
       sliceData.forEach((d, j) => d.g.style.opacity = j === i ? "1" : "0.5");
       p1.setAttribute("fill", s.hc);
@@ -448,47 +425,15 @@
       ttTypes.textContent = `${s.types[0]} \u00b7 ${s.types[1]}`;
       ttSign.textContent = `${s.sign} = ${s.sm}`;
       tooltip.classList.add("visible");
-    };
-    const deactivateThis = () => {
+    });
+    g.addEventListener("mouseleave", () => {
+      if (mode !== "slice") return;
       mode = null;
       sliceData.forEach(d => d.g.style.opacity = "1");
       p1.setAttribute("fill", s.c);
       p2.setAttribute("fill", cm(s.c,75,"black"));
       hl.setAttribute("opacity", "0");
       tooltip.classList.remove("visible");
-    };
-
-    // Desktop hover
-    g.addEventListener("mouseenter", () => {
-      if (mode === "dich" || mode === "dcnh") return;
-      if (stickySlice !== null && stickySlice !== i) return;
-      activateThis();
-    });
-    g.addEventListener("mouseleave", () => {
-      if (stickySlice === i) return; // tap-locked, ignore mouse leave
-      if (mode !== "slice") return;
-      deactivateThis();
-    });
-
-    // Mobile tap (also works on desktop click): toggle sticky activation
-    g.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (mode === "dich" || mode === "dcnh") return;
-      if (stickySlice === i) {
-        // Tap same slice again: deactivate
-        stickySlice = null;
-        deactivateThis();
-      } else {
-        // New activation: reset any previously sticky slice
-        if (stickySlice !== null) {
-          const prev = sliceData[stickySlice];
-          prev.p1.setAttribute("fill", prev.s.c);
-          prev.p2.setAttribute("fill", cm(prev.s.c,75,"black"));
-          prev.hl.setAttribute("opacity", "0");
-        }
-        stickySlice = i;
-        activateThis();
-      }
     });
   });
 
@@ -599,20 +544,6 @@
     });
     tooltip.classList.remove("visible");
   }
-
-  // Tap outside any slice to dismiss sticky activation (mobile)
-  // Slice clicks call stopPropagation, so this only fires for clicks elsewhere
-  document.addEventListener("click", () => {
-    if (stickySlice === null) return;
-    const d = sliceData[stickySlice];
-    stickySlice = null;
-    mode = null;
-    sliceData.forEach(dd => dd.g.style.opacity = "1");
-    d.p1.setAttribute("fill", d.s.c);
-    d.p2.setAttribute("fill", cm(d.s.c,75,"black"));
-    d.hl.setAttribute("opacity", "0");
-    tooltip.classList.remove("visible");
-  });
 
   // ── Symbol text labels (non-interactive) ──
   function symLabels(ring, ri, ro) {
