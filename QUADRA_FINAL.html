@@ -201,7 +201,7 @@ const SocionClock = ({ highlight }) => {
   ];
   const toRad = d => d * Math.PI / 180;
   return (
-    <svg viewBox="-60 -40 520 480" style={{ width: "100%", maxWidth: 360 }}>
+    <svg viewBox="-25 -25 450 450" style={{ width: "100%", maxWidth: 360 }}>
       {/* outer ring */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.border} strokeWidth={1} />
       <circle cx={cx} cy={cy} r={ir} fill="none" stroke={C.border} strokeWidth={0.5} strokeDasharray="4 4" />
@@ -218,24 +218,42 @@ const SocionClock = ({ highlight }) => {
         return (
           <g key={q.key}>
             <path d={`M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 0 0 ${iex} ${iey} Z`} fill={q.color} opacity={opacity} />
-            <text x={cx + mr * Math.cos(toRad(q.angle))} y={cy + mr * Math.sin(toRad(q.angle)) + 6} textAnchor="middle" fontSize="28" fontWeight="800" fill={q.color} opacity={highlight === q.key ? 1 : 0.5} fontFamily="'Playfair Display', Georgia, serif">{q.label}</text>
+            <text x={cx + mr * Math.cos(toRad(q.angle))} y={cy + mr * Math.sin(toRad(q.angle)) + 6} textAnchor="middle" fontSize="24" fontWeight="800" fill={q.color} opacity={highlight === q.key ? 1 : 0.5} fontFamily="'Playfair Display', Georgia, serif">{q.label}</text>
           </g>
         );
       })}
-      {/* arrows between quadras */}
+      {/* arrows between quadras (rotated tangent to circle, pointing clockwise) */}
       {quadras.map((q, i) => {
         const next = quadras[(i + 1) % 4];
-        const midA = toRad((q.angle + next.angle) / 2 + (i === 3 ? 180 : 0));
+        const midAdeg = (q.angle + next.angle) / 2 + (i === 3 ? 180 : 0);
+        const midA = toRad(midAdeg);
         const ax = cx + (r - 20) * Math.cos(midA), ay = cy + (r - 20) * Math.sin(midA);
-        return <text key={`arr${i}`} x={ax} y={ay + 4} textAnchor="middle" fontSize="16" fill={C.textDim} opacity={0.5}>→</text>;
+        const rot = midAdeg + 90;
+        return <text key={`arr${i}`} x={ax} y={ay} textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="700" fill={C.textDim} opacity={0.8} transform={`rotate(${rot} ${ax} ${ay})`}>→</text>;
       })}
       {/* center label */}
       <text x={cx} y={cy - 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">SOCION</text>
       <text x={cx} y={cy + 8} textAnchor="middle" fontSize="10" fill={C.textDim} letterSpacing="3" fontFamily="'JetBrains Mono', monospace">CLOCK</text>
-      {/* season labels */}
-      {[{a:-90,l:"GENESIS",s:"spring",c:C.alpha},{a:0,l:"MOBILIZE",s:"summer",c:C.beta},{a:90,l:"OPTIMIZE",s:"autumn",c:C.gamma},{a:180,l:"CONSERVE",s:"winter",c:C.delta}].map((s,i)=>(
-        <g key={i}><text x={cx+(r+18)*Math.cos(toRad(s.a))} y={cy+(r+18)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="7" fill={s.c} letterSpacing="2" fontFamily="'JetBrains Mono', monospace" opacity={0.7} fontWeight="700">{s.l}</text><text x={cx+(r+28)*Math.cos(toRad(s.a))} y={cy+(r+28)*Math.sin(toRad(s.a))+2} textAnchor="middle" fontSize="5.5" fill={s.c} fontFamily="'JetBrains Mono', monospace" opacity={0.35} fontStyle="italic">{s.s}</text></g>
-      ))}
+      {/* season labels — TOP/BOTTOM stack radially, LEFT/RIGHT stack vertically (sub above main) to clear the Greek letters at mr */}
+      {[
+        {a:-90,l:"GENESIS",s:"spring",c:C.alpha,vertical:false},
+        {a:0,l:"MOBILIZE",s:"summer",c:C.beta,vertical:true},
+        {a:90,l:"OPTIMIZE",s:"autumn",c:C.gamma,vertical:false},
+        {a:180,l:"CONSERVE",s:"winter",c:C.delta,vertical:true},
+      ].map((s,i)=>{
+        const ang = toRad(s.a);
+        const mainX = cx + (r+22)*Math.cos(ang);
+        const mainY = cy + (r+22)*Math.sin(ang) + 4;
+        // sub: radial offset for top/bottom, vertical (above) for left/right
+        const subX = s.vertical ? mainX : cx + (r+38)*Math.cos(ang);
+        const subY = s.vertical ? mainY - 14 : cy + (r+38)*Math.sin(ang) + 4;
+        return (
+          <g key={i}>
+            <text x={mainX} y={mainY} textAnchor="middle" fontSize="12" fill={s.c} letterSpacing="1" fontFamily="'JetBrains Mono', monospace" opacity={0.95} fontWeight="700">{s.l}</text>
+            <text x={subX} y={subY} textAnchor="middle" fontSize="10" fill={s.c} fontFamily="'JetBrains Mono', monospace" opacity={0.55} fontStyle="italic">{s.s}</text>
+          </g>
+        );
+      })}
     </svg>
   );
 };
@@ -447,7 +465,7 @@ function QuadraReport() {
       {/* ═══════════════ QUADRA PROFILES ═══════════════ */}
       {activeSection === "profiles" && <>
         <Divider label="Select a Quadra" color={C.accent1} />
-        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
           {quadraOrder.map(k => (
             <TabBtn key={k} label={`${Q[k].greek} ${Q[k].name}`} active={activeQuadra === k} onClick={() => setActiveQuadra(k)} color={Q[k].color} />
           ))}

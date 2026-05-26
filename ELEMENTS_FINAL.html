@@ -112,7 +112,7 @@ const ElementBadge = ({ symbol, label, color, size = 36 }) => (
 const DyadCard = ({ name, code, elements, color, desc, reinin, items }) => (
   <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20, flex: "1 1 220px", minWidth: 220 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-      <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+      <div style={{ minWidth: 52, height: 36, padding: "0 8px", borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{code}</div>
       <div>
         <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
         <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{elements}</div>
@@ -242,10 +242,12 @@ function FunctionsReport() {
         </div>
       </div>
 
-      <div className="tab-strip">
-        {sections.map(s => (
-          <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
-        ))}
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
+        <div className="tab-strip">
+          {sections.map(s => (
+            <TabBtn key={s.id} label={s.label} active={activeSection === s.id} onClick={() => setActiveSection(s.id)} color={s.color} />
+          ))}
+        </div>
       </div>
 
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "0 20px" }}>
