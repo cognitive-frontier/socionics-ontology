@@ -492,16 +492,16 @@ function ClubReport() {
             <Prose>
               Each Club further splits into a divergent dyad and a convergent dyad based on the Q/D (Questimity/Declatimity) dichotomy. Divergent thinking (Questim) emphasizes authorship, originality, and the creation of new knowledge or forms. Convergent thinking (Declatim) emphasizes adaptation, standardization, and the reproduction of existing knowledge or forms. This produces eight cognitive specializations, the finest granularity of the Strength system.
             </Prose>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+            <div className="grid-4-2x2" style={{ gap: 12 }}>
               {[
                 { dyad: "Business", types: "LIE + ILI", club: "NT", quadra: "Gamma", mode: "Convergent", color: C.nt, desc: "Maintaining market unity. Adapting abstract concepts to specific situations and real people." },
                 { dyad: "Knowledge", types: "ILE + LII", club: "NT", quadra: "Alpha", mode: "Divergent", color: C.nt, desc: "Creating and keeping paradigms. Scientific picture of the world through competition of independent thinkers." },
+                { dyad: "Culture", types: "IEE + EII", club: "NF", quadra: "Delta", mode: "Convergent", color: C.nf, desc: "Maintaining language-cultural unity. Adapting cultural forms for social reproduction." },
+                { dyad: "Art", types: "EIE + IEI", club: "NF", quadra: "Beta", mode: "Divergent", color: C.nf, desc: "Forming high art through competition of independent artists. Creating original cultural products." },
                 { dyad: "Power", types: "SLE + LSI", club: "ST", quadra: "Beta", mode: "Convergent", color: C.st, desc: "Maintaining state unity through power structures and organizational discipline." },
                 { dyad: "Production", types: "LSE + SLI", club: "ST", quadra: "Delta", mode: "Divergent", color: C.st, desc: "Forming ergonomic environments through competition of independent craftsmen. Innovative manufacturing." },
                 { dyad: "Nature", types: "ESE + SEI", club: "SF", quadra: "Alpha", mode: "Convergent", color: C.sf, desc: "Maintaining unity of population appearance, adapting it to natural habitat of the population." },
                 { dyad: "Ownership", types: "SEE + ESI", club: "SF", quadra: "Gamma", mode: "Divergent", color: C.sf, desc: "Shaping appearance of people through sexual and political competition of independent evaluators." },
-                { dyad: "Culture", types: "IEE + EII", club: "NF", quadra: "Delta", mode: "Convergent", color: C.nf, desc: "Maintaining language-cultural unity. Adapting cultural forms for social reproduction." },
-                { dyad: "Art", types: "EIE + IEI", club: "NF", quadra: "Beta", mode: "Divergent", color: C.nf, desc: "Forming high art through competition of independent artists. Creating original cultural products." },
               ].map((d, i) => (
                 <div key={i} style={{ background: `${d.color}06`, border: `1px solid ${d.color}18`, borderRadius: 10, padding: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
