@@ -15,6 +15,9 @@
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
   .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
   .tab-strip::-webkit-scrollbar-thumb:hover { background: #4a4a5a; }
+  .legend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 860px) { .legend-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .legend-grid { grid-template-columns: 1fr; } }
 { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
@@ -942,11 +945,30 @@ function IntertypeReport() {
           {/* Legend */}
           <Card>
             <SectionTitle>Legend</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 10 }}>
-              {Object.entries(REL_META).map(([code, meta]) => (
-                <div key={code} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", background: `${meta.color}0a`, border: `1px solid ${meta.color}28`, borderRadius: 8 }}>
-                  <div style={{ minWidth: 32, padding: "3px 6px", textAlign: "center", fontSize: 10, fontWeight: 800, color: meta.color, background: `${meta.color}1a`, border: `1px solid ${meta.color}40`, borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
-                  <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{meta.name}</div>
+            <SmallProse style={{ marginBottom: 14 }}>
+              The sixteen relations group by which dichotomy space defines them, following Vincent's Reinin and Minaiev synthesis. Four exist in either space, four are exclusive to the Reinin space, four are exclusive to the Minaiev space, and the four asymmetric ring relations exist only as a composition of both.
+            </SmallProse>
+            <div className="legend-grid">
+              {[
+                { header: "Reinin or Minaiev", sub: "Either space", codes: ["Id", "Du", "Su", "Ex"] },
+                { header: "Reinin Only", sub: "Structural", codes: ["Mr", "Co", "Ac", "Qd"] },
+                { header: "Minaiev Only", sub: "Domain", codes: ["Ki", "Bu", "Sd", "Mg"] },
+                { header: "Reinin and Minaiev", sub: "Composed, asymmetric", codes: ["Bn>", "Bn<", "Sv>", "Sv<"] },
+              ].map((group, gi) => (
+                <div key={gi} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ marginBottom: 2 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: C.text, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{group.header}</div>
+                    <div style={{ fontSize: 9, color: C.textDim, fontStyle: "italic" }}>{group.sub}</div>
+                  </div>
+                  {group.codes.map((code) => {
+                    const meta = REL_META[code];
+                    return (
+                      <div key={code} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 9px", background: `${meta.color}0a`, border: `1px solid ${meta.color}28`, borderRadius: 8 }}>
+                        <div style={{ minWidth: 30, padding: "3px 5px", textAlign: "center", fontSize: 10, fontWeight: 800, color: meta.color, background: `${meta.color}1a`, border: `1px solid ${meta.color}40`, borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}>{code}</div>
+                        <div style={{ fontSize: 11, color: C.text, fontWeight: 500 }}>{meta.name}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
