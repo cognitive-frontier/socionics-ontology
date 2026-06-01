@@ -163,7 +163,8 @@ const QuadrantDiagram = ({ title, topLabel, bottomLabel, leftLabel, rightLabel, 
 
 function ClubReport() {
   const [activeTab, setActiveTab] = useState("ns");
-  const [activeSection, setActiveSection] = useState("core");
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-club") || "core"; } catch (e) { return "core"; } });
+  const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-club", v); } catch (e) {} _setActiveSection(v); };;
 
   const sections = [
     { id: "core", label: "Core Theory", color: C.accent1 },

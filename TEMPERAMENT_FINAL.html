@@ -172,7 +172,8 @@ const EFRadial = ({ name, code, color, wm, ic, cf }) => {
 
 function TemperamentReport() {
   const [activeTab, setActiveTab] = useState("ei");
-  const [activeSection, setActiveSection] = useState("core");
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-temperament") || "core"; } catch (e) { return "core"; } });
+  const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-temperament", v); } catch (e) {} _setActiveSection(v); };;
 
   const sections = [
     { id: "core", label: "Core Theory", color: C.accent1 },

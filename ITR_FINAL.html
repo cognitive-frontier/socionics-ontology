@@ -195,7 +195,8 @@ const StackedBar = ({ data, title }) => {
 };
 
 function IntertypeReport() {
-  const [activeSection, setActiveSection] = useState("intro");
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-itr") || "intro"; } catch (e) { return "intro"; } });
+  const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-itr", v); } catch (e) {} _setActiveSection(v); };;
 
   const sections = [
     { id: "intro",      label: "Overview",                 color: C.accent1 },

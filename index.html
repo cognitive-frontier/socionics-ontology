@@ -14,6 +14,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
   body { background: #08090e; color: #e4e4e7; overflow: hidden; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+  /* Use dynamic viewport height so the sidebar's bottom (and its footnote) sits above
+     the iOS Chrome bottom toolbar, which overlaps a static 100vh. dvh tracks the
+     visible viewport; 100vh stays as a fallback for browsers without dvh support. */
+  .app-shell { height: 100vh; height: 100dvh; }
   /* Custom scrollbar for sidebar */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -80,10 +84,26 @@
       { id: 'subtypes', title: '10. Subtypes (DCNH)', icon: <Icons.Network />, file: 'DCNH_FINAL.html', available: true },
     ];
 
-    const [activeArticle, setActiveArticle] = useState(articles[0]);
+    // Persist the active module so a refresh restores the same one instead of
+    // dropping the reader back at module 1. Stored as the module id in localStorage.
+    const getInitialArticle = () => {
+      try {
+        const id = window.localStorage.getItem('ontology-active-module');
+        if (id) {
+          const found = articles.find(a => a.id === id && a.available);
+          if (found) return found;
+        }
+      } catch (e) { /* localStorage disabled */ }
+      return articles[0];
+    };
+    const [activeArticle, _setActiveArticle] = useState(getInitialArticle);
+    const setActiveArticle = (a) => {
+      try { window.localStorage.setItem('ontology-active-module', a.id); } catch (e) {}
+      _setActiveArticle(a);
+    };
 
     return (
-      <div className="flex h-screen bg-[#08090e] text-[#e4e4e7] overflow-hidden">
+      <div className="app-shell flex bg-[#08090e] text-[#e4e4e7] overflow-hidden">
         
         {/* Sidebar */}
         <div className={`flex-shrink-0 bg-[#10111a] border-r border-[#252538] transition-all duration-300 ease-in-out flex flex-col z-20 relative ${sidebarOpen ? 'w-72' : 'w-16'}`}>
@@ -138,7 +158,7 @@
             })}
           </div>
 
-          {/* Credit footnote — only rendered when sidebar is expanded */}
+          {/* Credit footnote, only rendered when sidebar is expanded */}
           {sidebarOpen && (
             <div className="px-4 py-3 border-t border-[#252538] text-[10px] leading-snug text-gray-500 font-['Inter'] italic select-none whitespace-nowrap overflow-hidden">
               {'by Ryan "Lamb Sauce" Petrello (March 2026).'}

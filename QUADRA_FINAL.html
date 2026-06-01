@@ -20,6 +20,8 @@
   .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
   @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
+  .quadra-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 560px; margin: 0 auto 24px; }
+  @media (max-width: 560px) { .quadra-select { grid-template-columns: 1fr 1fr; } }
 { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
@@ -127,7 +129,7 @@ const Q = {
     political: "Family-cognitive. Oriented toward small-group egalitarianism, direct democracy, voluntary association. Authority is situational and earned through knowledge, not force. State institutions are minimal or absent. Resembles pre-state communal societies, academic communes, open-source communities.",
     thermo: "High potential energy, low kinetic energy. Alpha is the genesis phase, maximum stored novelty, minimal organized force. Information is generated faster than it can be structured. The system is rich in possibility but poor in implementation. Thermodynamically: low entropy, high free energy, the most ordered informational state, but also the most fragile to external perturbation.",
     clock: "The Inventor opens (ILE), the Enthusiast disseminates (ESE), the Mediator stabilizes (SEI), the Analyst perfects (LII). Alpha dies by its own curiosity, new tools and techniques penetrate the commune and awaken instincts of power and possession, seeding the conditions for Beta.",
-    civilizations: "Al-Andalus (711–1492), Classic Maya (250–900), Joseon Korea (1392–1897), Contemporary: Sweden, Japan, South Korea",
+    civilizations: "Al-Andalus (711–1492), Abbasid Baghdad (House of Wisdom), Renaissance Florence, the Enlightenment Republic of Letters, Contemporary: South Korea",
     antiQuadra: "Gamma",
     dichotomies: ["Democratic", "Merry", "Judicious"],
   },
@@ -145,7 +147,7 @@ const Q = {
     political: "Ideological-statist. Oriented toward centralized authority, caste-based social structure, cultural uniformity. Authority is legitimized through ideology, charisma, or conquest. The state is the primary organizing institution. Resembles empires, revolutionary movements, theocracies, military states.",
     thermo: "Maximum kinetic energy. Beta is the mobilization phase, stored potential is converted into organized force. The system is mobilized, hierarchical, and expanding. Thermodynamically: rapid energy expenditure, increasing entropy through forced expansion. The most powerful but also the most volatile state, the system burns hot and eventually exhausts itself.",
     clock: "The Mentor ignites (EIE), the Marshal resources (SLE), the Inspector codifies (LSI), the Lyricist dissolves (IEI). Beta dies by over-bureaucratization and dogma, LSI's system petrifies, IEI dreams of a freer life, and the rigid structure collapses into Gamma's market liberalization.",
-    civilizations: "Akkadian Empire, Sparta, Roman Dominate, Vikings, Aztec Empire (1428–1521), Ottoman Empire, Sasanian Empire, Holy Roman Empire",
+    civilizations: "Akkadian Empire, Neo-Assyrian Empire, Sparta, Roman Dominate, Vikings, Aztec Empire (1428–1521), Ottoman Empire, Sasanian Empire",
     antiQuadra: "Delta",
     dichotomies: ["Aristocratic", "Merry", "Decisive"],
   },
@@ -163,7 +165,7 @@ const Q = {
     political: "Competitive-meritocratic. Oriented toward decentralized power determined through private competition. Authority derives from achievement, wealth, or strategic cunning. The market is the primary organizing institution. Resembles republics, merchant states, liberal democracies, entrepreneurial societies.",
     thermo: "Declining kinetic energy, rising informational complexity. Gamma is the optimization phase, the system harvests what was built and optimizes returns. Thermodynamically: entropy increases through differentiation and specialization. Resources are allocated efficiently but the system fragments. Maximum informational sophistication but declining collective cohesion.",
     clock: "The Politician reorients (SEE), the Entrepreneur monetizes (LIE), the Critic optimizes (ILI), the Guardian moralizes (ESI). Gamma dies when capitalism without ethics breeds anarchy, ESI's moral key either locks Gamma and opens Delta's humanistic order, or the system collapses back into Beta's authoritarian response.",
-    civilizations: "Achaemenid Empire, Roman Republic/Principate, Phoenicia, Republic of Venice, Dutch Republic, Classical Athens, Contemporary: USA, Czech Republic",
+    civilizations: "Carthage, Roman Republic/Principate, Phoenicia, Republic of Venice, Dutch Republic, Classical Athens, Contemporary: USA, Czech Republic",
     antiQuadra: "Alpha",
     dichotomies: ["Democratic", "Serious", "Decisive"],
   },
@@ -181,7 +183,7 @@ const Q = {
     political: "Decentralized-humanistic. Oriented toward checks and balances between networks of self-reliant individuals. Authority derives from character, competence, and community contribution. Resembles distributed democracies, craft guilds, cooperative movements, Scandinavian-style social contracts.",
     thermo: "Low kinetic energy, high informational order. Delta is the conservation phase, the system conserves, maintains, and passes on accumulated wisdom. Thermodynamically: minimum entropy production, maximum sustainable equilibrium. The most stable state but also the most resistant to change, the system can stagnate if it fails to generate new Alpha-style novelty.",
     clock: "The Administrator decentralizes (LSE), the Humanist ethicizes (EII), the Advisor liberates (IEE), the Craftsman sustains (SLI). Delta eventually stagnates into over-conservation, SLI's self-sufficiency becomes isolation, and the system needs Alpha's injection of curiosity and communal energy to restart the cycle.",
-    civilizations: "Parthian Empire, Contemporary: England (holistic), Netherlands, Denmark, Canada, Norway, Finland, Australia, Belgium",
+    civilizations: "Parthian Empire, Joseon Korea (1392–1897), Contemporary: Japan, the Nordic states (Sweden, Denmark, Norway, Finland), Netherlands, Belgium, Canada, Australia",
     antiQuadra: "Beta",
     dichotomies: ["Aristocratic", "Serious", "Judicious"],
   },
@@ -294,7 +296,8 @@ const EnergyDiagram = () => {
 // ─── MAIN COMPONENT ───────────────────────────────────────────────
 
 function QuadraReport() {
-  const [activeSection, setActiveSection] = useState("core");
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-quadra") || "core"; } catch (e) { return "core"; } });
+  const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-quadra", v); } catch (e) {} _setActiveSection(v); };;
   const [activeQuadra, setActiveQuadra] = useState("alpha");
 
   const sections = [
@@ -467,7 +470,7 @@ function QuadraReport() {
       {/* ═══════════════ QUADRA PROFILES ═══════════════ */}
       {activeSection === "profiles" && <>
         <Divider label="Select a Quadra" color={C.accent1} />
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+        <div className="quadra-select">
           {quadraOrder.map(k => (
             <TabBtn key={k} label={`${Q[k].greek} ${Q[k].name}`} active={activeQuadra === k} onClick={() => setActiveQuadra(k)} color={Q[k].color} />
           ))}

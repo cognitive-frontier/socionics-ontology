@@ -211,7 +211,8 @@ const IME_DATA = {
 
 /* ═══════════ MAIN APP ═══════════ */
 function FunctionsReport() {
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-elements") || "overview"; } catch (e) { return "overview"; } });
+  const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-elements", v); } catch (e) {} _setActiveSection(v); };;
 
   const sections = [
     { id: "overview", label: "Overview", color: C.teal },

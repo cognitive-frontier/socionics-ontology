@@ -1089,7 +1089,8 @@ const TABS=[
 ];
 
 function App(){
-  const [tab,setTab]=useState("overview");
+  const [tab,_setTab]=useState(()=>{try{return localStorage.getItem("ontology-sec-models")||"overview";}catch(e){return "overview";}});
+  const setTab=(v)=>{try{localStorage.setItem("ontology-sec-models",v);}catch(e){}_setTab(v);};
   const [sel,setSel]=useState("ILE");
   const t=TYPES[sel];
   const ac=TABS.find(x=>x.id===tab)?.color||C.accent;

@@ -129,7 +129,8 @@ const DichRow=({code,name,pole1,pole2,color,tier,desc})=>(
 
 /* ═══════════════ MAIN APP ═══════════════ */
 function FoundationsReport(){
-  const [activeSection,setActiveSection]=useState("origins");
+  const [activeSection,_setActiveSection]=useState(()=>{try{return localStorage.getItem("ontology-sec-overview")||"origins";}catch(e){return "origins";}});
+  const setActiveSection=(v)=>{try{localStorage.setItem("ontology-sec-overview",v);}catch(e){}_setActiveSection(v);};
 
   const sections=[
     {id:"origins",label:"Origins",color:C.origins},
