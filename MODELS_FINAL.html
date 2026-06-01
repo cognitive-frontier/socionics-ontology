@@ -18,6 +18,21 @@ button{font-family:inherit;cursor:pointer}
 ::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:3px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.35s ease-out}
+/* Keep the type header (type, ego, mission, combined notation) on one line on mobile.
+   nowrap prevents the (Ne-Tx) notation from orphaning to a second line; the reduced
+   font and gap let even the longest type labels fit across phone widths. */
+@media (max-width:480px){
+  .type-header{flex-wrap:nowrap !important;gap:6px !important;padding-left:8px !important;padding-right:8px !important;justify-content:center !important;}
+  .type-header > span{font-size:11px !important;}
+}
+/* Positional-mapping panels: only 4 (2x4), 2 (4x2), or 1 column, never an "almost 3x3".
+   minmax(0,1fr) lets the fixed column count shrink to fit instead of reflowing to 3. */
+.posmap-grid{display:grid;gap:8px;grid-template-columns:repeat(4,minmax(0,1fr));}
+@media (max-width:760px){.posmap-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:430px){.posmap-grid{grid-template-columns:1fr;}}
+/* Model A function badges (Strong/Weak, Valued/Subdued, Inert/Contact): shave the size
+   a touch on mobile so all three stay on one line per row. */
+@media (max-width:560px){.ma-badges{gap:1px !important;}.ma-badges > span{font-size:7.5px !important;padding:1px 2px !important;letter-spacing:0 !important;}}
 @media (max-width:820px){.portrait-grid{grid-template-columns:1fr !important}.portrait-grid aside > div{position:static !important}}
 .cube-vertex-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:640px){.cube-vertex-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -305,10 +320,10 @@ const SG_TABLES={
   quadra:{
     label:"Quadra", labelXyz:"Quadra",
     members:{
-      Alpha:{xyz:"Alpha", types:["ILE","LII","ESE","SEI"], detail:"Curious, light, democratic; values open inquiry and easy comfort"},
-      Beta:{xyz:"Beta",   types:["EIE","IEI","SLE","LSI"], detail:"Passionate, hierarchical, mobilized; values willpower and ideological cause"},
-      Gamma:{xyz:"Gamma", types:["SEE","ESI","LIE","ILI"], detail:"Reformist, pragmatic, individualist; values results and frank judgement"},
-      Delta:{xyz:"Delta", types:["LSE","SLI","IEE","EII"], detail:"Stable, humane, conservationist; values craft and quiet care"},
+      Alpha:{xyz:"Renaissance Values", types:["ILE","LII","ESE","SEI"], detail:"Curious, light, democratic; values open inquiry and easy comfort"},
+      Beta:{xyz:"Revolutionary Values",   types:["EIE","IEI","SLE","LSI"], detail:"Passionate, hierarchical, mobilized; values willpower and ideological cause"},
+      Gamma:{xyz:"Market Values", types:["SEE","ESI","LIE","ILI"], detail:"Reformist, pragmatic, individualist; values results and frank judgement"},
+      Delta:{xyz:"Communitarian Values", types:["LSE","SLI","IEE","EII"], detail:"Stable, humane, conservationist; values craft and quiet care"},
     }
   },
   // 8. Club / Activity Disposition
@@ -376,8 +391,8 @@ const SG_TABLES={
     label:"Romance Style", labelXyz:"Primal Social Role",
     members:{
       "Childlike":{xyz:"Infantile",types:["ILE","IEE","LII","EII"], detail:"Playful, intellectual, asexual until safe; needs care"},
-      "Victim":   {xyz:"Victim",   types:["LIE","EIE","ILI","IEI"], detail:"Doubting, dramatic, drawn to power that grounds them"},
-      "Aggressor":{xyz:"Aggressor",types:["SLE","SEE","LSI","ESI"], detail:"Direct, possessive, openly pursues the desired partner"},
+      "Victim":   {xyz:"Provoking",   types:["LIE","EIE","ILI","IEI"], detail:"Doubting, dramatic, drawn to power that grounds them"},
+      "Aggressor":{xyz:"Pursuing",types:["SLE","SEE","LSI","ESI"], detail:"Direct, possessive, openly pursues the desired partner"},
       "Caring":   {xyz:"Curator",  types:["LSE","ESE","SLI","SEI"], detail:"Suave, attentive, protective of partner's well-being"},
     }
   },
@@ -545,7 +560,7 @@ function ModelAVisualizer({type}){
                 <div style={{fontSize:8,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>Position {pos.num} · {pos.dim} · {pos.pri} · {pos.lvl}</div>
               </div>
             </div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:2}}>
+            <div className="ma-badges" style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:2}}>
               <Badge label={pos.d7.strength} color={pos.d7.strength==="Strong"?C.accentA:C.textDim} filled/>
               <Badge label={pos.d7.value} color={pos.d7.value==="Valued"?C.accentG:C.textDim} filled/>
               <Badge label={pos.d7.inertia} color={pos.d7.inertia==="Inert"?C.accent:C.textDim} filled/>
@@ -651,7 +666,7 @@ function ModelGVisualizer({type}){
         <div style={{fontSize:7,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>G{gp.num} · A{gp.aPos}</div>
         <div style={{fontSize:10,fontWeight:700,color:ec,marginTop:2}}>{gp.energy}</div>
       </div>
-      <div style={{display:"flex",justifyContent:"center",gap:2,marginTop:3}}><Badge label={gp.half} color={HALF_COLORS[gp.half]} filled/></div>
+      <div style={{display:"flex",justifyContent:"center",gap:2,marginTop:3}}><Badge label={gp.d7.excitable} color={gp.d7.excitable==="Excitable"?"#22c55e":"#eab308"} filled/></div>
     </div>);
   };
 
@@ -723,6 +738,9 @@ function OverviewSection(){
       <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:12}}>
         Neither model alone provides a complete picture. Together, they offer complementary 2D projections of a unified 3D psychic architecture, much as biology studies both the informational (DNA) and energetic (ATP) aspects of cellular life. The same eight information elements occupy positions in both models, but the <em>ordering and grouping</em> differ, revealing distinct structural properties.
       </p>
+      <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:0}}>
+        This pairing echoes a pattern from the Dichotomies module, where the Reinin and Minaiev trait spaces overlap at the <em>Conjunct Plane</em>: two partly independent coordinate systems that together describe a type across <strong>23 dichotomies</strong>. Model A and Model G stand in the same relationship one scale down, at the level of the functions. Each model carries four metabolic dichotomies of its own and shares three with the other (the metabolic equivalents of the Extraverted/Introverted, Static/Dynamic, and Rational/Irrational dichotomies), so the two spaces overlap into <strong style={{color:C.accentG}}>11 metabolic dichotomies</strong> once Valid/Null is set aside. Information and energy turn out to be two coordinate systems on a single psyche, exactly as Reinin and Minaiev are two coordinate systems on a single type.
+      </p>
     </Card>
     <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
       <Card style={{flex:"1 1 300px"}}>
@@ -750,7 +768,7 @@ function OverviewSection(){
     <Card>
       <div style={{fontSize:15,fontWeight:700,color:C.accent,marginBottom:10}}>The Positional Mapping: Same Elements, Different Architecture</div>
       <p style={{fontSize:13,color:C.textMuted,lineHeight:1.65,marginBottom:12}}>The key insight is that Model G rearranges Model A's functions into a different structural logic. Critically, certain functions that are paired in Model A become separated in Model G, and vice versa:</p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(175px,1fr))",gap:8}}>
+      <div className="posmap-grid">
         {MG.map((gp,gi)=>(
           <div key={gi} style={{padding:"8px 10px",borderRadius:6,background:EC[gp.energy]+"0d",border:`1px solid ${EC[gp.energy]}22`}}>
             <div style={{fontSize:12,fontWeight:700,color:EC[gp.energy]}}>G{gp.num}: {gp.n}</div>
@@ -765,16 +783,16 @@ function OverviewSection(){
 
 /* ═══════ PRESENCE CUBE ═══════ */
 const CUBE_NODES=[
-  {num:1,name:"Lead",aka:"Base / Program",x:230,y:62, L:4,D:4,P:4,traits:["Strong","Valued","Bold"],    aBlock:"Ego",       aBlockColor:"#3b82f6",gPos:"G1 Leading",      gBlock:"Social Mission",    gBlockColor:"#f59e0b",bridge:"The dominant axis of both models — the only function at 4L. Unique vertex, anchors both architectures."},
-  {num:6,name:"Mobilizing",aka:"Hidden Agenda",x:82, y:182,L:3,D:2,P:4,traits:["Weak","Valued","Bold"],     aBlock:"Super-Id",  aBlockColor:"#22c55e",gPos:"G4 Launcher",     gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Model A's hidden aspiration becomes Model G's social activity trigger — reveals priority ≠ dimensionality."},
-  {num:2,name:"Creative",aka:"Tool / Auxiliary",x:230,y:252,L:3,D:3,P:3,traits:["Strong","Valued","Cautious"],aBlock:"Ego",     aBlockColor:"#3b82f6",gPos:"G5 Demonstrative",gBlock:"Self-Realization", gBlockColor:"#14b8a6",bridge:"Ego's auxiliary in Model A becomes close-distance self-expression in Model G — situationally reliable."},
+  {num:1,name:"Lead",aka:"Base / Program",x:230,y:62, L:4,D:4,P:4,traits:["Strong","Valued","Bold"],    aBlock:"Ego",       aBlockColor:"#3b82f6",gPos:"G1 Leading",      gBlock:"Social Mission",    gBlockColor:"#f59e0b",bridge:"The dominant axis of both models, the only function at 4L. Unique vertex, anchors both architectures."},
+  {num:6,name:"Mobilizing",aka:"Hidden Agenda",x:82, y:182,L:3,D:2,P:4,traits:["Weak","Valued","Bold"],     aBlock:"Super-Id",  aBlockColor:"#22c55e",gPos:"G4 Launcher",     gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Model A's hidden aspiration becomes Model G's social activity trigger, revealing priority ≠ dimensionality."},
+  {num:2,name:"Creative",aka:"Tool / Auxiliary",x:230,y:252,L:3,D:3,P:3,traits:["Strong","Valued","Cautious"],aBlock:"Ego",     aBlockColor:"#3b82f6",gPos:"G5 Demonstrative",gBlock:"Self-Realization", gBlockColor:"#14b8a6",bridge:"Ego's auxiliary in Model A becomes close-distance self-expression in Model G, situationally reliable."},
   {num:8,name:"Demonstrative",aka:"Background",x:378,y:182,L:3,D:4,P:2,traits:["Strong","Subdued","Bold"],  aBlock:"Id",        aBlockColor:"#a855f7",gPos:"G2 Creative",     gBlock:"Social Mission",   gBlockColor:"#f59e0b",bridge:"Background competence in A; mission-executing tool in G. Same 4D strength as Lead, but subdued, not valued."},
-  {num:3,name:"Role",aka:"Normative",x:230,y:302,L:2,D:2,P:2,traits:["Weak","Subdued","Bold"],              aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G3 Role",         gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Identical position in both models — conscious social-norm adaptation. The only shared slot besides Lead."},
+  {num:3,name:"Role",aka:"Normative",x:230,y:302,L:2,D:2,P:2,traits:["Weak","Subdued","Bold"],              aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G3 Role",         gBlock:"Social Adaptation",gBlockColor:"#eab308",bridge:"Identical position in both models: conscious social-norm adaptation. The only shared slot besides Lead."},
   {num:5,name:"Suggestive",aka:"Dual-Seeking",x:82, y:388,L:2,D:1,P:3,traits:["Weak","Valued","Cautious"],  aBlock:"Super-Id",  aBlockColor:"#22c55e",gPos:"G6 Manipulative", gBlock:"Self-Realization", gBlockColor:"#14b8a6",bridge:"Desired input in Model A; long-term habit formation in Model G. 1D but highly valued."},
-  {num:7,name:"Ignoring",aka:"Observing",x:378,y:388,L:2,D:3,P:1,traits:["Strong","Subdued","Cautious"],    aBlock:"Id",        aBlockColor:"#a855f7",gPos:"G8 Control",      gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"Selective restriction. Strong competence paired with lowest priority — the classic 'I know but I can't be bothered.'"},
-  {num:4,name:"Vulnerable",aka:"PoLR",x:230,y:492,L:1,D:1,P:1,traits:["Weak","Subdued","Cautious"],         aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G7 Brake",        gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"The psyche's blind spot. Uniquely 1L, 1D, 1P — the mathematical antipode of Lead in all three projections."},
+  {num:7,name:"Ignoring",aka:"Observing",x:378,y:388,L:2,D:3,P:1,traits:["Strong","Subdued","Cautious"],    aBlock:"Id",        aBlockColor:"#a855f7",gPos:"G8 Control",      gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"Selective restriction. Strong competence paired with lowest priority, the classic 'I know but I can't be bothered.'"},
+  {num:4,name:"Vulnerable",aka:"PoLR",x:230,y:492,L:1,D:1,P:1,traits:["Weak","Subdued","Cautious"],         aBlock:"Super-Ego", aBlockColor:"#ef4444",gPos:"G7 Brake",        gBlock:"Inflation",        gBlockColor:"#78909c",bridge:"The psyche's blind spot. Uniquely 1L, 1D, 1P, the mathematical antipode of Lead in all three projections."},
 ];
-// edges: [from, to, dashed] — dashed = back-of-cube (Node 2 connections, behind 3)
+// edges: [from, to, dashed]; dashed = back-of-cube (Node 2 connections, behind 3)
 const CUBE_EDGES=[
   [1,6,false],[1,2,true],[1,8,false],
   [6,5,false],[6,3,false],
@@ -796,10 +814,10 @@ function PresenceCubeSection(){
     <Card>
       <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:22,fontWeight:700,color:C.text,marginBottom:12}}>One Manifold, Two Projections</div>
       <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75,marginBottom:12}}>
-        Model A and Model G are traditionally drawn as flat 2×4 grids, but this flattening is a convenience of the page, not a fact of the psyche. Both models are <strong style={{color:C.violet}}>2D projections of a single 3D manifold</strong> — the <em>Presence Cube</em>, formalized by Andrew Joynton. The same eight functions occupy the same eight vertices of this cube; Model A and Model G simply view it from different angles.
+        Model A and Model G are traditionally drawn as flat 2×4 grids, but this flattening is a convenience of the page, not a fact of the psyche. Both models are <strong style={{color:C.violet}}>2D projections of a single 3D manifold</strong>: the <em>Presence Cube</em>, formalized by Andrew Joynton. The same eight functions occupy the same eight vertices of this cube; Model A and Model G simply view it from different angles.
       </p>
       <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75}}>
-        The cube is built from the three Model A function dichotomies with the strongest external visibility — what Joynton calls the <strong style={{color:C.text}}>presence traits</strong>. The remaining four dichotomies (Inert/Contact, Mental/Vital, Accepting/Producing, Evaluatory/Situational) are orthogonal to the cube's geometry and do not add visual dimensions.
+        The cube is built from the three Model A function dichotomies with the strongest external visibility, what Joynton calls the <strong style={{color:C.text}}>presence traits</strong>. The remaining four dichotomies (Inert/Contact, Mental/Vital, Accepting/Producing, Evaluatory/Situational) are orthogonal to the cube's geometry and do not add visual dimensions.
       </p>
     </Card>
 
@@ -848,7 +866,7 @@ function PresenceCubeSection(){
     <Card style={{background:"linear-gradient(135deg,rgba(59,130,246,0.05),rgba(16,185,129,0.05))",borderColor:"rgba(139,92,246,0.25)"}}>
       <div style={{fontSize:13,fontWeight:700,color:C.violet,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Reconciling Model A & Model G</div>
       <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7}}>
-        Rotating the cube exposes different blocking structures. Viewed along one axis, Strong×Valued pairs functions into Model A's <strong style={{color:C.accentA}}>Horizontal Information Blocks</strong> (Ego, Super-Ego, Super-Id, Id). Rotated ninety degrees, the skew along Priority and Dimensionality produces the <strong style={{color:C.accentG}}>Skew Blocks</strong> that map onto Model G's energetic rings and vertical blocking. Both models are faithful — they simply project orthogonal faces of the same solid.
+        Rotating the cube exposes different blocking structures. Viewed along one axis, Strong×Valued pairs functions into Model A's <strong style={{color:C.accentA}}>Horizontal Information Blocks</strong> (Ego, Super-Ego, Super-Id, Id). Rotated ninety degrees, the skew along Priority and Dimensionality produces the <strong style={{color:C.accentG}}>Skew Blocks</strong> that map onto Model G's energetic rings and vertical blocking. Both models are faithful; they simply project orthogonal faces of the same solid.
       </p>
     </Card>
 
@@ -1113,19 +1131,21 @@ function App(){
         </div>
       </div>))}
     </div>
-    <div style={{padding:"9px 20px",background:"rgba(255,255,255,0.015)",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+    <div className="type-header" style={{padding:"9px 20px",background:"rgba(255,255,255,0.015)",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap",alignItems:"center"}}>
       <span style={{fontSize:13,fontWeight:700,color:C.text}}>{sel}: {t.l}</span>
       <span style={{fontSize:13,color:C.textFaint}}>|</span>
       <span style={{fontSize:13,color:C.accentA}}>Ego: {t.b}+{t.c}</span>
       <span style={{fontSize:13,color:C.accentG}}>Mission: {t.b}+{t.d}</span>
       <span style={{fontSize:13,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace"}}>({t.b}-{t.c[0]}x)</span>
     </div>
-    <div style={{display:"flex",gap:2,padding:"0 20px",borderBottom:`1px solid ${C.border}55`,overflowX:"auto",justifyContent:"center"}}>
+    <div style={{padding:"0 20px",borderBottom:`1px solid ${C.border}55`,overflowX:"auto"}}>
+      <div style={{display:"flex",gap:2,width:"max-content",margin:"0 auto"}}>
       {TABS.map(tb=>(<button key={tb.id} onClick={()=>setTab(tb.id)} style={{
         padding:"13px 22px",border:"none",fontSize:13,fontWeight:700,background:"transparent",
         color:tab===tb.id?tb.color:C.textFaint,borderBottom:tab===tb.id?`2px solid ${tb.color}`:"2px solid transparent",
         transition:"all 0.2s",whiteSpace:"nowrap",letterSpacing:0.5,cursor:"pointer",
       }}>{tb.label}</button>))}
+      </div>
     </div>
     <div style={{padding:"28px 24px",maxWidth:900,margin:"0 auto"}}>
       {tab==="overview"&&<OverviewSection/>}
