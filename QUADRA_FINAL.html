@@ -121,7 +121,7 @@ const Q = {
     typesFull: ["ILE (Seeker)", "SEI (Mediator)", "ESE (Enthusiast)", "LII (Analyst)"],
     valued: ["Ne", "Si", "Fe", "Ti"], subdued: ["Ni", "Se", "Fi", "Te"],
     valuedColors: [C.ne, C.si, C.fe, C.ti], subduedColors: [C.ni, C.se, C.fi, C.te],
-    label: "Authentic-Generative", orient: "Horizontal Collectivism",
+    label: "Authentic-Generative", orient: "Horizontal Individualism",
     motto: "Curiosity before power, comfort before conquest",
     socialOrg: "Commune / Holacracy",
     desc: "Alpha is the quadra of open inquiry, communal warmth, and intellectual play. It values the free exploration of ideas (Ne) grounded in shared physical comfort (Si), communicated through inclusive emotional atmosphere (Fe) and organized by structural clarity (Ti). Alpha environments feel like a lively seminar that segues into a potluck, the emphasis is on generating novelty, sharing it generously, and ensuring everyone is physically comfortable and emotionally included.",
@@ -175,7 +175,7 @@ const Q = {
     typesFull: ["IEE (Advisor)", "SLI (Craftsman)", "EII (Humanist)", "LSE (Administrator)"],
     valued: ["Ne", "Si", "Fi", "Te"], subdued: ["Ni", "Se", "Fe", "Ti"],
     valuedColors: [C.ne, C.si, C.fi, C.te], subduedColors: [C.ni, C.se, C.fe, C.ti],
-    label: "Humane-Stewardly", orient: "Horizontal Individualism",
+    label: "Humane-Stewardly", orient: "Horizontal Collectivism",
     motto: "Work well, live simply, develop character",
     socialOrg: "Community / Stewardship",
     desc: "Delta is the quadra of industrious self-reliance, ecological balance, and humanistic values. It values open-ended possibility (Ne) grounded in sustainable physical practice (Si), evaluated through deep personal ethics (Fi) and measured by productive craftsmanship (Te). Delta environments feel like a well-run workshop, a farmers' market, or a neighborhood community center, the emphasis is on practical skill, moral character, individual development, and sustainable coexistence.",
@@ -572,10 +572,10 @@ function QuadraReport() {
           {quadraOrder.map(k => {
             const qd = Q[k];
             const socData = {
-              alpha: { org: "Commune / Holacracy", cult: "Horizontal Collectivism", values: "Family-cognitive", traits: ["Shared resource distribution", "Situational leadership by knowledge", "No formal state apparatus", "Ecological harmony with environment", "Education-centered, curiosity-driven", "Vulnerable to external aggression"] },
+              alpha: { org: "Commune / Holacracy", cult: "Horizontal Individualism", values: "Family-cognitive", traits: ["Shared resource distribution", "Situational leadership by knowledge", "No formal state apparatus", "Ecological harmony with environment", "Education-centered, curiosity-driven", "Vulnerable to external aggression"] },
               beta: { org: "State / Hierarchy", cult: "Vertical Collectivism", values: "Ideological-statist", traits: ["Centralized authority structure", "Cultural uniformity & legitimation", "Conquest and territorial integration", "Devotion to collective mission", "Revolutionary energy, propaganda", "Vulnerable to over-bureaucratization"] },
               gamma: { org: "Market / Polyarchy", cult: "Vertical Individualism", values: "Competitive-meritocratic", traits: ["Power divided by merit/competition", "Private enterprise & trade routes", "Elections, coalitions, lobbying", "Pragmatic law enforcement", "Entrepreneurial culture", "Vulnerable to amoral anarchy"] },
-              delta: { org: "Community / Stewardship", cult: "Horizontal Individualism", values: "Decentralized-humanistic", traits: ["Checks & balances between networks", "Industrious self-reliance", "Moral character development expected", "Integration of support networks", "Tolerance and humanistic ideals", "Vulnerable to stagnation & isolation"] },
+              delta: { org: "Community / Stewardship", cult: "Horizontal Collectivism", values: "Decentralized-humanistic", traits: ["Checks & balances between networks", "Industrious self-reliance", "Moral character development expected", "Integration of support networks", "Tolerance and humanistic ideals", "Vulnerable to stagnation & isolation"] },
             };
             const sd = socData[k];
             return (
