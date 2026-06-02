@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Club Dichotomies & Their Structural Significance</title>
+<title>Club Dichotomies & Their Significance</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
   * 
-  .tab-strip { display: flex; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
+  .tab-strip { display: flex; justify-content: safe center; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
   .tab-strip::-webkit-scrollbar { height: 6px; }
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
   .tab-strip::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }
@@ -270,7 +270,7 @@ function ClubReport() {
       <div style={{ background: `radial-gradient(ellipse at 20% 0%, ${C.nt}08, transparent 55%), radial-gradient(ellipse at 80% 0%, ${C.nf}06, transparent 55%), radial-gradient(ellipse at 20% 100%, ${C.st}05, transparent 50%), radial-gradient(ellipse at 80% 100%, ${C.sf}05, transparent 50%)`, padding: "48px 28px 36px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
         <Mono color={C.teal}>Section IV · Club Primer</Mono>
         <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, margin: "14px 0", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-          Club Dichotomies & Their Structural Significance
+          Club Dichotomies & Their Significance
         </h1>
         <Prose style={{ maxWidth: 680, margin: "0 auto 18px", textAlign: "center" }}>
           A comprehensive analysis of N/S, T/F, and Q/D, the three dichotomies determining functional strength and generating the four Socionics Clubs: explored through cognitive architecture, societal specialization, the Democratic/Aristocratic autocatalysis hypothesis, and cross-system correspondences.
@@ -801,7 +801,7 @@ function ClubReport() {
           <Card>
             <SectionTitle>The Carrier Wave Metaphor, Revisited</SectionTitle>
             <Prose>
-              In the Temperament report, we described temperament as the "carrier wave upon which all information metabolism signals are transmitted." If temperament is the carrier wave, then the Club is the <em>frequency band</em>: the domain of information the signal occupies. Two types in the same Club but different Temperaments are broadcasting on the same frequency but at different amplitudes and rhythms. Two types in the same Temperament but different Clubs are broadcasting at the same rhythm but in completely different frequency bands.
+              In the Temperament module, we described temperament as the "carrier wave upon which all information metabolism signals are transmitted." If temperament is the carrier wave, then the Club is the <em>frequency band</em>: the domain of information the signal occupies. Two types in the same Club but different Temperaments are broadcasting on the same frequency but at different amplitudes and rhythms. Two types in the same Temperament but different Clubs are broadcasting at the same rhythm but in completely different frequency bands.
             </Prose>
             <Prose>
               The Quadra, then, is the <em>modulation pattern</em>: the specific values, orientations, and priorities encoded into the signal. A full sociotype specification requires all three: what band you're broadcasting on (Club), what rhythm you're using (Temperament), and what message you're encoding (Quadra). Notably, while Temperament is fully independent of both Club and Quadra, Club and Quadra are partially entangled through the ab (Democratic/Aristocratic) dichotomy: which is why Democratic clubs (NT, SF) always appear together in certain quadras, and Aristocratic clubs (NF, ST) in others. This entanglement is itself informative: it reveals that <em>what you can do</em> and <em>what you want to do</em> are not entirely separable dimensions of personality.

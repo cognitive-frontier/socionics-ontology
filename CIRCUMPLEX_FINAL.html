@@ -114,6 +114,15 @@
     margin-top: 14px;
     text-align: center;
   }
+  /* Keep each title/credit phrase whole, and break cleanly between them on mobile
+     (separator dot on desktop, line break on phones) instead of mid-phrase wrapping. */
+  .eyebrow .nb, .attribution .nb { white-space: nowrap; }
+  .sepbr { display: none; }
+  @media (max-width: 640px) {
+    .sepdot { display: none; }
+    .sepbr { display: inline; }
+    .eyebrow { font-size: 10px; letter-spacing: 0.5px; }
+  }
   .hint {
     display: inline-flex;
     align-items: center;
@@ -220,8 +229,8 @@
   <span class="dot">·</span>
   <span class="cell right"><b>#</b> Aristocratic <span class="par">(Collectivism)</span></span>
 </div>
-<div class="eyebrow">Circumplex of Personality Metatraits (CPM) · Interpersonal Circumplex (IPC)</div>
-<p class="attribution">Based on Romanov (2018) · Value Ring of R-Dual Pairs · Ryan Petrello (2026)</p>
+<div class="eyebrow"><span class="nb">Circumplex of Personality Metatraits (CPM)</span><span class="sepdot"> · </span><br class="sepbr"><span class="nb">Interpersonal Circumplex (IPC)</span></div>
+<p class="attribution"><span class="nb">Based on Romanov (2018)</span> · <span class="nb">Value Ring of R-Dual Pairs</span><span class="sepdot"> · </span><br class="sepbr"><span class="nb">Ryan Petrello (2026)</span></p>
 
 <script>
 (() => {
