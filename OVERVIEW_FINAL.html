@@ -26,6 +26,11 @@
   ::-webkit-scrollbar { height: 6px; width: 6px; }
   ::-webkit-scrollbar-track { background: #10111a; }
   ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+  /* Roadmap panels: only 4 (one row), 2 (two-by-two), or 1 column, never an "almost 3x3".
+     minmax(0,1fr) lets the fixed column count shrink to fit instead of reflowing to 3. */
+  .roadmap-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+  @media (max-width: 780px) { .roadmap-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 440px) { .roadmap-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -292,7 +297,7 @@ function FoundationsReport(){
       Lithuanian economist and sociologist Ausra Augustinaviciute founded Socionics through a series of works between 1968 and 1985. Her central realization, reportedly occurring in 1968 while studying Jung's Psychological Types, was that Jung's cognitive functions must correspond to <em>aspects of objective reality</em> accessible to all types, not just the one or two functions Jung emphasized. This led her to expand Jung's model from a dominant-auxiliary focus to a full <em>8-function model</em> where every type possesses all eight information elements, each occupying a distinct functional position with specific properties.
     </Prose>
     <Prose>
-      By synthesizing Jung's cognitive functions with Kepinski's information metabolism framework, Augusta transformed a descriptive typology into a <em>structural theory of how the psyche processes information</em>. She defined 8 information elements (renamed from Jung's function-attitudes), placed them into an 8-position model (Model A), developed a complete theory of 16 intertype relations based on how two functional configurations interact, and introduced the concept of the Socion, the complete set of 16 types forming a self-regulating social organism.
+      By synthesizing Jung's cognitive functions with Kepinski's information metabolism framework, Augusta transformed a descriptive typology into a <em>structural theory of how the psyche processes information</em>. She defined 8 information elements (renamed from Jung's function-attitudes), placed them into an 8-position model (Model A), developed a complete theory of 14 intertype relations based on how two functional configurations interact (a count that feels suspiciously low until you notice that the two asymmetric rings, Benefit and Supervision, each resolve to a single relation rather than two), and introduced the concept of the Socion, the complete set of 16 types forming a self-regulating social organism.
     </Prose>
     <Prose style={{marginBottom:0,fontStyle:"italic",color:C.augusta}}>
       "We have not thought up anything ourselves, but have just extended and elaborated on the provisions of C.G. Jung, though in the process some of them have changed beyond recognition."
@@ -510,7 +515,7 @@ function FoundationsReport(){
         {/* Background */}
         <rect x="0" y="0" width="660" height="420" fill="#10111a" rx="8"/>
         {/* Chart area: left=140, right=620, top=50, bottom=360 */}
-        {/* Vertical grid lines at 1D=260, 2D=340, 3D=420, 4D=500 — but we use column centers at 200,300,400,500 */}
+        {/* Vertical grid lines at 1D=260, 2D=340, 3D=420, 4D=500, but we use column centers at 200,300,400,500 */}
         {/* Horizontal grid lines at Max=75, Opt=160, Min=245, Pes=330 */}
         {[75,160,245,330].map(y=>(
           <line key={`h${y}`} x1="155" y1={y} x2="600" y2={y} stroke="#252538" strokeWidth="1" strokeDasharray="4,4"/>
@@ -528,7 +533,7 @@ function FoundationsReport(){
         {[{x:230,l:"1D"},{x:340,l:"2D"},{x:450,l:"3D"},{x:560,l:"4D"}].map(d=>(
           <text key={d.l} x={d.x} y="382" textAnchor="middle" fontSize="10" fill="#6b7280" fontFamily="'JetBrains Mono',monospace">{d.l}</text>
         ))}
-        {/* Energy level labels — left of axis with clear gap */}
+        {/* Energy level labels, left of axis with clear gap */}
         {[
           {y:75,label:"Maximum",color:"#3b82f6"},
           {y:160,label:"Optimum",color:"#10b981"},
@@ -537,7 +542,7 @@ function FoundationsReport(){
         ].map((e,i)=>(
           <text key={i} x="148" y={e.y+4} textAnchor="end" fontSize="10" fill={e.color} fontFamily="'JetBrains Mono',monospace" fontWeight="600">{e.label}</text>
         ))}
-        {/* Function boxes — each placed at (dimension_column, energy_row) */}
+        {/* Function boxes, each placed at (dimension_column, energy_row) */}
         {/* Maximum row (y=75): Creative[2] at 3D, Base[1] at 4D */}
         {/* Optimum row (y=160): Suggestive[5] at 1D, Demo[8] at 4D */}
         {/* Minimum row (y=245): PoLR[4] at 1D, Role[3] at 2D */}
@@ -1001,9 +1006,9 @@ function FoundationsReport(){
           Unlike Big Five Neuroticism (which bundles anxiety with anger and impulsiveness), HEXACO Emotionality isolates the vulnerability-attachment cluster. Several extended dichotomies may carry partial signal:
         </SmallProse>
         <div style={{fontSize:12,color:C.text,lineHeight:1.7}}>
-          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Static / Dynamic (ABC)</span> — Static types show emotional fixation (digital processing), Dynamic types show labile affect (analog processing). High Emotionality may correlate with the Static pole's tendency to hold emotional states rigidly.</div>
-          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Negativist / Positivist (XAB)</span> — Negativists attend to what is absent, threatening, or deficient, a cognitive orientation that overlaps with the hypervigilant threat-detection characteristic of high Emotionality.</div>
-          <div><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span> — The Judicious (peaceful) pole's conflict avoidance and preference for safe, harmonious environments may partially index the fearfulness and dependence facets of Emotionality.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Static / Dynamic (ABC)</span>: Static types show emotional fixation (digital processing), Dynamic types show labile affect (analog processing). High Emotionality may correlate with the Static pole's tendency to hold emotional states rigidly.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Negativist / Positivist (XAB)</span>: Negativists attend to what is absent, threatening, or deficient, a cognitive orientation that overlaps with the hypervigilant threat-detection characteristic of high Emotionality.</div>
+          <div><span style={{color:C.dich,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span>: The Judicious (peaceful) pole's conflict avoidance and preference for safe, harmonious environments may partially index the fearfulness and dependence facets of Emotionality.</div>
         </div>
       </div>
       <div style={{background:`${C.teal}06`,border:`1px solid ${C.teal}18`,borderRadius:10,padding:16}}>
@@ -1013,9 +1018,9 @@ function FoundationsReport(){
           The HEXACO factor most absent from standard socionics, Honesty-Humility inversely predicts Dark Triad traits (Machiavellianism, narcissism, psychopathy). Several extended dichotomies carry suggestive content:
         </SmallProse>
         <div style={{fontSize:12,color:C.text,lineHeight:1.7}}>
-          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span> — Talanov's redefinition as Peacefulness/Rivalness explicitly correlates the Decisive pole with Dark Triad features, making this the strongest single candidate for inverse H-H.</div>
-          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Democratic / Aristocratic (AB)</span> — The Democratic pole's egalitarian-individualistic orientation aligns with the fairness and modesty facets, while Aristocratic hierarchy-endorsement may correlate with reduced greed-avoidance.</div>
-          <div><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Asking / Declaring (C)</span> — Questim (separation/divergence) types maintain narrower boundaries of the personally permissible and show moral fastidiousness, potentially overlapping with the sincerity facet of H-H.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Judicious / Decisive (AC)</span>: Talanov's redefinition as Peacefulness/Rivalness explicitly correlates the Decisive pole with Dark Triad features, making this the strongest single candidate for inverse H-H.</div>
+          <div style={{marginBottom:6}}><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Democratic / Aristocratic (AB)</span>: The Democratic pole's egalitarian-individualistic orientation aligns with the fairness and modesty facets, while Aristocratic hierarchy-endorsement may correlate with reduced greed-avoidance.</div>
+          <div><span style={{color:C.teal,fontWeight:600,fontFamily:"'JetBrains Mono',monospace",fontSize:10}}>Asking / Declaring (C)</span>: Questim (separation/divergence) types maintain narrower boundaries of the personally permissible and show moral fastidiousness, potentially overlapping with the sincerity facet of H-H.</div>
         </div>
       </div>
     </div>
@@ -1032,12 +1037,12 @@ function FoundationsReport(){
           <Prose>
             This document has established the foundations: the intellectual lineage from philosophical archetypes to cybernetic information metabolism, the three major models (A, G, and the empirical Talanov framework), and the 15+ dichotomy architecture that structures the entire system. The remaining four documents build on this foundation:
           </Prose>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
+          <div className="roadmap-grid">
             {[
               {n:"II",title:"Key Small Groups",color:C.modelA,desc:"Clubs, Temperaments, Quadras, and the full taxonomy of tetrachotomies, explored through the 3x3 triadic architecture and cross-system correspondences."},
               {n:"III",title:"IMEs and their Dichotomies",color:C.modelG,desc:"Deep-dive into all 8 information elements across multiple descriptive layers, from neurobiological substrate to semiotic patterns, with interactive Model A visualization."},
               {n:"IV",title:"Models, Blocks, and Slots",color:C.empirical,desc:"Comprehensive type profiles organized by temperament, covering Model A stacks, DCNH variations, the Threefold Path (Ego, Priority, Social Mission, Disconnect), and cross-system notes."},
-              {n:"V",title:"Types, Subtypes, & ITRs",color:C.dich,desc:"DCNH subtype dynamics, the 16 intertype relations derived from functional overlap, Benefit and Supervision rings, and practical guidance for leveraging type knowledge in relationships and teams."},
+              {n:"V",title:"Types, Subtypes, & ITRs",color:C.dich,desc:"DCNH subtype dynamics, the 14 intertype relations derived from functional overlap, Benefit and Supervision rings, and practical guidance for leveraging type knowledge in relationships and teams."},
             ].map((d,i)=>(
               <div key={i} style={{background:`${d.color}06`,border:`1px solid ${d.color}18`,borderRadius:10,padding:16}}>
                 <div style={{fontSize:22,fontWeight:800,color:d.color,fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>{d.n}</div>

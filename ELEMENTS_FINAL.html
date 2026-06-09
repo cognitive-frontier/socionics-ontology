@@ -217,8 +217,8 @@ function FunctionsReport() {
   const sections = [
     { id: "overview", label: "Overview", color: C.teal },
     { id: "elements", label: "Eight Info-Elements", color: C.accent3 },
-    { id: "energetics", label: "Four Energetic Rhythms", color: C.accent1 },
-    { id: "aspects", label: "Four Jungian Aspects", color: C.accent2 },
+    { id: "energetics", label: "Four Energetic \"Rhythms\"", color: C.accent1 },
+    { id: "aspects", label: "Four Club Aspects", color: C.accent2 },
     { id: "axes", label: "Four Quadra Axes", color: C.rose },
     { id: "dichotomies", label: "Dichotomies", color: C.accent4 },
   ];
@@ -237,7 +237,7 @@ function FunctionsReport() {
           A comprehensive analysis of the eight information metabolism elements (IMEs), explored through their associated dichotomies and these three organizing concepts: Energetics (how they operate), Aspects (what domain they target), and Axes (how they complement each other in quadra values).
         </Prose>
         <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
-          {["Eight Info-Elements", "Four Energetic Rhythms", "Four Jungian Aspects", "Four Quadra Axes", "Dichotomies"].map((l, i) => (
+          {["Eight Info-Elements", "Four Energetic \"Rhythms\"", "Four Club Aspects", "Four Quadra Axes", "Dichotomies"].map((l, i) => (
             <Tag key={i} label={l} color={[C.accent3, C.accent1, C.accent2, C.rose, C.accent4][i]} />
           ))}
         </div>
@@ -286,7 +286,7 @@ function FunctionsReport() {
               Information Metabolism Elements (IMEs) are the eight fundamental categories of information that the human psyche is structured to process. Each IME represents a distinct <em>attentional basin</em>: a stable cognitive configuration in which perceptual resources, evaluative frameworks, and behavioral outputs are organized to handle a specific domain of reality. They are not merely "preferences" in the colloquial sense; they are structural features of how the mind carves the informational world into processable chunks.
             </Prose>
             <Prose>
-              The concept originates from Antoni Kepinski's theory of information metabolism: the idea that the psyche operates like a thermodynamic open system, receiving energy-information from the environment, metabolizing it through specialized processing structures, and converting it back into action. Aushra Augusta's central insight (c. 1968) was to identify Jung's eight function-attitudes as corresponding to eight <em>aspects of objective reality</em> that every psyche must process, with each sociotype handling them in a different structural configuration. Her resulting model, Model A (1978), placed all eight elements into an 8-position functional architecture with specific rules governing their arrangement, generating exactly 16 types.
+              The concept originates from Antoni Kepinski's theory of information metabolism: the idea that the psyche operates like a thermodynamic open system, receiving energy-information from the environment, metabolizing it through specialized processing structures, and converting it back into action. Ausra Augusta's central insight (c. 1968) was to identify Jung's eight function-attitudes as corresponding to eight <em>aspects of objective reality</em> that every psyche must process, with each sociotype handling them in a different structural configuration. Her resulting model, Model A (1978), placed all eight elements into an 8-position functional architecture with specific rules governing their arrangement, generating exactly 16 types.
             </Prose>
             <Prose>
               Working alongside Augusta in the early development of Socionics was Victor Gulenko, who went on to become the most prolific contributor to the theory's evolution. Gulenko founded the Humanitarian Socionics School (HSS) in Kiev and shifted the theory's emphasis from purely informational processing toward the integration of <em>energy budgeting and utilization</em> alongside information flow. Where other schools continued to focus primarily on how humans perceive and process information (informational metabolism), HSS highlighted attention on human behavior and performance (energy metabolism). This dual emphasis produced two of Gulenko's most significant contributions: Model G, an alternative functional model that foregrounds the energy dynamics between functions, and the DCNH subtype system (Dominant, Creative, Normalizing, Harmonizing), which treats each of the 16 types as having four continuous subtype variations rather than being monolithic categories.
@@ -334,7 +334,7 @@ function FunctionsReport() {
 
         {/* ═══════════ ENERGETICS ═══════════ */}
         {activeSection === "energetics" && <>
-          <Divider label="Four Energetic Rhythms: The Temperament Dyads" color={C.accent1} />
+          <Divider label={"Four Energetic \"Rhythms\": The Temperament Dyads"} color={C.accent1} />
           <Card>
             <SectionTitle color={C.accent1}>The Most Fundamental Partition</SectionTitle>
             <Prose>
@@ -445,7 +445,7 @@ function FunctionsReport() {
 
         {/* ═══════════ ASPECTS ═══════════ */}
         {activeSection === "aspects" && <>
-          <Divider label="Four Jungian Aspects: The Cognitive Faculties" color={C.accent2} />
+          <Divider label="Four Club Aspects: The Cognitive Faculties" color={C.accent2} />
           <Card>
             <SectionTitle color={C.accent2}>The Four Domains of Information</SectionTitle>
             <Prose>
