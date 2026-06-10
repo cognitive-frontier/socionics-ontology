@@ -36,6 +36,17 @@ button{font-family:inherit;cursor:pointer}
 @media (max-width:820px){.portrait-grid{grid-template-columns:1fr !important}.portrait-grid aside > div{position:static !important}}
 .cube-vertex-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:640px){.cube-vertex-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Model G visualizer: on phones the two half-blocks per row stack vertically so the
+   2x4 grid never exceeds viewport width; the side-by-side halves header is hidden and
+   each block label gains its own half indicator instead. */
+.mg-row{display:flex;gap:3px}
+.mg-halves{display:flex;gap:4px;margin-bottom:4px}
+.mg-halfdot{display:none}
+@media (max-width:540px){
+  .mg-row{flex-direction:column}
+  .mg-halves{display:none}
+  .mg-halfdot{display:inline}
+}
 </style>
 </head>
 <body>
@@ -671,29 +682,29 @@ function ModelGVisualizer({type}){
   };
 
   return(<div>
-    <div style={{display:"flex",gap:4,marginBottom:4}}>
+    <div className="mg-halves">
       <div style={{flex:1,textAlign:"center",fontSize:8,fontWeight:700,color:HALF_COLORS.Energetic,letterSpacing:1.5}}>◆ ENERGETIC HALF</div>
       <div style={{flex:1,textAlign:"center",fontSize:8,fontWeight:700,color:HALF_COLORS.Passive,letterSpacing:1.5}}>◇ PASSIVE HALF</div>
     </div>
     <div style={{display:"flex",flexDirection:"column",gap:3}}>
-      <div style={{display:"flex",gap:3}}>
+      <div className="mg-row">
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Mission"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Mission"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Mission"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SOCIAL MISSION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Mission"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}><span className="mg-halfdot" style={{color:HALF_COLORS.Energetic}}>◆ </span>SOCIAL MISSION</div>
           {topRow.slice(0,2).map(renderCell)}
         </div>
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Social Adaptation"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Social Adaptation"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Adaptation"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SOCIAL ADAPTATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Social Adaptation"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}><span className="mg-halfdot" style={{color:HALF_COLORS.Passive}}>◇ </span>SOCIAL ADAPTATION</div>
           {topRow.slice(2,4).map(renderCell)}
         </div>
       </div>
       <div style={{flex:1,textAlign:"center",fontSize:7,color:C.textFaint,letterSpacing:1}}>▲ PUBLIC: Far Distance (Society)</div>
-      <div style={{display:"flex",gap:3}}>
+      <div className="mg-row">
         <div style={{flex:1,display:"flex",gap:3,background:GBC["Self-Realization"]+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC["Self-Realization"]}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Self-Realization"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>SELF-REALIZATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC["Self-Realization"],letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}><span className="mg-halfdot" style={{color:HALF_COLORS.Energetic}}>◆ </span>SELF-REALIZATION</div>
           {botRow.slice(0,2).map(renderCell)}
         </div>
         <div style={{flex:1,display:"flex",gap:3,background:GBC.Inflation+"0d",borderRadius:8,padding:4,border:`1px solid ${GBC.Inflation}18`,position:"relative"}}>
-          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC.Inflation,letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}>INFLATION</div>
+          <div style={{position:"absolute",top:3,left:0,right:0,textAlign:"center",fontSize:7,fontWeight:700,color:GBC.Inflation,letterSpacing:1.2,opacity:0.7,pointerEvents:"none"}}><span className="mg-halfdot" style={{color:HALF_COLORS.Passive}}>◇ </span>INFLATION</div>
           {botRow.slice(2,4).map(renderCell)}
         </div>
       </div>

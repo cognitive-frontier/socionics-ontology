@@ -313,7 +313,7 @@ function ClubReport() {
           </Card>
 
           <Divider label="Dichotomy Deep Dives" color={current.color} />
-          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap", justifyContent: "center" }}>
             {Object.entries(tabs).map(([k, t]) => (
               <TabBtn key={k} label={t.label} active={activeTab === k} onClick={() => setActiveTab(k)} color={t.color} />
             ))}
@@ -369,7 +369,7 @@ function ClubReport() {
               <LensCard lens="Societal-Functional" color={C.sf}
                 content="Danidin and Talanov assign each Club an organic metaphor: NT as nervous tissue (information processing), NF as covering tissue (cultural membrane), ST as muscular tissue (productive force), SF as connective tissue (social binding). These metaphors capture the Club's irreplaceable societal function; remove any one and the social organism fails." />
               <LensCard lens="Evolutionary" color={C.lime}
-                content="Romanov's survival framework: NT types specialize in divergent abstract-symbolic cognition, inventing tools and paradigms. NF types specialize in divergent implicit-figurative cognition, creating cultural bonds through shared imagery. ST types specialize in convergent explicit-technical cognition, maintaining state-level material infrastructure. SF types specialize in convergent visceral-impressionist cognition, regulating group cohesion through appearance and resource-sharing." />
+                content="Romanov's survival framework: NT types specialize in abstract-symbolic cognition, inventing tools and paradigms. NF types specialize in implicit-figurative cognition, creating cultural bonds through shared imagery. ST types specialize in explicit-technical cognition, maintaining state-level material infrastructure. SF types specialize in visceral-impressionist cognition, regulating group cohesion through appearance and resource-sharing." />
             </div>
           </Card>
         </>}

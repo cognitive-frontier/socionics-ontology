@@ -9,7 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
-  * 
   .tab-strip { display: flex; justify-content: safe center; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
   .tab-strip::-webkit-scrollbar { height: 6px; }
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
@@ -20,7 +19,7 @@
   .grid-4-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
   @media (max-width: 900px) { .grid-4-row { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
-{ margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #08090e; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
     html, body { overflow-x: hidden; max-width: 100%; }
@@ -112,7 +111,7 @@ const ElementBadge = ({ symbol, label, color, size = 36 }) => (
 const DyadCard = ({ name, code, elements, color, desc, reinin, items }) => (
   <div style={{ background: `linear-gradient(145deg, ${color}0a, ${C.card})`, border: `1px solid ${color}30`, borderRadius: 14, padding: 20, flex: "1 1 220px", minWidth: 220 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-      <div style={{ minWidth: 52, height: 36, padding: "0 8px", borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{code}</div>
+      <div style={{ minWidth: 52, height: 36, padding: "0 8px", borderRadius: 8, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: code.length === 1 ? 19 : 13, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{code}</div>
       <div>
         <div style={{ fontSize: 15, fontWeight: 700, color }}>{name}</div>
         <div style={{ fontSize: 10, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase" }}>{elements}</div>
@@ -661,7 +660,7 @@ function FunctionsReport() {
 
           <Card>
             <SectionTitle>Understanding the Derived Elemental Dichotomies</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
+            <div className="grid-4-2x2">
               <LensCard lens="Abstracted (NT) / Embedded (SF)" color={C.accent2}
                 content="Separates the NT elements (Ne, Ni, Te, Ti) from the SF elements (Se, Si, Fe, Fi). Abstracted elements process information at cognitive distance: through models, theories, possibilities, and logical structures. Embedded elements process through visceral engagement: bodily sensation, emotional resonance, volitional force, and relational depth. This is the Club axis that separates Researchers+Humanitarians from Pragmatists+Socials along the &quot;mental vs. somatic&quot; divide." />
               <LensCard lens="Implicit (NF) / Explicit (ST)" color={C.N}

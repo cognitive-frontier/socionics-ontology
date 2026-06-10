@@ -9,7 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <style>
-  * 
   .tab-strip { display: flex; justify-content: safe center; gap: 4px; padding: 0 4px; overflow-x: auto; overflow-y: hidden; margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; -webkit-overflow-scrolling: touch; }
   .tab-strip::-webkit-scrollbar { height: 6px; }
   .tab-strip::-webkit-scrollbar-track { background: transparent; }
@@ -22,7 +21,9 @@
   @media (max-width: 480px) { .grid-4-row { grid-template-columns: 1fr; } }
   .quadra-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 560px; margin: 0 auto 24px; }
   @media (max-width: 560px) { .quadra-select { grid-template-columns: 1fr 1fr; } }
-{ margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .qtrans-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 720px) { .qtrans-head { flex-direction: column; align-items: flex-start; gap: 3px; } }
   body { background: #0a0a0f; color: #e4e4e7; font-family: 'Inter', -apple-system, sans-serif; }
   @media (max-width: 540px) {
     html, body { overflow-x: hidden; max-width: 100%; }
@@ -556,8 +557,8 @@ function QuadraReport() {
               { from: "Δ → Α", color: C.delta, title: "Communal Equilibrium → Universal Renaissance", desc: "Delta's communal equilibrium achieves maximum sustainability, but stability shades into stagnation, insularity, and quiet resistance to change. The system grows so settled it can no longer adapt to genuinely new conditions. Pressure for renewal accumulates beneath the calm until it breaks through, and an injection of fresh curiosity and communal play sparks a universal renaissance: the cycle restarts at a higher turn of the spiral." },
             ].map((t, i) => (
               <div key={i} style={{ background: `${t.color}08`, border: `1px solid ${t.color}20`, borderRadius: 10, padding: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: t.color, fontFamily: "'JetBrains Mono', monospace" }}>{t.from}</span>
+                <div className="qtrans-head">
+                  <span style={{ fontSize: 13, fontWeight: 800, color: t.color, fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap", flexShrink: 0 }}>{t.from}</span>
                   <span style={{ fontSize: 12, fontWeight: 600, color: t.color }}>{t.title}</span>
                 </div>
                 <SmallProse style={{ color: C.textMuted }}>{t.desc}</SmallProse>
