@@ -29,6 +29,10 @@
   ::-webkit-scrollbar { height: 6px; width: 6px; }
   ::-webkit-scrollbar-track { background: #10111a; }
   ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+  @keyframes dashflow { to { stroke-dashoffset: -24; } }
+  .ring-edge { animation: dashflow 1.1s linear infinite; }
+  .sgram-btn { background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 14px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+  .sgram-btn:hover { border-color: rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
@@ -194,6 +198,398 @@ const StackedBar = ({ data, title }) => {
   );
 };
 
+// ═══════════════════ SOCIOGRAM ═══════════════════
+function SociogramView() {
+  const [selType, setSelType] = React.useState(null);
+  const [hovEdge, setHovEdge] = React.useState(null);
+  const [ringMode, setRingMode] = React.useState(null); // null | 'benefit' | 'supervision'
+  const [filters, setFilters] = React.useState({ core: true, reinin: true, tencer: true, rings: true });
+  const [tooltip, setTooltip] = React.useState(null);
+  const [selRing, setSelRing] = React.useState(null); // which specific ring index (0-3) is highlighted
+
+  const W = 700, H = 700, CX = 350, CY = 350, R = 265, NR = 21;
+
+  const TYPES_ORDER = ["ILE","SEI","ESE","LII","EIE","LSI","SLE","IEI","SEE","ILI","LIE","ESI","LSE","EII","IEE","SLI"];
+
+  const QUADRA_INFO = [
+    { name:"Alpha", types:["ILE","SEI","ESE","LII"], color:"#3b82f6", start:0, end:3 },
+    { name:"Beta",  types:["EIE","LSI","SLE","IEI"], color:"#a78bfa", start:4, end:7 },
+    { name:"Gamma", types:["SEE","ILI","LIE","ESI"], color:"#ef4444", start:8, end:11 },
+    { name:"Delta", types:["LSE","EII","IEE","SLI"], color:"#22c55e", start:12, end:15 },
+  ];
+
+  const RMETA = {
+    Du:{ cat:'core',   color:'#10b981', name:'Dual',           sym:true  },
+    Su:{ cat:'core',   color:'#ef4444', name:'Super-Ego',      sym:true  },
+    Ex:{ cat:'core',   color:'#8b5cf6', name:'Extinguishment', sym:true  },
+    Mr:{ cat:'reinin', color:'#06b6d4', name:'Mirror',         sym:true  },
+    Co:{ cat:'reinin', color:'#dc2626', name:'Conflict',       sym:true  },
+    Ac:{ cat:'reinin', color:'#14b8a6', name:'Activity',       sym:true  },
+    Qd:{ cat:'reinin', color:'#3b82f6', name:'Quasi-Identity', sym:true  },
+    Ki:{ cat:'tencer', color:'#0ea5e9', name:'Kindred',        sym:true  },
+    Bu:{ cat:'tencer', color:'#22c55e', name:'Business',       sym:true  },
+    Sd:{ cat:'tencer', color:'#eab308', name:'Semi-Dual',      sym:true  },
+    Mg:{ cat:'tencer', color:'#f97316', name:'Mirage',         sym:true  },
+    Bn:{ cat:'rings',  color:'#f59e0b', name:'Benefactor →', sym:false },
+    Sv:{ cat:'rings',  color:'#d97706', name:'Supervisor →', sym:false },
+  };
+
+  const RD = {
+    ILE:{Du:"SEI",Ac:"ESE",Mr:"LII",Ki:"IEE",Mg:"IEI",Bu:"SLE",Sd:"SLI",Qd:"LIE",Ex:"ILI",Su:"SEE",Co:"ESI",Bn:"EIE",Sv:"LSI"},
+    SEI:{Du:"ILE",Ac:"LII",Mr:"ESE",Ki:"SLI",Mg:"SLE",Bu:"IEI",Sd:"IEE",Qd:"ESI",Ex:"SEE",Su:"ILI",Co:"LIE",Bn:"LSI",Sv:"EIE"},
+    LII:{Du:"ESE",Ac:"SEI",Mr:"ILE",Ki:"LSI",Mg:"LSE",Bu:"EII",Sd:"EIE",Qd:"ILI",Ex:"LIE",Su:"ESI",Co:"SEE",Bn:"SLI",Sv:"IEE"},
+    ESE:{Du:"LII",Ac:"ILE",Mr:"SEI",Ki:"EIE",Mg:"EII",Bu:"LSE",Sd:"LSI",Qd:"SEE",Ex:"ESI",Su:"LIE",Co:"ILI",Bn:"IEE",Sv:"SLI"},
+    EIE:{Du:"LSI",Ac:"SLE",Mr:"IEI",Ki:"ESE",Mg:"ESI",Bu:"LIE",Sd:"LII",Qd:"IEE",Ex:"EII",Su:"LSE",Co:"SLI",Bn:"SEE",Sv:"ILI"},
+    LSI:{Du:"EIE",Ac:"IEI",Mr:"SLE",Ki:"LII",Mg:"LIE",Bu:"ESI",Sd:"ESE",Qd:"SLI",Ex:"LSE",Su:"EII",Co:"IEE",Bn:"ILI",Sv:"SEE"},
+    SLE:{Du:"IEI",Ac:"EIE",Mr:"LSI",Ki:"SEE",Mg:"SEI",Bu:"ILE",Sd:"ILI",Qd:"LSE",Ex:"SLI",Su:"IEE",Co:"EII",Bn:"ESE",Sv:"LII"},
+    IEI:{Du:"SLE",Ac:"LSI",Mr:"EIE",Ki:"ILI",Mg:"ILE",Bu:"SEI",Sd:"SEE",Qd:"EII",Ex:"IEE",Su:"SLI",Co:"LSE",Bn:"LII",Sv:"ESE"},
+    SEE:{Du:"ILI",Ac:"LIE",Mr:"ESI",Ki:"SLE",Mg:"SLI",Bu:"IEE",Sd:"IEI",Qd:"ESE",Ex:"SEI",Su:"ILE",Co:"LII",Bn:"LSE",Sv:"EII"},
+    ILI:{Du:"SEE",Ac:"ESI",Mr:"LIE",Ki:"IEI",Mg:"IEE",Bu:"SLI",Sd:"SLE",Qd:"LII",Ex:"ILE",Su:"SEI",Co:"ESE",Bn:"EII",Sv:"LSE"},
+    LIE:{Du:"ESI",Ac:"SEE",Mr:"ILI",Ki:"LSE",Mg:"LSI",Bu:"EIE",Sd:"EII",Qd:"ILE",Ex:"LII",Su:"ESE",Co:"SEI",Bn:"SLE",Sv:"IEI"},
+    ESI:{Du:"LIE",Ac:"ILI",Mr:"SEE",Ki:"EII",Mg:"EIE",Bu:"LSI",Sd:"LSE",Qd:"SEI",Ex:"ESE",Su:"LII",Co:"ILE",Bn:"IEI",Sv:"SLE"},
+    LSE:{Du:"EII",Ac:"IEE",Mr:"SLI",Ki:"LIE",Mg:"LII",Bu:"ESE",Sd:"ESI",Qd:"SLE",Ex:"LSI",Su:"EIE",Co:"IEI",Bn:"ILE",Sv:"SEI"},
+    EII:{Du:"LSE",Ac:"SLI",Mr:"IEE",Ki:"ESI",Mg:"ESE",Bu:"LII",Sd:"LIE",Qd:"IEI",Ex:"EIE",Su:"LSI",Co:"SLE",Bn:"SEI",Sv:"ILE"},
+    IEE:{Du:"SLI",Ac:"LSE",Mr:"EII",Ki:"ILE",Mg:"ILI",Bu:"SEE",Sd:"SEI",Qd:"EIE",Ex:"IEI",Su:"SLE",Co:"LSI",Bn:"LIE",Sv:"ESI"},
+    SLI:{Du:"IEE",Ac:"EII",Mr:"LSE",Ki:"SEI",Mg:"SEE",Bu:"ILI",Sd:"ILE",Qd:"LSI",Ex:"SLE",Su:"IEI",Co:"EIE",Bn:"ESI",Sv:"LIE"},
+  };
+
+  const BENEFIT_RINGS = [
+    ["ILE","EIE","SEE","LSE"],
+    ["SEI","LSI","ILI","EII"],
+    ["ESE","IEE","LIE","SLE"],
+    ["LII","SLI","ESI","IEI"],
+  ];
+  const SUPERV_RINGS = [
+    ["ILE","LSI","SEE","EII"],
+    ["SEI","EIE","ILI","LSE"],
+    ["ESE","SLI","LIE","IEI"],
+    ["LII","IEE","ESI","SLE"],
+  ];
+
+  // Node positions on circle
+  const npos = {};
+  TYPES_ORDER.forEach((t, i) => {
+    const a = (i / 16) * Math.PI * 2 - Math.PI / 2;
+    npos[t] = { x: CX + R * Math.cos(a), y: CY + R * Math.sin(a) };
+  });
+
+  // Edge endpoint helpers: offset to node circumference
+  const eS = (t) => {
+    const p = npos[t], dx = CX - p.x, dy = CY - p.y, d = Math.sqrt(dx*dx+dy*dy);
+    return { x: p.x + dx*(NR+2)/d, y: p.y + dy*(NR+2)/d };
+  };
+  const eE = (t) => {
+    const p = npos[t], dx = CX - p.x, dy = CY - p.y, d = Math.sqrt(dx*dx+dy*dy);
+    return { x: p.x + dx*(NR+8)/d, y: p.y + dy*(NR+8)/d };
+  };
+  const symPath = (a, b) => { const s=eS(a),e=eS(b); return `M ${s.x.toFixed(1)} ${s.y.toFixed(1)} Q ${CX} ${CY} ${e.x.toFixed(1)} ${e.y.toFixed(1)}`; };
+  const dirPath = (a, b) => { const s=eS(a),e=eE(b); return `M ${s.x.toFixed(1)} ${s.y.toFixed(1)} Q ${CX} ${CY} ${e.x.toFixed(1)} ${e.y.toFixed(1)}`; };
+
+  const idxOf = (t) => TYPES_ORDER.indexOf(t);
+
+  // Build edge list, deduplicating symmetric pairs
+  const edges = React.useMemo(() => {
+    const list = [];
+    const seen = new Set();
+    TYPES_ORDER.forEach(src => {
+      Object.entries(RD[src]).forEach(([code, tgt]) => {
+        const meta = RMETA[code];
+        if (!meta) return;
+        if (meta.sym) {
+          const key = [idxOf(src), idxOf(tgt)].sort((a,b)=>a-b).join('-');
+          if (seen.has(key)) return;
+          seen.add(key);
+          list.push({ src, tgt, code, meta, path: symPath(src, tgt), key: `${src}-${code}-${tgt}` });
+        } else {
+          list.push({ src, tgt, code, meta, path: dirPath(src, tgt), key: `${src}-${code}-${tgt}` });
+        }
+      });
+    });
+    return list;
+  }, []);
+
+  // Build ring edge sets
+  const ringEdgeSet = React.useMemo(() => {
+    const sets = { benefit: new Set(), supervision: new Set() };
+    BENEFIT_RINGS.forEach(ring => ring.forEach((t,i) => sets.benefit.add(`${t}-${ring[(i+1)%4]}`)));
+    SUPERV_RINGS.forEach(ring => ring.forEach((t,i) => sets.supervision.add(`${t}-${ring[(i+1)%4]}`)));
+    return sets;
+  }, []);
+
+  // Per-ring sets for individual ring selection
+  const ringBySets = React.useMemo(() => {
+    return {
+      benefit: BENEFIT_RINGS.map(ring => {
+        const s = new Set();
+        ring.forEach((t,i) => s.add(`${t}-${ring[(i+1)%4]}`));
+        return s;
+      }),
+      supervision: SUPERV_RINGS.map(ring => {
+        const s = new Set();
+        ring.forEach((t,i) => s.add(`${t}-${ring[(i+1)%4]}`));
+        return s;
+      }),
+    };
+  }, []);
+
+  const activeRingSet = ringMode ? (selRing !== null ? ringBySets[ringMode][selRing] : ringEdgeSet[ringMode]) : null;
+
+  // Filter visible edges
+  const visibleEdges = edges.filter(e => {
+    if (!filters[e.meta.cat]) return false;
+    if (selType) return e.src === selType || e.tgt === selType;
+    if (ringMode) return activeRingSet && activeRingSet.has(`${e.src}-${e.tgt}`);
+    return true;
+  });
+
+  // Quadra sector arc paths
+  const sectorPath = (startIdx, endIdx) => {
+    const Ri = R - 36, Ro = R + 36;
+    const a0 = (startIdx / 16) * Math.PI * 2 - Math.PI / 2;
+    const a1 = (endIdx   / 16) * Math.PI * 2 - Math.PI / 2;
+    const ix0=CX+Ri*Math.cos(a0), iy0=CY+Ri*Math.sin(a0);
+    const ox0=CX+Ro*Math.cos(a0), oy0=CY+Ro*Math.sin(a0);
+    const ix1=CX+Ri*Math.cos(a1), iy1=CY+Ri*Math.sin(a1);
+    const ox1=CX+Ro*Math.cos(a1), oy1=CY+Ro*Math.sin(a1);
+    const laf = (a1 - a0) > Math.PI ? 1 : 0;
+    return `M ${ox0.toFixed(1)} ${oy0.toFixed(1)} A ${Ro} ${Ro} 0 ${laf} 1 ${ox1.toFixed(1)} ${oy1.toFixed(1)} L ${ix1.toFixed(1)} ${iy1.toFixed(1)} A ${Ri} ${Ri} 0 ${laf} 0 ${ix0.toFixed(1)} ${iy0.toFixed(1)} Z`;
+  };
+
+  const toggleFilter = (cat) => setFilters(f => ({ ...f, [cat]: !f[cat] }));
+  const toggleRing = (mode) => {
+    if (ringMode === mode) { setRingMode(null); setSelRing(null); }
+    else { setRingMode(mode); setSelType(null); setSelRing(null); }
+  };
+
+  const CAT_LABELS = { core:'Both (4)', reinin:'Reinin (4)', tencer:'Minaiev (4)', rings:'Rings (2)' };
+  const CAT_COLORS = { core:'#10b981', reinin:'#06b6d4', tencer:'#a78bfa', rings:'#f59e0b' };
+
+  const RING_COLORS = ['#f59e0b','#0ea5e9','#10b981','#ec4899'];
+
+  return (
+    <div style={{ paddingTop: 8 }}>
+      {/* ── Controls ── */}
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', marginBottom:16, padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:12 }}>
+        <span style={{ fontSize:10, color:C.textDim, fontFamily:"'JetBrains Mono',monospace", letterSpacing:1, textTransform:'uppercase', marginRight:4 }}>Show</span>
+        {Object.keys(CAT_LABELS).map(cat => (
+          <button key={cat} className="sgram-btn" onClick={() => toggleFilter(cat)} style={{ color: filters[cat] ? CAT_COLORS[cat] : C.textDim, borderColor: filters[cat] ? `${CAT_COLORS[cat]}60` : 'rgba(255,255,255,0.1)', background: filters[cat] ? `${CAT_COLORS[cat]}10` : 'transparent' }}>
+            {CAT_LABELS[cat]}
+          </button>
+        ))}
+        <div style={{ width:1, height:22, background:C.border, margin:'0 4px' }} />
+        <span style={{ fontSize:10, color:C.textDim, fontFamily:"'JetBrains Mono',monospace", letterSpacing:1, textTransform:'uppercase', marginRight:4 }}>Rings</span>
+        {['benefit','supervision'].map(mode => (
+          <button key={mode} className="sgram-btn" onClick={() => toggleRing(mode)} style={{ color: ringMode===mode ? '#f59e0b' : C.textMuted, borderColor: ringMode===mode ? '#f59e0b60' : 'rgba(255,255,255,0.1)', background: ringMode===mode ? '#f59e0b10' : 'transparent', textTransform:'capitalize' }}>
+            {mode}
+          </button>
+        ))}
+        {selType && (
+          <button className="sgram-btn" onClick={() => setSelType(null)} style={{ color:'#ec4899', borderColor:'#ec489960', marginLeft:'auto' }}>
+            ✕ {selType}
+          </button>
+        )}
+      </div>
+
+      {/* ── Ring sub-selector ── */}
+      {ringMode && (
+        <div style={{ display:'flex', gap:8, marginBottom:12, padding:'10px 14px', background:`${C.card}aa`, border:`1px solid ${C.border}`, borderRadius:10 }}>
+          <span style={{ fontSize:10, color:C.textDim, fontFamily:"'JetBrains Mono',monospace", letterSpacing:1, textTransform:'uppercase', alignSelf:'center', marginRight:4 }}>Ring</span>
+          {(ringMode==='benefit' ? BENEFIT_RINGS : SUPERV_RINGS).map((ring, ri) => (
+            <button key={ri} className="sgram-btn" onClick={() => setSelRing(selRing===ri ? null : ri)} style={{ color: selRing===ri ? RING_COLORS[ri] : C.textMuted, borderColor: selRing===ri ? `${RING_COLORS[ri]}70` : 'rgba(255,255,255,0.1)', background: selRing===ri ? `${RING_COLORS[ri]}12` : 'transparent', fontFamily:"'JetBrains Mono',monospace", fontSize:11 }}>
+              {ring.join(' → ')}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── SVG Sociogram ── */}
+      <div style={{ position:'relative' }}>
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ maxWidth:W, display:'block', margin:'0 auto', background:C.card, borderRadius:14, border:`1px solid ${C.border}` }}>
+          <defs>
+            <marker id="arr-Bn" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto">
+              <polygon points="0,0 7,3.5 0,7" fill="#f59e0b" opacity="0.95"/>
+            </marker>
+            <marker id="arr-Sv" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto">
+              <polygon points="0,0 7,3.5 0,7" fill="#d97706" opacity="0.95"/>
+            </marker>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          {/* Quadra sector bands */}
+          {QUADRA_INFO.map(q => (
+            <path key={q.name} d={sectorPath(q.start - 0.5, q.end + 0.5)} fill={q.color} opacity="0.065" />
+          ))}
+
+          {/* Sector border rings and dividers */}
+          {(() => {
+            const Ri = R - 36, Ro = R + 36;
+            const silver = "rgba(180,182,196,0.38)";
+            // Seam angles: mid-gap between quadras at indices -0.5, 3.5, 7.5, 11.5
+            const seamIdxs = [-0.5, 3.5, 7.5, 11.5];
+            // Mid-quadra (dual-pair divider) angles at indices 1.5, 5.5, 9.5, 13.5
+            const midIdxs  = [1.5, 5.5, 9.5, 13.5];
+            const ang = i => (i / 16) * Math.PI * 2 - Math.PI / 2;
+            return (
+              <g>
+                {/* Outer bounding circle */}
+                <circle cx={CX} cy={CY} r={Ro} fill="none" stroke={silver} strokeWidth="1.2"/>
+                {/* Inner bounding circle */}
+                <circle cx={CX} cy={CY} r={Ri} fill="none" stroke={silver} strokeWidth="1.2"/>
+                {/* Solid seam lines between quadras */}
+                {seamIdxs.map((idx, i) => {
+                  const a = ang(idx);
+                  return <line key={i} x1={CX+Ri*Math.cos(a)} y1={CY+Ri*Math.sin(a)} x2={CX+Ro*Math.cos(a)} y2={CY+Ro*Math.sin(a)} stroke={silver} strokeWidth="1.2"/>;
+                })}
+                {/* Dashed dual-pair dividers (within each quadra) */}
+                {midIdxs.map((idx, i) => {
+                  const a = ang(idx);
+                  return <line key={i} x1={CX+Ri*Math.cos(a)} y1={CY+Ri*Math.sin(a)} x2={CX+Ro*Math.cos(a)} y2={CY+Ro*Math.sin(a)} stroke="rgba(80,82,100,0.7)" strokeWidth="0.8" strokeDasharray="3 3"/>;
+                })}
+              </g>
+            );
+          })()}
+
+          {/* Quadra name labels */}
+          {QUADRA_INFO.map(q => {
+            const midA = ((q.start + q.end + 1) / 2 / 16) * Math.PI * 2 - Math.PI / 2;
+            const lr = R + 74;
+            return (
+              <text key={q.name} x={CX + lr*Math.cos(midA)} y={CY + lr*Math.sin(midA)} textAnchor="middle" dominantBaseline="middle" fill={q.color} fontSize="12" fontFamily="'JetBrains Mono',monospace" letterSpacing="1.5" opacity="0.75" fontWeight="600">{q.name.toUpperCase()}</text>
+            );
+          })}
+
+          {/* Corner hint: top-left, clear of all edges */}
+          {!selType && !ringMode && (
+            <g opacity="0.5">
+              <rect x="12" y="12" width="130" height="22" rx="6" fill={C.bg} stroke={C.border}/>
+              <text x="22" y="23.5" dominantBaseline="middle" fill={C.textDim} fontFamily="'JetBrains Mono',monospace">
+                <tspan fontSize="10">{"↑ click any type "}</tspan><tspan fontSize="13" dy="0.5">↘</tspan>
+              </text>
+            </g>
+          )}
+          {selType && (
+            <g>
+              <text x={CX} y={CY-10} textAnchor="middle" dominantBaseline="middle" fill={QUADRA_INFO.find(q=>q.types.includes(selType))?.color || C.text} fontSize="20" fontWeight="800" fontFamily="'JetBrains Mono',monospace">{selType}</text>
+              <text x={CX} y={CY+14} textAnchor="middle" dominantBaseline="middle" fill={C.textDim} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="1">RELATIONS</text>
+            </g>
+          )}
+
+          {/* Edges: render dimmed first, then highlighted on top */}
+          {visibleEdges.map(e => {
+            const isRing = activeRingSet && activeRingSet.has(`${e.src}-${e.tgt}`);
+            const isHov = hovEdge === e.key;
+            const focused = selType ? (e.src===selType||e.tgt===selType) : (ringMode ? isRing : true);
+            const op = focused ? (isHov ? 1 : 0.75) : 0.08;
+            const sw = isHov ? 2.8 : (focused ? 1.8 : 1);
+            const useDash = !e.meta.sym && ringMode && isRing;
+            return (
+              <path
+                key={e.key}
+                d={e.path}
+                fill="none"
+                stroke={e.meta.color}
+                strokeWidth={sw}
+                opacity={op}
+                strokeDasharray={useDash ? "8 4" : undefined}
+                strokeDashoffset={useDash ? "0" : undefined}
+                className={useDash ? "ring-edge" : undefined}
+                markerEnd={!e.meta.sym ? `url(#arr-${e.code})` : undefined}
+                filter={isHov ? "url(#glow)" : undefined}
+                onMouseEnter={ev => { setHovEdge(e.key); setTooltip({ x:ev.clientX, y:ev.clientY, src:e.src, tgt:e.tgt, name:e.meta.name, color:e.meta.color, sym:e.meta.sym }); }}
+                onMouseLeave={() => { setHovEdge(null); setTooltip(null); }}
+                style={{ cursor:'pointer' }}
+              />
+            );
+          })}
+
+          {/* Nodes */}
+          {TYPES_ORDER.map(t => {
+            const p = npos[t];
+            const q = QUADRA_INFO.find(q => q.types.includes(t));
+            const isSel = selType === t;
+            const isConn = selType && selType !== t && Object.values(RD[selType]).includes(t);
+            const inRing = ringMode && activeRingSet && [...activeRingSet].some(k => k.startsWith(t+'-')||k.endsWith('-'+t));
+            const dimmed = (selType && !isSel && !isConn) || (ringMode && !selType && !inRing);
+            return (
+              <g key={t} onClick={() => { setSelType(selType===t ? null : t); if(ringMode) setRingMode(null); }} style={{ cursor:'pointer' }}>
+                <circle cx={p.x} cy={p.y} r={NR+7} fill="transparent"/>
+                <circle cx={p.x} cy={p.y} r={NR} fill={isSel ? `${q.color}22` : C.bg} stroke={isSel ? q.color : `${q.color}70`} strokeWidth={isSel ? 2.5 : 1.5} opacity={dimmed ? 0.25 : 1} filter={isSel ? "url(#glow)" : undefined}/>
+                <text x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fill={isSel ? q.color : (dimmed ? C.textDim : C.text)} fontSize="10" fontWeight={isSel ? "800" : "600"} fontFamily="'JetBrains Mono',monospace" opacity={dimmed ? 0.3 : 1}>{t}</text>
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Floating tooltip */}
+        {tooltip && (
+          <div style={{ position:'fixed', left:tooltip.x+14, top:tooltip.y-10, pointerEvents:'none', zIndex:9999, background:C.card, border:`1px solid ${tooltip.color}50`, borderRadius:8, padding:'8px 12px', fontSize:12, color:C.text, whiteSpace:'nowrap', boxShadow:'0 4px 20px rgba(0,0,0,0.5)' }}>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace", color:tooltip.color, fontWeight:700 }}>{tooltip.name}</span>
+            <span style={{ color:C.textDim, margin:'0 6px' }}>{tooltip.sym ? '⟷' : '→'}</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace", color:C.textMuted }}>{tooltip.src} {tooltip.sym ? '↔' : '→'} {tooltip.tgt}</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Legend ── */}
+      {(() => {
+        const groups = [
+          { header:"Reinin or Minaiev", sub:"Either space",      codes:["Du","Su","Ex"], extraCodes:[] },
+          { header:"Reinin Only",       sub:"Structural",        codes:["Mr","Co","Ac","Qd"] },
+          { header:"Minaiev Only",      sub:"Domain",            codes:["Ki","Bu","Sd","Mg"] },
+          { header:"Rings",             sub:"Composed, directed",codes:["Bn","Sv"] },
+        ];
+        // Core group only has 3 sym relations (Id excluded from RMETA), pad with empty
+        const groupDefs = [
+          { header:"Reinin or Minaiev", sub:"Either space",       codes:["__Id","Du","Su","Ex"]  },
+          { header:"Reinin Only",       sub:"Structural",         codes:["Mr","Co","Ac","Qd"]   },
+          { header:"Minaiev Only",      sub:"Domain",             codes:["Ki","Bu","Sd","Mg"]   },
+          { header:"Reinin and Minaiev",sub:"Rings of Progress",  codes:["Bn","Sv","",""]       },
+        ];
+        return (
+          <div style={{ marginTop:16, display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+            {groupDefs.map((g,gi) => (
+              <div key={gi} style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                <div style={{ marginBottom:2 }}>
+                  <div style={{ fontSize:10, fontWeight:700, color:C.text, letterSpacing:1, textTransform:'uppercase', fontFamily:"'JetBrains Mono',monospace" }}>{g.header}</div>
+                  <div style={{ fontSize:9, color:C.textDim, fontStyle:'italic' }}>{g.sub}</div>
+                </div>
+                {g.codes.map((code, ci) => {
+                  if (!code) return <div key={ci} style={{ height:34 }}/>;
+                  if (code === "__Id") return (
+                    <div key="Id" style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 9px', background:'rgba(100,116,139,0.04)', border:'1px solid rgba(100,116,139,0.15)', borderRadius:8, opacity:0.45 }}>
+                      <div style={{ width:20, minWidth:20, padding:'3px 4px', textAlign:'center', fontSize:10, fontWeight:800, color:'#64748b', background:'rgba(100,116,139,0.1)', border:'1px solid rgba(100,116,139,0.25)', borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>Id</div>
+                      <span style={{ fontSize:11, color:'#64748b', fontWeight:500, textDecoration:'line-through', textDecorationColor:'rgba(100,116,139,0.5)' }}>Identity</span>
+                    </div>
+                  );
+                  const m = RMETA[code];
+                  return (
+                    <div key={code} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 9px', background:`${m.color}0a`, border:`1px solid ${m.color}28`, borderRadius:8 }}>
+                      <div style={{ width:20, minWidth:20, padding:'3px 4px', textAlign:'center', fontSize:10, fontWeight:800, color:m.color, background:`${m.color}1a`, border:`1px solid ${m.color}40`, borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>{code}</div>
+                      <span style={{ fontSize:11, color:C.text, fontWeight:500 }}>{m.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        );
+      })()}
+
+      {/* ── Instructions ── */}
+      <div style={{ marginTop:14, padding:'12px 16px', background:`${C.accent2}08`, border:`1px solid ${C.accent2}20`, borderRadius:10 }}>
+        <p style={{ margin:0, fontSize:12, color:C.textDim, lineHeight:1.6 }}>
+          <strong style={{ color:C.textMuted }}>Click any type</strong> to isolate its 13 relations.{' '}
+          <strong style={{ color:C.textMuted }}>Benefit / Supervision</strong> buttons trace the directed rings; then select an individual ring to animate a single 4-cycle.{' '}
+          <strong style={{ color:C.textMuted }}>Show filters</strong> toggle relation categories. All bezier arcs pass through center, the chord-diagram aesthetic reflects the algebraic structure of the Reinin × Minaiev synthesis.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function IntertypeReport() {
   const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-itr") || "intro"; } catch (e) { return "intro"; } });
   const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-itr", v); } catch (e) {} _setActiveSection(v); };;
@@ -204,7 +600,8 @@ function IntertypeReport() {
     { id: "fringes",    label: "Space-Exclusive Relations", color: C.reinin },
     { id: "asymmetric", label: "Ring Relations",           color: C.asymmetric },
     { id: "frontier",   label: "Validation Efforts",       color: C.accent2 },
-    { id: "matrix",     label: "All Type Relations",       color: C.teal },
+    { id: "matrix",     label: "ITR Matrix",               color: C.teal },
+    { id: "sociogram",  label: "Sociogram",                color: "#a78bfa" },
   ];
 
   // Bukalov data, relabeled to match document terminology
@@ -991,6 +1388,21 @@ function IntertypeReport() {
               This spatial structure is not decorative; it is the algebraic signature of the Reinin and Minaiev dichotomy products acting on the Socion. The matrix is, in effect, a visual proof that the 14 relations are not an arbitrary list but an exhaustive consequence of how the dichotomies partition the 16-type space.
             </Prose>
           </Card>
+        </>}
+
+        {/* ═══════════════════ SOCIOGRAM ═══════════════════ */}
+        {activeSection === "sociogram" && <>
+          <Divider label="Interactive Sociogram" color="#a78bfa" />
+          <Card color="#a78bfa">
+            <SectionTitle color="#a78bfa">The Full Socion as a Network</SectionTitle>
+            <Prose>
+              The 16 socionics types arranged in a circle, with all 104 directed and undirected edges drawn as quadratic bezier curves arcing through the center. Every arc passes through (CX, CY): the chord-diagram aesthetic that makes the algebraic structure of the Reinin × Minaiev synthesis directly visible as geometry. Types in the same quadra occupy adjacent nodes; the four colored sector bands mark the Alpha, Beta, Gamma, and Delta quadra groupings.
+            </Prose>
+            <Prose style={{ marginBottom:0 }}>
+              The benefit and supervision rings are the two directed sub-structures: four 4-cycles each, where the direction of the arrow encodes the flow of the relation. Animated dashes on active ring edges show which types are upstream and downstream in each cycle. All symmetric relations are rendered as undirected chords; selecting a single type reduces the graph to that type's 13-relation neighborhood.
+            </Prose>
+          </Card>
+          <SociogramView />
         </>}
 
         {/* FOOTER */}
