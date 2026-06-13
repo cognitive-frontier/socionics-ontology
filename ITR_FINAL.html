@@ -208,6 +208,7 @@ function SociogramView() {
   const [filters, setFilters] = React.useState({ core: true, reinin: true, tencer: true, rings: true });
   const [tooltip, setTooltip] = React.useState(null);
   const [selRing, setSelRing] = React.useState(null); // which specific ring index (0-3) is highlighted
+  const [selRel, setSelRel] = React.useState(null);   // selected relation code from legend click
 
   const W = 700, H = 700, CX = 350, CY = 350, R = 265, NR = 21;
 
@@ -357,10 +358,15 @@ function SociogramView() {
     return `M ${ox0.toFixed(1)} ${oy0.toFixed(1)} A ${Ro} ${Ro} 0 ${laf} 1 ${ox1.toFixed(1)} ${oy1.toFixed(1)} L ${ix1.toFixed(1)} ${iy1.toFixed(1)} A ${Ri} ${Ri} 0 ${laf} 0 ${ix0.toFixed(1)} ${iy0.toFixed(1)} Z`;
   };
 
-  const toggleFilter = (cat) => setFilters(f => ({ ...f, [cat]: !f[cat] }));
+  const toggleFilter = (cat) => { setFilters(f => ({ ...f, [cat]: !f[cat] })); setSelRel(null); };
   const toggleRing = (mode) => {
+    setSelRel(null);
     if (ringMode === mode) { setRingMode(null); setSelRing(null); }
     else { setRingMode(mode); setSelType(null); setSelRing(null); }
+  };
+  const toggleRel = (code) => {
+    setSelRel(r => r === code ? null : code);
+    setRingMode(null); setSelRing(null); setSelType(null);
   };
 
   const CAT_LABELS = { core:'Both (4)', reinin:'Reinin (4)', tencer:'Minaiev (4)', rings:'Rings (2)' };
@@ -463,8 +469,16 @@ function SociogramView() {
             );
           })}
 
+          {/* Center: relation label when selRel active */}
+          {selRel && !selType && (
+            <g>
+              <text x={CX} y={CY-10} textAnchor="middle" dominantBaseline="middle" fill={RMETA[selRel]?.color} fontSize="18" fontWeight="800" fontFamily="'JetBrains Mono',monospace">{selRel}</text>
+              <text x={CX} y={CY+14} textAnchor="middle" dominantBaseline="middle" fill={C.textDim} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="1">{RMETA[selRel]?.name?.toUpperCase()}</text>
+            </g>
+          )}
+
           {/* Corner hint: top-left, clear of all edges */}
-          {!selType && !ringMode && (
+          {!selType && !ringMode && !selRel && (
             <g opacity="0.5">
               <rect x="12" y="12" width="130" height="22" rx="6" fill={C.bg} stroke={C.border}/>
               <text x="22" y="23.5" dominantBaseline="middle" fill={C.textDim} fontFamily="'JetBrains Mono',monospace">
@@ -483,9 +497,11 @@ function SociogramView() {
           {visibleEdges.map(e => {
             const isRing = activeRingSet && activeRingSet.has(`${e.src}-${e.tgt}`);
             const isHov = hovEdge === e.key;
-            const focused = selType ? (e.src===selType||e.tgt===selType) : (ringMode ? isRing : true);
-            const op = focused ? (isHov ? 1 : 0.75) : 0.08;
-            const sw = isHov ? 2.8 : (focused ? 1.8 : 1);
+            const focused = selRel
+              ? e.code === selRel
+              : selType ? (e.src===selType||e.tgt===selType) : (ringMode ? isRing : true);
+            const op = focused ? (isHov ? 1 : 0.78) : 0.06;
+            const sw = isHov ? 2.8 : (focused ? 2 : 1);
             const useDash = !e.meta.sym && ringMode && isRing;
             return (
               <path
@@ -514,7 +530,8 @@ function SociogramView() {
             const isSel = selType === t;
             const isConn = selType && selType !== t && Object.values(RD[selType]).includes(t);
             const inRing = ringMode && activeRingSet && [...activeRingSet].some(k => k.startsWith(t+'-')||k.endsWith('-'+t));
-            const dimmed = (selType && !isSel && !isConn) || (ringMode && !selType && !inRing);
+            const inRelEdge = selRel && visibleEdges.some(e => e.code === selRel && (e.src === t || e.tgt === t));
+            const dimmed = selRel ? !inRelEdge : (selType && !isSel && !isConn) || (ringMode && !selType && !inRing);
             return (
               <g key={t} onClick={() => { setSelType(selType===t ? null : t); if(ringMode) setRingMode(null); }} style={{ cursor:'pointer' }}>
                 <circle cx={p.x} cy={p.y} r={NR+7} fill="transparent"/>
@@ -567,10 +584,11 @@ function SociogramView() {
                     </div>
                   );
                   const m = RMETA[code];
+                  const isActive = selRel === code;
                   return (
-                    <div key={code} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 9px', background:`${m.color}0a`, border:`1px solid ${m.color}28`, borderRadius:8 }}>
+                    <div key={code} onClick={() => toggleRel(code)} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 9px', background: isActive ? `${m.color}1c` : `${m.color}0a`, border:`1px solid ${isActive ? m.color : m.color+'28'}`, borderRadius:8, cursor:'pointer', transition:'all 0.15s', boxShadow: isActive ? `0 0 0 1px ${m.color}40` : 'none' }}>
                       <div style={{ width:20, minWidth:20, padding:'3px 4px', textAlign:'center', fontSize:10, fontWeight:800, color:m.color, background:`${m.color}1a`, border:`1px solid ${m.color}40`, borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>{code}</div>
-                      <span style={{ fontSize:11, color:C.text, fontWeight:500 }}>{m.name}</span>
+                      <span style={{ fontSize:11, color: isActive ? m.color : C.text, fontWeight: isActive ? 700 : 500 }}>{m.name}</span>
                     </div>
                   );
                 })}
@@ -593,17 +611,17 @@ function SociogramView() {
 }
 
 function IntertypeReport() {
-  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-itr") || "intro"; } catch (e) { return "intro"; } });
+  const [activeSection, _setActiveSection] = useState(() => { try { return localStorage.getItem("ontology-sec-itr") || "sociogram"; } catch (e) { return "sociogram"; } });
   const setActiveSection = (v) => { try { localStorage.setItem("ontology-sec-itr", v); } catch (e) {} _setActiveSection(v); };;
 
   const sections = [
+    { id: "sociogram",  label: "Sociogram",                color: "#a78bfa" },
     { id: "intro",      label: "Overview",                 color: C.accent1 },
     { id: "symmetric",  label: "Central Relations",        color: C.symmetric },
     { id: "fringes",    label: "Space-Exclusive Relations", color: C.reinin },
     { id: "asymmetric", label: "Ring Relations",           color: C.asymmetric },
     { id: "frontier",   label: "Validation Efforts",       color: C.accent2 },
     { id: "matrix",     label: "ITR Matrix",               color: C.teal },
-    { id: "sociogram",  label: "Sociogram",                color: "#a78bfa" },
   ];
 
   // Bukalov data, relabeled to match document terminology
@@ -698,7 +716,7 @@ function IntertypeReport() {
             The Cybernetics of Human Interaction
           </div>
           <Prose style={{ maxWidth: 720, margin: "0 auto 24px" }}>
-            A comprehensive analysis of the 14 classical Socionics relations, reconstructed through the algebraic synthesis of Reinin and Minaiev dichotomy spaces, grounded in Bukalov's empirical marriage data, and framed as a predictive science of structural cognitive acoustics.
+            A comprehensive introduction to the 14 unique Socionics type relations, presented via the algebraic synthesis of the Reinin and Minaiev dichotomy spaces and grounded in Aleksandr Bukalov's marriage statistics.
           </Prose>
           <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
             {["Relations Overview", "ITR Structure", "Couples Data", "Rings of Progress", "Empirical Investigation"].map((l, i) => (
