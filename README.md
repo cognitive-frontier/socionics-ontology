@@ -44,3 +44,4 @@ A convenience script is provided for first-time deployment:
 ## Dependencies
 
 No build step. The shell loads React 18, Tailwind, and Babel Standalone from CDNs at runtime. Individual articles are self-contained HTML and load their own dependencies as needed.
+
