@@ -146,7 +146,7 @@ const PROFILES={
     valuation:`What motivates them most is uniqueness. They want work that is open, intellectually alive, and capable of producing something not already present in the world. They are drawn to social climates where curiosity is rewarded, discussion stays informal, and people are not boxed in by rigid rank or ceremonial distance. Alpha values add a preference for lightness, play, conceptual freedom, and shared discovery. What deadens them is prestige chasing for its own sake, routine maintenance as a life principle, and interpersonal environments where hidden grievance matters more than open exchange.`,
     communication:`In communication the Searcher is open, exploratory, and more businesslike than intimate in a first approach. They make contact easily, move conversation by questions and possibilities, and often assume that mutual interest matters more than strict boundaries. Their sense of identity is strongly personal rather than role-bound. In groups they often function as the originator who introduces a new line of development and energizes others around it. Under stress they can be surprisingly sticky: they react hard at first, then lose traction and withdraw into private worry, especially when freedom of movement disappears.`,
     portraitA:`Ego pairs Ne with Ti: conceptual reach disciplined by structural logic, so the lead expression is invention that wants to also be coherent. The Super-Ego (Fi, Se) is the awkward zone, where managing personal closeness and asserting physical will both feel like duty rather than instinct. The Super-Id (Si, Fe) is the unmet ache: bodily comfort and a warm shared mood, both craved but unreliably self-generated. The Id (Ni, Te) runs in the background as quiet long-range hunch and competent factual handling, used without fanfare. Information flows from Ne's open horizon down through Ti's structural sieve, with the rest of the psyche tilted toward keeping that motion uninterrupted.`,
-    portraitG:`Same eight functions, rotated into energetic geography. Social Mission (Ne + Te) projects invention at societal distance: theories, demonstrations, public arguments that the world contains unused possibilities. Social Adaptation (Fi + Fe) is where energy flickers, with relationships launched in bursts of warmth rather than steady cultivation. Self-Realization (Ti + Si) holds the intimate sphere: structural play and modest sensory routines maintained quietly with chosen company. Inflation (Se + Ni) is the energy sink, where raw will and gloomy premonition both drain rather than fuel. Where Model A asks what this psyche knows, Model G asks where its energy actually flows. Same object, two cross-sections.`,
+    portraitG:`Same eight functions, rotated into energetic geography. Social Mission (Ne + Te) projects invention at societal distance: theories, demonstrations, public arguments that the world contains unused possibilities. Social Adaptation (Se + Fe) is where energy flickers, with assertive push and social warmth arriving in short bursts for the occasion rather than as steady cultivation. Self-Realization (Ti + Si) holds the intimate sphere: structural play and modest sensory routines maintained quietly with chosen company. Inflation (Fi + Ni) is the energy sink, where brooding personal sentiment and gloomy premonition both drain rather than fuel. Where Model A asks what this psyche knows, Model G asks where its energy actually flows. Same object, two cross-sections.`,
   },
   SEI:{
     nickname:`The Mediator`,
@@ -161,7 +161,7 @@ const PROFILES={
   },
   ESE:{
     nickname:`The Enthusiast`,
-    aka:``,
+    aka:`Communicator and Bonvivant`,
     behavior:`The Enthusiast behaves like a social amplifier. Talanov's swarm strategy captures the core pattern: this type increases survival by synchronizing a flock, raising morale, and turning scattered individuals into a coordinated human environment. They are outwardly warm, active, and quick to intervene where life has become flat, neglected, or emotionally cold. Their strongest behavioral asset is not mere friendliness but collective ignition. They can make participation feel attractive. Their liabilities appear when this energy outruns reflection. They overload themselves with duties, dramatize urgency, and may keep everyone moving without asking whether the movement still serves a meaningful direction.`,
     temperament:`Their energy is linear, active, and difficult to switch off. They prefer to stay engaged, keep up pace, and answer trouble before it spreads. Affect ignites quickly and is expressed openly through face, voice, and bodily presence. Personal initiative is strong and often blends with a wish to draw others into motion. Social energy tends to run high and public, which is why they can organize, host, encourage, and emotionally provision a group with unusual force. Solitude, emotional coldness, and prolonged passivity deplete them fast.`,
     cognition:`Cognitively they are practical sensates with a strong eye for what keeps life functioning. Attention goes to visible disorder, immediate needs, hospitality, social tone, and the practical state of bodies and spaces. Their thinking is more processual than schematic: they track living currents, emotional feedback, and the way one action shifts the energy of the whole setting. In argument they do not usually win by detached proof. They win by normative interpretation, vivid example, and socially legible common sense. The question underneath their reasoning is often whether a situation is healthy, workable, and humanly sustainable.`,
@@ -339,21 +339,21 @@ const SG_TABLES={
   },
   // 8. Club / Activity Disposition
   club:{
-    label:"Club", labelXyz:"Activity Disposition",
+    label:"Club", labelXyz:"Activity Orientation",
     members:{
-      "Researchers (xNTx)":{xyz:"Scientific-Investigative", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
-      "Pragmatists (xSTx)":{xyz:"Technical-Managerial",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
-      "Socialites (xSFx)": {xyz:"Social-Affiliative",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
-      "Humanitarians (xNFx)":{xyz:"Humanistic-Aesthetic",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
+      "Researchers (xNTx)":{xyz:"Researchers (xNTx)", types:["ILE","LII","ILI","LIE"], detail:"Abstract systems, invention, theoretical reach"},
+      "Pragmatists (xSTx)":{xyz:"Operator",     types:["SLE","LSI","LSE","SLI"], detail:"Tangible structures, applied force, technique"},
+      "Socialites (xSFx)": {xyz:"Provisioner",       types:["SEI","ESE","SEE","ESI"], detail:"People, atmosphere, material comfort"},
+      "Humanitarians (xNFx)":{xyz:"Mentalizer",   types:["EIE","IEI","EII","IEE"], detail:"Human meaning, ideals, narrative imagination"},
     }
   },
   // 3. Temperament
   temperament:{
     label:"Temperament", labelXyz:"Temperament",
     members:{
-      "Flexible-Maneuvering (ExxP)":{xyz:"Radial-Pivoting",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
+      "Flexible-Maneuvering (ExxP)":{xyz:"Radial-Exploring",  types:["ILE","SLE","IEE","SEE"], detail:"Mobile, impulsive, exploratory in bursts"},
       "Linear-Assertive (ExxJ)":    {xyz:"Vectored-Driving", types:["LIE","EIE","LSE","ESE"], detail:"Proactive, directive, restless forward push"},
-      "Receptive-Adaptive (IxxP)":  {xyz:"Ambient-Drifting", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
+      "Receptive-Adaptive (IxxP)":  {xyz:"Ambient-Flowing", types:["ILI","IEI","SLI","SEI"], detail:"Relaxed, flowing, low-energy absorption"},
       "Rigid-Stable (IxxJ)":        {xyz:"Steady-Regulating",types:["LII","EII","LSI","ESI"], detail:"Calm, balanced, stable internal mood"},
     }
   },
@@ -361,35 +361,35 @@ const SG_TABLES={
   stimulus:{
     label:"Stimulus Group", labelXyz:"Immersed in",
     members:{
-      "Uniqueness Seeking (ENxx)":{xyz:"Ideas",     types:["ILE","LIE","IEE","EIE"], detail:"Drawn to novelty, originality, frontier ideas"},
-      "Status Seeking (ESxx)":    {xyz:"Reality",   types:["SLE","LSE","SEE","ESE"], detail:"Drawn to influence, prestige, social position"},
-      "Self-Worth Seeking (INxx)":{xyz:"Themselves",types:["ILI","LII","IEI","EII"], detail:"Drawn to inner worth, principled work at own pace"},
-      "Well-Being Seeking (ISxx)":{xyz:"Ordinary",  types:["SLI","LSI","SEI","ESI"], detail:"Drawn to comfort, security, steady provision"},
+      "Uniqueness Seeking (ENxx)":{xyz:"Ideational Velocity",     types:["ILE","LIE","IEE","EIE"], detail:"Drawn to novelty, originality, frontier ideas"},
+      "Status Seeking (ESxx)":    {xyz:"Active Reality",   types:["SLE","LSE","SEE","ESE"], detail:"Drawn to influence, prestige, social position"},
+      "Self-Worth Seeking (INxx)":{xyz:"Inner Depth",types:["ILI","LII","IEI","EII"], detail:"Drawn to inner worth, principled work at own pace"},
+      "Well-Being Seeking (ISxx)":{xyz:"Familiar Order",  types:["SLI","LSI","SEI","ESI"], detail:"Drawn to comfort, security, steady provision"},
     }
   },
   // 2. Communication Style
   communication:{
-    label:"Communication Style", labelXyz:"Communication Style",
+    label:"Communication Style", labelXyz:"Interpersonal Style",
     members:{
-      "Business-like (ExTx)":  {xyz:"Business-Driven",     types:["ILE","LIE","SLE","LSE"], detail:"Task-first, practical, outcome-oriented exchange"},
-      "Passionate (ExFx)":     {xyz:"Passionate-Expressive",types:["IEE","EIE","SEE","ESE"], detail:"Emotionally charged, dramatic, expressive exchange"},
-      "Cold-Blooded (IxTx)":   {xyz:"Cool-Headed",         types:["ILI","LII","SLI","LSI"], detail:"Reserved, analytical, low-affect exchange"},
+      "Business-like (ExTx)":  {xyz:"Bold-Enterprisive",     types:["ILE","LIE","SLE","LSE"], detail:"Task-first, practical, outcome-oriented exchange"},
+      "Passionate (ExFx)":     {xyz:"Vibrant-Expressive",types:["IEE","EIE","SEE","ESE"], detail:"Emotionally charged, dramatic, expressive exchange"},
+      "Cold-Blooded (IxTx)":   {xyz:"Cool-Composed",         types:["ILI","LII","SLI","LSI"], detail:"Reserved, analytical, low-affect exchange"},
       "Sincere (IxFx)":        {xyz:"Tender-Hearted",      types:["IEI","EII","SEI","ESI"], detail:"Warm, personal, feeling-weighted exchange"},
     }
   },
   // 9. Perceptual Group
   perceptual:{
-    label:"Perceptual Group", labelXyz:"Perceptual Orientation",
+    label:"Perceptual Group", labelXyz:"Perceptual Style",
     members:{
-      "Associative (xNxP)":{xyz:"Mercurial",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
-      "Dissociative (xNxJ)":{xyz:"Austere",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
-      "Commutative (xSxP)":{xyz:"Visceral",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
-      "Distributive (xSxJ)":{xyz:"Methodical",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
+      "Associative (xNxP)":{xyz:"Phantasmagoric",  types:["ILE","IEE","ILI","IEI"], detail:"Free associative web; perceives by anchoring images"},
+      "Dissociative (xNxJ)":{xyz:"Prospective",   types:["LIE","EIE","LII","EII"], detail:"Reduces perception to archetypal building blocks"},
+      "Commutative (xSxP)":{xyz:"Appetitive",   types:["SLE","SEE","SLI","SEI"], detail:"Concrete kaleidoscope; reality felt as movable mosaic"},
+      "Distributive (xSxJ)":{xyz:"Punctilious",types:["LSE","ESE","LSI","ESI"], detail:"Orderly distribution by traditional or trained priority"},
     }
   },
   // 14. Argumentation Group
   argumentation:{
-    label:"Argumentation Group", labelXyz:"Argumentation Style",
+    label:"Argumentation Group", labelXyz:"Reasoning Style",
     members:{
       "Restructors (xxTP)": {xyz:"Restructurer",types:["ILE","SLE","ILI","SLI"], detail:"Reframes, borrows across paradigms, free of dogma"},
       "Constructors (xxTJ)":{xyz:"Constructor", types:["LIE","LSE","LII","LSI"], detail:"Builds tight, complete deductive chains within one system"},
@@ -399,11 +399,11 @@ const SG_TABLES={
   },
   // 11. Romance Style / Primal Social Role
   romance:{
-    label:"Romance Style", labelXyz:"Primal Social Role",
+    label:"Romance Style", labelXyz:"Primal Role",
     members:{
       "Childlike":{xyz:"Infantile",types:["ILE","IEE","LII","EII"], detail:"Playful, intellectual, asexual until safe; needs care"},
-      "Victim":   {xyz:"Provoking",   types:["LIE","EIE","ILI","IEI"], detail:"Doubting, dramatic, drawn to power that grounds them"},
-      "Aggressor":{xyz:"Pursuing",types:["SLE","SEE","LSI","ESI"], detail:"Direct, possessive, openly pursues the desired partner"},
+      "Victim":   {xyz:"Victim",   types:["LIE","EIE","ILI","IEI"], detail:"Doubting, dramatic, drawn to power that grounds them"},
+      "Aggressor":{xyz:"Aggressor",types:["SLE","SEE","LSI","ESI"], detail:"Direct, possessive, openly pursues the desired partner"},
       "Caring":   {xyz:"Curator",  types:["LSE","ESE","SLI","SEI"], detail:"Suave, attentive, protective of partner's well-being"},
     }
   },
@@ -414,7 +414,7 @@ const SG_TABLES={
       "Energy Generators":   {xyz:"Agitator",  types:["ILE","EIE","LSE","SEE"], detail:"Translate information into energy; ignite mass-scale chain reactions"},
       "Energy Carriers":     {xyz:"Mobilizer", types:["LIE","IEE","SLE","ESE"], detail:"Most energy-saturated; coordinate and direct small groups"},
       "Information Accumulators":{xyz:"Stabilizer",types:["ILI","EII","LSI","SEI"], detail:"Hoard and refine information; the socion's stable foundation"},
-      "Information Generators":{xyz:"Dissenter",types:["LII","IEI","SLI","ESI"], detail:"Translate energy into information; bind small affinity-groups"},
+      "Information Generators":{xyz:"Corrector",types:["LII","IEI","SLI","ESI"], detail:"Translate energy into information; bind small affinity-groups"},
     }
   },
   // 31. Cognitive Styles / Supervision Ring / Cognitive Form
@@ -422,39 +422,39 @@ const SG_TABLES={
     label:"Supervision Ring (Cognitive Style)", labelXyz:"Cognitive Form",
     members:{
       "Causal-Determinist":   {xyz:"Architectonic",types:["ILE","LSI","SEE","EII"], detail:"Linear cause-and-effect chains; classical deductive logic"},
-      "Holographic-Panoramic":{xyz:"Diagnostic",   types:["SLE","LII","IEE","ESI"], detail:"Multi-perspective superposition; structural x-ray vision"},
-      "Vortical-Synergetic":  {xyz:"Synergetic",   types:["LIE","IEI","ESE","SLI"], detail:"Trial-and-error vortex; order emerges from chaotic search"},
-      "Dialectical-Algorithmic":{xyz:"Hermeneutic",types:["EIE","ILI","LSE","SEI"], detail:"Synthesis of opposites; conditional branching prediction"},
+      "Holographic-Panoramic":{xyz:"Trenchant",   types:["SLE","LII","IEE","ESI"], detail:"Multi-perspective superposition; structural x-ray vision"},
+      "Vortical-Synergetic":  {xyz:"Confluent",   types:["LIE","IEI","ESE","SLI"], detail:"Trial-and-error vortex; order emerges from chaotic search"},
+      "Dialectical-Algorithmic":{xyz:"Genealogic",types:["EIE","ILI","LSE","SEI"], detail:"Synthesis of opposites; conditional branching prediction"},
     }
   },
   // 4. Forms of Will / Mode of Will
   will:{
     label:"Form of Will", labelXyz:"Mode of Will",
     members:{
-      "Initiative":  {xyz:"Initiating",types:["ILE","LIE","SEE","ESE"], detail:"Acts on individual impulse, often outside social constraint"},
+      "Initiative":  {xyz:"Pioneering",types:["ILE","LIE","SEE","ESE"], detail:"Acts on individual impulse, often outside social constraint"},
       "Commanders":  {xyz:"Commanding",types:["IEE","EIE","SLE","LSE"], detail:"Directs others, speaks for the group, restricts deviance"},
       "Self-Critical":{xyz:"Doubting", types:["ILI","LII","SEI","ESI"], detail:"Doubts and restrains the self by inward conviction"},
-      "Executive":   {xyz:"Conforming",types:["IEI","EII","SLI","LSI"], detail:"Submits willingly to social structure and assigned role"},
+      "Executive":   {xyz:"Camouflaging",types:["IEI","EII","SLI","LSI"], detail:"Submits willingly to social structure and assigned role"},
     }
   },
   // 30. Quest-Diminutive / Identity Locus
   identity:{
-    label:"Quest-Diminutive", labelXyz:"Identity Locus",
+    label:"Identity Locus", labelXyz:"Quest-Diminutive",
     members:{
-      "Chaotic":   {xyz:"Individual Will",   types:["ILE","SEE","LII","ESI"], detail:"Sees self as separate, irreducibly individual; defends personal freedoms"},
-      "Reducing":  {xyz:"Collective Will",   types:["SLE","IEE","EII","LSI"], detail:"Reduces self and others to clean social roles and standards"},
-      "Natural":   {xyz:"Familial-Worldly",  types:["LIE","ESE","ILI","SEI"], detail:"Identifies with the simple integrity of inner aspirations"},
-      "Idealizing":{xyz:"Elitist-Fastidious",types:["LSE","EIE","IEI","SLI"], detail:"Identifies through elite affiliation and devotional ideals"},
+      "Individual Will":  {xyz:"Chaotic",   types:["ILE","SEE","LII","ESI"], detail:"Sees self as separate, irreducibly individual; defends personal freedoms"},
+      "Collective Will":  {xyz:"Reducing",  types:["SLE","IEE","EII","LSI"], detail:"Reduces self and others to clean social roles and standards"},
+      "Socially Flexible":{xyz:"Natural",   types:["LIE","ESE","ILI","SEI"], detail:"Identifies with the simple integrity of inner aspirations"},
+      "Fastidious":       {xyz:"Idealizing",types:["LSE","EIE","IEI","SLI"], detail:"Identifies through elite affiliation and devotional ideals"},
     }
   },
   // 21. Stress Resistance / Social Attachment Style
   stress:{
-    label:"Stress Group", labelXyz:"Social Attachment Style",
+    label:"Social Attachment Style", labelXyz:"Stress Group",
     members:{
-      "Frozen by Stress":   {xyz:"Personally Loyal", types:["ILE","SEE","ILI","SEI"], detail:"Viscous; resists initially then withdraws to known anchors"},
-      "Resistant to Stress":{xyz:"Free Agent",       types:["IEE","SLE","IEI","SLI"], detail:"Elastic; mobilized by sudden change, evades or waits out the storm"},
-      "Trained by Stress":  {xyz:"Personally Free",  types:["LIE","ESE","LII","ESI"], detail:"Crystalline; hardened by repeated exposure, can rebuild from zero"},
-      "Vulnerable to Stress":{xyz:"Group-Devoted",   types:["EIE","LSE","EII","LSI"], detail:"Monolithic but brittle; needs solid foundation and stable group"},
+      "Personally Free": {xyz:"Frozen by Stress",    types:["ILE","SEE","ILI","SEI"], detail:"Viscous; resists initially then withdraws to known anchors"},
+      "Free Agent":      {xyz:"Resistant to Stress", types:["IEE","SLE","IEI","SLI"], detail:"Elastic; mobilized by sudden change, evades or waits out the storm"},
+      "Personally Loyal":{xyz:"Trained by Stress",   types:["LIE","ESE","LII","ESI"], detail:"Crystalline; hardened by repeated exposure, can rebuild from zero"},
+      "Group-Devoted":   {xyz:"Vulnerable to Stress",types:["EIE","LSE","EII","LSI"], detail:"Monolithic but brittle; needs solid foundation and stable group"},
     }
   },
 };
@@ -477,6 +477,7 @@ function getSmallGroups(t){
         sub:found.subName,
         subXyz:found.m.xyz,
         detail:found.m.detail,
+        types:found.m.types,
       });
     }
   }
@@ -568,7 +569,7 @@ function ModelAVisualizer({type}){
               <Chip fn={fn} size={30} glow={isSel||vHit} bg={chipColors[idx]}/>
               <div>
                 <div style={{fontSize:11,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.5)"}}>{pos.n}</div>
-                <div style={{fontSize:8,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>Position {pos.num} · {pos.dim} · {pos.pri} · {pos.lvl}</div>
+                <div style={{fontSize:8,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>Position {pos.num} | {pos.dim} | {pos.pri} | {pos.lvl}</div>
               </div>
             </div>
             <div className="ma-badges" style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:2}}>
@@ -637,7 +638,7 @@ function ModelAVisualizer({type}){
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
         <Chip fn={fns[sel]} size={34} glow bg={chipColors[sel]}/><div>
           <div style={{fontSize:14,fontWeight:700,color:C.text}}>{MA[sel].n} Function: {fns[sel]}</div>
-          <div style={{fontSize:9,color:C.textDim}}>{MA[sel].aka} · Position {MA[sel].num} · {MA[sel].dim} · {MA[sel].pri} · {MA[sel].lvl}</div>
+          <div style={{fontSize:9,color:C.textDim}}>{MA[sel].aka} | Position {MA[sel].num} | {MA[sel].dim} | {MA[sel].pri} | {MA[sel].lvl}</div>
         </div>
         <button onClick={()=>setSel(null)} style={{marginLeft:"auto",background:"none",border:"none",color:C.textDim,fontSize:16}}>✕</button>
       </div>
@@ -674,7 +675,7 @@ function ModelGVisualizer({type}){
       <div style={{textAlign:"center",marginBottom:4}}><Chip fn={fn} size={30} glow={isSel} bg={cc}/></div>
       <div style={{textAlign:"center"}}>
         <div style={{fontSize:10,fontWeight:700,color:C.text,textShadow:"0 1px 2px rgba(0,0,0,0.6)"}}>{gp.n}</div>
-        <div style={{fontSize:7,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>G{gp.num} · A{gp.aPos}</div>
+        <div style={{fontSize:7,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace"}}>G{gp.num} | A{gp.aPos}</div>
         <div style={{fontSize:10,fontWeight:700,color:ec,marginTop:2}}>{gp.energy}</div>
       </div>
       <div style={{display:"flex",justifyContent:"center",gap:2,marginTop:3}}><Badge label={gp.d7.excitable} color={gp.d7.excitable==="Excitable"?"#22c55e":"#eab308"} filled/></div>
@@ -721,7 +722,7 @@ function ModelGVisualizer({type}){
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
         <Chip fn={fns[G2A[sel]]} size={34} glow bg={COL[sel%4]}/><div>
           <div style={{fontSize:14,fontWeight:700,color:C.text}}>{MG[sel].n}: {fns[G2A[sel]]}</div>
-          <div style={{fontSize:9,color:C.textDim}}>{MG[sel].aka} · G{MG[sel].num} (= A{MG[sel].aPos}) · {MG[sel].energy} Energy · {MG[sel].block}</div>
+          <div style={{fontSize:9,color:C.textDim}}>{MG[sel].aka} | G{MG[sel].num} (= A{MG[sel].aPos}) | {MG[sel].energy} Energy | {MG[sel].block}</div>
         </div>
         <button onClick={()=>setSel(null)} style={{marginLeft:"auto",background:"none",border:"none",color:C.textDim,fontSize:16}}>✕</button>
       </div>
@@ -784,7 +785,7 @@ function OverviewSection(){
           <div key={gi} style={{padding:"8px 10px",borderRadius:6,background:EC[gp.energy]+"0d",border:`1px solid ${EC[gp.energy]}22`}}>
             <div style={{fontSize:12,fontWeight:700,color:EC[gp.energy]}}>G{gp.num}: {gp.n}</div>
             <div style={{fontSize:11,color:C.textDim}}>= Model A Position {gp.aPos} ({MA[G2A[gi]].n})</div>
-            <div style={{fontSize:10,color:C.textFaint}}>{gp.energy} · {gp.block}</div>
+            <div style={{fontSize:10,color:C.textFaint}}>{gp.energy} | {gp.block}</div>
           </div>
         ))}
       </div>
@@ -828,22 +829,22 @@ function PresenceCubeSection(){
         Model A and Model G are traditionally drawn as flat 2×4 grids, but this flattening is a convenience of the page, not a fact of the psyche. Both models are <strong style={{color:C.violet}}>2D projections of a single 3D manifold</strong>: the <em>Presence Cube</em>, formalized by Andrew Joynton. The same eight functions occupy the same eight vertices of this cube; Model A and Model G simply view it from different angles.
       </p>
       <p style={{fontSize:14,color:C.textMuted,lineHeight:1.75}}>
-        The cube is built from the three Model A function dichotomies with the strongest external visibility, what Joynton calls the <strong style={{color:C.text}}>presence traits</strong>. The remaining four dichotomies (Inert/Contact, Mental/Vital, Accepting/Producing, Evaluatory/Situational) are orthogonal to the cube's geometry and do not add visual dimensions.
+        The cube is built from the three Model A function dichotomies with the strongest external visibility, what Joynton calls the <strong style={{color:C.text}}>presence traits</strong>. The remaining four dichotomies (Inert/Contact, Mental/Vital, Accepting/Producing, Evaluatory/Situational) are orthogonal to the cube's geometry and do not add visual dimensions. They are not inert leftovers, though: three of them (Inert/Contact, Evaluatory/Situational, Mental/Vital) are precisely the traits that stay <em>constant</em> along the cube's internal diagonals, and two of them can be crossed to raise the conjectural Permeability spectrum introduced below.
       </p>
     </Card>
 
     {/* ═══ THE 3 AXES ═══ */}
     <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:14}}>
       <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.rose}`}}>
-        <div style={{fontSize:11,fontWeight:700,color:C.rose,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 1 · Strong / Weak</div>
+        <div style={{fontSize:11,fontWeight:700,color:C.rose,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 1 | Strong / Weak</div>
         <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Capacity. Strong functions have an advanced, well-developed understanding of their information domain; weak functions have only a simplistic grasp.</p>
       </Card>
       <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.accentA}`}}>
-        <div style={{fontSize:11,fontWeight:700,color:C.accentA,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 2 · Valued / Subdued</div>
+        <div style={{fontSize:11,fontWeight:700,color:C.accentA,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 2 | Valued / Subdued</div>
         <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Attraction. The individual is drawn toward valued information and repelled from subdued information, regardless of how competently either is processed.</p>
       </Card>
       <Card style={{flex:"1 1 240px",marginBottom:0,borderLeft:`3px solid ${C.lime}`}}>
-        <div style={{fontSize:11,fontWeight:700,color:C.lime,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 3 · Bold / Cautious</div>
+        <div style={{fontSize:11,fontWeight:700,color:C.lime,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>Axis 3 | Bold / Cautious</div>
         <p style={{fontSize:12.5,color:C.textMuted,lineHeight:1.6}}>Confidence. Bold functions are deployed with assertive certainty; cautious functions are used carefully, selectively, and often only when the situation demands.</p>
       </Card>
     </div>
@@ -852,11 +853,11 @@ function PresenceCubeSection(){
     <Card>
       <div style={{fontSize:14,fontWeight:700,color:C.violet,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>The Three Projections</div>
       <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7,marginBottom:14}}>
-        Because the cube is built from three binary axes, pairs of axes can be projected orthogonally to produce three distinct 1D spectra. Each spectrum ranks the eight functions from 1 (lowest) to 4 (highest) along a different psychological quality:
+        Because the cube is built from three binary axes, pairs of axes can be projected orthogonally to produce three distinct 1D spectra. Each spectrum ranks the eight functions from 1 (lowest) to 4 (highest) along a different psychological quality. A fourth spectrum can be raised by the same construction from two of the <em>hidden</em> dichotomies rather than the cube's own axes; it is styled apart below because it is not (yet) part of the cube's formal geometry:
       </p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:10}}>
-        <div style={{padding:"12px 14px",background:"rgba(251,146,60,0.06)",border:"1px solid rgba(251,146,60,0.2)",borderRadius:8}}>
-          <div style={{fontSize:13,fontWeight:700,color:"#fb923c",marginBottom:5}}>Dimensionality (D)</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:10}}>
+        <div style={{padding:"12px 14px",background:"rgba(34,197,94,0.06)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:8}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#22c55e",marginBottom:5}}>Dimensionality (D)</div>
           <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Strong/Weak × Bold/Cautious</div>
           <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How <em>capable and accessible</em> a function is. Bukalov &amp; Ermak's original metric. Base (4D) is maximally dimensional; Vulnerable (1D) is minimally so.</p>
         </div>
@@ -865,10 +866,18 @@ function PresenceCubeSection(){
           <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Valued/Subdued × Bold/Cautious</div>
           <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How much the psyche <em>directly prefers</em> the function. Joynton's complement to Dimensionality. Base and Mobilizing share the 4P peak.</p>
         </div>
-        <div style={{padding:"12px 14px",background:"rgba(139,92,246,0.08)",border:"1px solid rgba(139,92,246,0.25)",borderRadius:8}}>
+        <div style={{padding:"12px 14px",background:"rgba(139,92,246,0.08)",border:"1px solid rgba(139,92,246,0.25)",borderRadius:8,gridColumn:"1 / -1"}}>
           <div style={{fontSize:13,fontWeight:700,color:C.violet,marginBottom:5}}>Level (L) <span style={{fontSize:10,fontWeight:500,color:C.textFaint}}>= (D + P) / 2</span></div>
           <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Vertical axis of the cube</div>
-          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How <em>present</em> a function is in the psyche overall. Base uniquely occupies 4L; Vulnerable uniquely occupies 1L. The other six split 3L/2L.</p>
+          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6}}>How <em>present</em> a function is in the psyche overall: how much of a person's visible cognition and behavior it occupies. Base uniquely holds 4L and Vulnerable uniquely holds 1L, and the six functions between them split lawfully rather than arbitrarily. 3L gathers the producing functions shy of the Vulnerable (Creative, Mobilizing, Demonstrative); 2L gathers the accepting functions shy of the Base (Role, Suggestive, Ignoring). Accepting/Producing is the one trait that alternates tier by tier down the spine, so descending the cube alternates between functions that take information in and functions that hand output back.</p>
+        </div>
+        <div style={{padding:"12px 14px",background:"rgba(251,146,60,0.05)",border:"1.5px dashed rgba(251,146,60,0.45)",borderRadius:8,gridColumn:"1 / -1"}}>
+          <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap",marginBottom:5}}>
+            <div style={{fontSize:13,fontWeight:700,color:"#fb923c"}}>Permeability (&Pi;)</div>
+            <span style={{fontSize:8,fontWeight:700,color:"#fb923c",border:"1px dashed rgba(251,146,60,0.4)",borderRadius:3,padding:"1px 6px",letterSpacing:1.2,textTransform:"uppercase"}}>Conjectural | Non-Cube Axis</span>
+          </div>
+          <div style={{fontSize:11,color:C.textDim,fontFamily:"'JetBrains Mono',monospace",marginBottom:6}}>Inert/Contact × Evaluatory/Situational</div>
+          <p style={{fontSize:12,color:C.textMuted,lineHeight:1.6,fontStyle:"italic"}}>Boundary sensitivity: how far a function stays open to renegotiation by the environment. Contact functions integrate feedback where Inert ones seal it out; Situational functions re-judge case by case where Evaluatory ones hold standing verdicts. Creative &amp; Role sit at 4&Pi; (fully adaptive), Suggestive &amp; Demonstrative at 3&Pi;, Mobilizing &amp; Ignoring at 2&Pi;, Base &amp; Vulnerable at 1&Pi; (fully fixed). Not a projection of the cube: both parent traits are constant along the cube's internal diagonals, so each &Pi; value is shared by <em>polar-opposite vertices</em>, and their product recovers Mental/Vital. The psyche adapts at its instruments; it stays sovereign at its anchor and its wound.</p>
         </div>
       </div>
     </Card>
@@ -890,8 +899,8 @@ function PresenceCubeSection(){
       <div style={{flex:"1 1 360px",background:"radial-gradient(ellipse at center,rgba(139,92,246,0.06),transparent 70%)",border:`1px solid ${C.border}`,borderRadius:12,padding:"18px 10px",display:"flex",justifyContent:"center"}}>
         <svg viewBox="0 0 460 560" style={{width:"100%",maxWidth:420,height:"auto"}}>
           {/* Axis labels */}
-          <text x="230" y="16" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">4L · PRESENCE PEAK</text>
-          <text x="230" y="550" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">1L · PRESENCE FLOOR</text>
+          <text x="230" y="16" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">4L | PRESENCE PEAK</text>
+          <text x="230" y="550" textAnchor="middle" fill={C.textFaint} fontSize="9" fontFamily="'JetBrains Mono',monospace" letterSpacing="2">1L | PRESENCE FLOOR</text>
 
           {/* Level guide ticks (left side) */}
           {[{y:62,l:"4L"},{y:182,l:"3L"},{y:345,l:"2L"},{y:492,l:"1L"}].map(t=>(
@@ -964,7 +973,7 @@ function PresenceCubeSection(){
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:14}}>
             {[
               {l:"Level",v:activeNode.L+"L",c:C.violet},
-              {l:"Dimension",v:activeNode.D+"D",c:"#fb923c"},
+              {l:"Dimension",v:activeNode.D+"D",c:"#22c55e"},
               {l:"Priority",v:activeNode.P+"P",c:"#60a5fa"},
             ].map(s=>(
               <div key={s.l} style={{padding:"8px 6px",background:s.c+"0f",border:`1px solid ${s.c}33`,borderRadius:6,textAlign:"center"}}>
@@ -1006,7 +1015,7 @@ function PresenceCubeSection(){
 
     {/* ═══ BOTTOM TABLE: ALL 8 FUNCTIONS AT A GLANCE ═══ */}
     <Card style={{marginTop:16}}>
-      <div style={{fontSize:11,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>All Eight Vertices · Presence Coordinates</div>
+      <div style={{fontSize:11,color:C.textDim,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>All Eight Vertices | Presence Coordinates</div>
       <div className="cube-vertex-grid">
         {CUBE_NODES.slice().sort((a,b)=>a.num-b.num).map(n=>{
           const isActive=active===n.num;
@@ -1019,7 +1028,7 @@ function PresenceCubeSection(){
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
               <span style={{fontSize:12,fontWeight:700,color:C.text}}>{n.num}. {n.name}</span>
             </div>
-            <div style={{fontSize:10,color:color,fontFamily:"'JetBrains Mono',monospace",marginTop:2,fontWeight:700}}>{n.L}L · {n.D}D · {n.P}P</div>
+            <div style={{fontSize:10,color:color,fontFamily:"'JetBrains Mono',monospace",marginTop:2,fontWeight:700}}>{n.L}L | {n.D}D | {n.P}P</div>
           </div>);
         })}
       </div>
@@ -1029,11 +1038,11 @@ function PresenceCubeSection(){
 
 /* ═══════ PORTRAIT SECTION ═══════ */
 const PORTRAIT_SECTIONS=[
-  {key:"behavior",      label:"Behavioral Expression & Survival Strategy", eyebrow:"01 · Strategy"},
-  {key:"temperament",   label:"Temperament & Affect",                       eyebrow:"02 · Temperament"},
-  {key:"cognition",     label:"Cognitive, Perceptual & Orientational Style",eyebrow:"03 · Cognition"},
-  {key:"valuation",     label:"Valuation & Motivation",                     eyebrow:"04 · Drive"},
-  {key:"communication", label:"Communication & Social Positioning",         eyebrow:"05 · Social"},
+  {key:"behavior",      label:"Behavioral Expression & Survival Strategy", eyebrow:"Strategy"},
+  {key:"temperament",   label:"Temperament & Affect",                       eyebrow:"Temperament"},
+  {key:"cognition",     label:"Cognitive, Perceptual & Orientational Style",eyebrow:"Cognition"},
+  {key:"valuation",     label:"Valuation & Motivation",                     eyebrow:"Drive"},
+  {key:"communication", label:"Communication & Social Positioning",         eyebrow:"Social"},
 ];
 
 function PortraitSection({type}){
@@ -1050,16 +1059,16 @@ function PortraitSection({type}){
     <Card style={{background:`linear-gradient(135deg,${qc}0e 0%,${C.card} 65%)`,borderColor:qc+"44",padding:"24px 22px",marginBottom:18}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
         <div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:qc,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>{t.q} Quadra · {type}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:qc,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>{t.q} Quadra | {type}</div>
           <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:30,fontWeight:700,color:C.text,margin:"0 0 4px",letterSpacing:0.2}}>{p.nickname}</h2>
           {p.aka&&<div style={{fontFamily:"'Crimson Text',Georgia,serif",fontSize:13,fontStyle:"italic",color:C.textDim}}>Also known as {p.aka}.</div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"auto auto auto auto",alignItems:"center",columnGap:8,rowGap:8}}>
-          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentA,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model A · Ego:</span>
+          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentA,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model A | Ego:</span>
           <Chip fn={t.b} size={30} glow/>
           <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
           <Chip fn={t.c} size={30} glow/>
-          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentG,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model G · Soc. Mission:</span>
+          <span style={{fontFamily:"'Inter',-apple-system,sans-serif",fontSize:10.5,fontWeight:700,color:C.accentG,letterSpacing:1.6,textTransform:"uppercase",textAlign:"right"}}>Model G | Soc. Mission:</span>
           <Chip fn={t.b} size={30} glow/>
           <span style={{fontSize:11,color:C.textFaint,fontFamily:"'JetBrains Mono',monospace",textAlign:"center"}}>+</span>
           <Chip fn={t.d} size={30} glow/>
@@ -1091,17 +1100,20 @@ function PortraitSection({type}){
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {sgroups.map((g,i)=>(
               <div key={i} style={{paddingBottom:10,borderBottom:i<sgroups.length-1?`1px solid ${C.border}55`:"none"}}>
-                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:8.5,fontWeight:700,color:C.textFaint,letterSpacing:1.3,textTransform:"uppercase",marginBottom:3,lineHeight:1.35}}>
-                  {g.group}{g.groupXyz&&g.groupXyz!==g.group?<span style={{color:C.textFaint,opacity:0.7}}> ({g.groupXyz})</span>:null}
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:800,color:C.textDim,letterSpacing:1.3,textTransform:"uppercase",marginBottom:3,lineHeight:1.35}}>
+                  {g.group}{g.groupXyz&&g.groupXyz!==g.group?<span style={{color:C.textFaint,opacity:0.8,fontWeight:700}}> ({g.groupXyz})</span>:null}
                 </div>
                 <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:3,lineHeight:1.35}}>
                   {g.sub}{g.subXyz&&g.subXyz!==g.sub?<span style={{color:C.textMuted,fontWeight:500}}> ({g.subXyz})</span>:null}
                 </div>
                 <div style={{fontSize:10.5,color:C.textDim,lineHeight:1.5,fontFamily:"'Crimson Text',Georgia,serif",fontStyle:"italic"}}>{g.detail}</div>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:8.5,fontWeight:700,letterSpacing:1.3,textTransform:"uppercase",marginTop:4,lineHeight:1.35,color:C.textFaint}}>
+                  <span style={{color:qc}}>{type}</span>{g.types.filter(x=>x!==type).map((x,j)=><span key={j}> | {x}</span>)}
+                </div>
               </div>
             ))}
           </div>
-          <div style={{marginTop:10,paddingTop:8,borderTop:`1px solid ${C.border}55`,fontSize:9.5,color:C.textFaint,lineHeight:1.5}}>Each entry shows the conventional Tetrachotomy Compendium label followed by the sociotype.xyz/g label in parentheses where they differ.</div>
+          <div style={{marginTop:10,paddingTop:8,borderTop:`1px solid ${C.border}55`,fontSize:9.5,color:C.textFaint,lineHeight:1.5}}>Each entry pairs the two label traditions, the Tetrachotomy Compendium and sociotype.xyz/g, with the alternate name shown in parentheses wherever the two differ.</div>
         </Card>
       </aside>
     </div>
@@ -1126,7 +1138,7 @@ function App(){
 
   return(<div style={{minHeight:"100vh",background:C.bg,paddingBottom:60}}>
     <div style={{background:`linear-gradient(180deg,${ac}08 0%,transparent 100%)`,borderBottom:`1px solid ${C.border}`,padding:"38px 24px 24px",textAlign:"center"}}>
-      <div style={{fontFamily:"'JetBrains Mono', monospace",fontSize:11,color:C.textDim,marginBottom:10}}>Section VII · Models Primer</div>
+      <div style={{fontFamily:"'JetBrains Mono', monospace",fontSize:11,color:C.textDim,marginBottom:10}}>Section VII | Models Primer</div>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:34,fontWeight:700,margin:0,color:"#ffffff",letterSpacing:0.3}}>Socionics Model Architecture</h1>
       <div style={{fontFamily:"'Crimson Text','Playfair Display',Georgia,serif",fontSize:15,fontStyle:"italic",color:C.textMuted,marginTop:8,letterSpacing:0.2}}>Information Metabolism (Model A) & Energy Metabolism (Model G)</div>
     </div>
@@ -1192,8 +1204,8 @@ function App(){
       </div>}
     </div>
     <div style={{textAlign:"center",padding:"36px 20px 14px",color:C.textFaint,fontSize:11,letterSpacing:0.5}}>
-      <div>The Complete Socionics Ontology · Models, Architecture & Type Portraits</div>
-      <div style={{marginTop:4}}>Sources: sociotype.xyz · wikisocion · opensocionics · bestsocionics · varlawend</div>
+      <div>The Complete Socionics Ontology | Models, Architecture & Type Portraits</div>
+      <div style={{marginTop:4}}>Sources: sociotype.xyz | wikisocion | opensocionics | bestsocionics | varlawend</div>
     </div>
   </div>);
 }
